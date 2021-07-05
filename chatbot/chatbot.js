@@ -8,11 +8,14 @@ const sessionId = config.dialogFlowSessionID;
 const languageCode = config.dialogFlowSessionLanguageCode;
 
 const credentials = {
-  //   client_email: config.googleClientEmail,
+  client_email: config.googleClientEmail,
   private_key: config.googlePrivateKey,
 };
 
-const sessionClient = new dialogflow.SessionsClient();
+const sessionClient = new dialogflow.SessionsClient({
+  projectId,
+  credentials,
+});
 const sessionPath = sessionClient.sessionPath(projectId, sessionId);
 
 module.exports = {
