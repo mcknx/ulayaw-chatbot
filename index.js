@@ -12,7 +12,7 @@ app.use(
 require("./routes/dialogFlowRoutes")(app);
 
 app.get("/", (req, res) => {
-  res.send({ hi: "awaw" });
+  res.send({ hi: "awawawawas" });
 });
 const PORT = process.env.PORT || 5000;
 app.listen(PORT);
