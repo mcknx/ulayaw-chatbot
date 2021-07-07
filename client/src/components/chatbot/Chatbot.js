@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios/index";
-
+import Message from "./Message";
 function Chatbot() {
   const [messages, setMessages] = useState();
 
@@ -29,7 +29,7 @@ function Chatbot() {
     const res = await axios.post("/api/df_event_query", { event });
 
     for (let msg of res.data.fulfillmentMessages) {
-      says = {
+      let says = {
         speaks: "me",
         msg: msg,
       };
@@ -37,10 +37,27 @@ function Chatbot() {
     }
   }
 
+  function renderMessages(returnedMessages) {
+    if (returnedMessages) {
+      return returnedMessages.map((message, i) => {
+        return (
+          <Message
+            key={i}
+            speaks={message.speaks}
+            text={message.msg.text.text}
+          />
+        );
+      });
+    } else {
+      return null;
+    }
+  }
+  // jsx
   return (
     <div className="h-96 w-64 float-right border-2 ">
       <div className="w-full h-full overflow-auto">
         <h2>Chatbot</h2>
+        {renderMessages(messages)}
         <input type="text" />
       </div>
     </div>
