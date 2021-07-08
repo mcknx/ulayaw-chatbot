@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios/index";
 import Message from "./Message";
+
 function Chatbot() {
   const [messages, setMessages] = useState([]);
   let messagesEnd = useRef(null);
+  let talkInput = useRef(null);
 
   async function df_text_query(queryText) {
     let says = {
@@ -91,6 +93,7 @@ function Chatbot() {
   }
   useEffect(() => {
     messagesEnd.scrollIntoView({ behavior: "smooth" });
+    talkInput.focus();
   });
   // jsx
   return (
@@ -102,7 +105,8 @@ function Chatbot() {
           ref={(el) => {
             messagesEnd = el;
           }}
-          style={{ float: "left", clear: "both" }}
+          className="clear-both"
+          // style={{ float: "left", clear: "both" }}
         ></div>
 
         <div className="bottom-0">
@@ -111,6 +115,9 @@ function Chatbot() {
             type="text"
             onKeyPress={_handleInputKeyPress}
             placeholder="Type here ..."
+            ref={(input) => {
+              talkInput = input;
+            }}
           />
         </div>
       </div>
