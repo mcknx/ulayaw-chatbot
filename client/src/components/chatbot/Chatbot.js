@@ -4,24 +4,40 @@ import Message from "./Message";
 function Chatbot() {
   const [messages, setMessages] = useState([]);
 
-  async function df_text_query(text) {
+  async function df_text_query(queryText) {
     let says = {
       speaks: "user",
       msg: {
         text: {
-          text: text,
+          text: queryText,
         },
       },
     };
-    setMessages({ messages: [...messages, says] });
-    const res = await axios.post("/api/df_text_query", { text });
+    // setMessages({ messages: [...messages, says] });
+
+    // Version 2
+    // setMessages([...messages, says]);
+
+    setMessages((prevMessages) => {
+      return [...prevMessages, says];
+    });
+
+    const res = await axios.post("/api/df_text_query", { text: queryText });
 
     for (let msg of res.data.fulfillmentMessages) {
       says = {
         speaks: "bot",
         msg: msg,
       };
-      setMessages({ messages: [...messages, says] });
+      // Version 1
+      // setMessages({ messages: [...messages, says] });
+
+      // Version 2
+      // setMessages([...messages, says]);
+
+      setMessages((prevMessages) => {
+        return [...prevMessages, says];
+      });
     }
   }
 
@@ -35,15 +51,12 @@ function Chatbot() {
       };
 
       // Version 1
-      // setMessages((prevMessages) => {
-      //   return {
-      //     ...prevMessages,
-      //     says,
-      //   };
-      // });
+      setMessages((prevMessages) => {
+        return [...prevMessages, says];
+      });
 
       // Version 2
-      setMessages([...messages, says]);
+      // setMessages([...messages, says]);
 
       // Version 3
       // setMessages(...messages, says);
@@ -54,7 +67,7 @@ function Chatbot() {
   }, []);
   function renderMessages(returnedMessages) {
     if (returnedMessages) {
-      console.log(returnedMessages);
+      // console.log(returnedMessages);
 
       return returnedMessages.map((message, i) => {
         return (
@@ -69,13 +82,26 @@ function Chatbot() {
       return null;
     }
   }
+  function _handleInputKeyPress(e) {
+    if (e.key === "Enter") {
+      df_text_query(e.target.value);
+      e.target.value = "";
+    }
+  }
   // jsx
   return (
     <div className="h-96 w-full md:w-96 float-right border-2 ">
       <div className="w-full h-full overflow-auto p-4 space-y-2">
         <h2>Chatbot</h2>
-        {renderMessages(messages)}
-        <input type="text" />
+        <div className="mb-10">{renderMessages(messages)}</div>
+        <div className="bottom-0">
+          <input
+            className="border-2 rounded-lg border-red-500 p-2 w-full my-10 "
+            type="text"
+            onKeyPress={_handleInputKeyPress}
+            placeholder="Type here ..."
+          />
+        </div>
       </div>
     </div>
   );
