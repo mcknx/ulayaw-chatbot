@@ -1,11 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios/index";
 import Message from "./Message";
+import Cookies from "universal-cookie";
+import { v4 as uuid } from "uuid";
+
+const cookies = new Cookies();
 
 function Chatbot() {
   const [messages, setMessages] = useState([]);
   let messagesEnd = useRef(null);
   let talkInput = useRef(null);
+  if (cookies.get("userID") === undefined) {
+    cookies.set("userID", uuid(), { path: "/" });
+  }
+  console.log(cookies.get("userID"));
 
   async function df_text_query(queryText) {
     let says = {
@@ -25,7 +33,11 @@ function Chatbot() {
       return [...prevMessages, says];
     });
 
-    const res = await axios.post("/api/df_text_query", { text: queryText });
+    // const res = await axios.post("/api/df_text_query", { text: queryText });
+    const res = await axios.post("/api/df_text_query", {
+      text: queryText,
+      userID: cookies.get("userID"),
+    });
 
     for (let msg of res.data.fulfillmentMessages) {
       says = {
@@ -44,8 +56,12 @@ function Chatbot() {
     }
   }
 
-  async function df_event_query(event) {
-    const res = await axios.post("/api/df_event_query", { event });
+  async function df_event_query(eventName) {
+    // const res = await axios.post("/api/df_event_query", { event });
+    const res = await axios.post("/api/df_event_query", {
+      event: eventName,
+      userID: cookies.get("userID"),
+    });
     // console.log(res);
     for (let msg of res.data.fulfillmentMessages) {
       let says = {

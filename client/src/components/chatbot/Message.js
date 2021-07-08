@@ -17,7 +17,7 @@ function Message({ speaks, text }) {
 }
 
 function MessageFormat({ speaks, text, float }) {
-  console.log(float);
+  // console.log(float);
   return (
     <div
       className={
