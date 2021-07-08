@@ -1,16 +1,17 @@
 import React from "react";
 
 function Message({ speaks, text }) {
+  console.log(speaks);
   return (
-    <div>
+    <div className="border-2 border-black rounded-lg p-2">
       <div>
-        <div>
+        <div className="flex space-x-2">
           {speaks === "bot" && (
-            <div>
+            <div className="bg-gray-500 rounded-full p-2 text-white self-center">
               <a href="/">{speaks}</a>
             </div>
           )}
-          <div>
+          <div className="self-center">
             <span>{text}</span>
           </div>
           {speaks === "user" && (
