@@ -22,8 +22,8 @@ function MessageFormat({ speaks, text, float }) {
     <div
       className={
         float === "left"
-          ? "flex justify-start space-x-2"
-          : "flex justify-end space-x-2"
+          ? "flex justify-start space-x-2 "
+          : "flex flex-row-reverse space-x-2 space-x-reverse "
       }
     >
       <div className="bg-gray-500 rounded-full p-2 text-white self-center h-10 w-10 ">

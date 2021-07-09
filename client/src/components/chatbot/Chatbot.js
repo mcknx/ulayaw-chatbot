@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios/index";
 import Message from "./Message";
+import Card from "./Card";
 import Cookies from "universal-cookie";
 import { v4 as uuid } from "uuid";
 
@@ -84,22 +85,54 @@ function Chatbot() {
   useEffect(() => {
     df_event_query("Welcome");
   }, []);
+
+  function renderCards(cards) {
+    return cards.map((card, i) => <Card key={i} payload={card.structValue} />);
+  }
+
+  function renderOneMessage(message, i) {
+    if (message.msg && message.msg.text && message.msg.text.text) {
+      return (
+        <Message key={i} speaks={message.speaks} text={message.msg.text.text} />
+      );
+    } else if (message.msg && message.msg.payload.fields.cards) {
+      //message.msg.payload.fields.cards.listValue.values
+
+      return (
+        <div className="border-2 border-black rounded-lg p-2 mb-2 " key={i}>
+          <div className="bg-gray-500 rounded-full p-2 text-white self-center h-10 w-10 ">
+            <a href="/">{message.speaks}</a>
+          </div>
+          <div className="border-2 border-black rounded-lg p-2 mb-2 transform scale-75">
+            <div style={{ overflow: "hidden" }}>
+              <div className="overflow-y-hidden" style={{ height: 400 }}>
+                <div
+                  className="flex flex-row space-x-2 "
+                  style={{
+                    height: 300,
+                    width:
+                      message.msg.payload.fields.cards.listValue.values.length *
+                      240,
+                  }}
+                >
+                  {renderCards(
+                    message.msg.payload.fields.cards.listValue.values
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  }
+
   function renderMessages(returnedMessages) {
     if (returnedMessages) {
       // console.log(returnedMessages);
 
       return returnedMessages.map((message, i) => {
-        if (message.msg && message.msg.text && message.msg.text.text) {
-          return (
-            <Message
-              key={i}
-              speaks={message.speaks}
-              text={message.msg.text.text}
-            />
-          );
-        } else {
-          return <h2>Cards</h2>;
-        }
+        return renderOneMessage(message, i);
       });
     } else {
       return null;
@@ -117,31 +150,45 @@ function Chatbot() {
   });
   // jsx
   return (
-    <div className="h-96 w-full md:w-96 float-right border-2 ">
-      <div className="w-full h-full overflow-auto p-4 space-y-2">
-        <h2>Chatbot</h2>
-        <div className="mb-10">{renderMessages(messages)}</div>
-        <div
-          ref={(el) => {
-            messagesEnd = el;
-          }}
-          className="clear-both"
-          // style={{ float: "left", clear: "both" }}
-        ></div>
+    <>
+      <div
+        className=" w-full md:w-96  border-2 bottom-0  right-0  fixed bg-white h-full md:h-3/4 pb-52"
+        // style={{ height: 500 }}
+      >
+        <nav>
+          <div className="bg-gray-100 p-4">
+            <a href="/" className="brand-logo">
+              Ulayaw - Chatbot
+            </a>
+          </div>
+        </nav>
 
-        <div className="bottom-0">
-          <input
-            className="border-2 rounded-lg border-red-500 p-2 w-full my-10 "
-            type="text"
-            onKeyPress={_handleInputKeyPress}
-            placeholder="Type here ..."
-            ref={(input) => {
-              talkInput = input;
+        <div
+          className="w-full h-full  overflow-auto space-y-2 "
+          //
+        >
+          <div className="mb-10 p-2 ">{renderMessages(messages)}</div>
+          <div
+            ref={(el) => {
+              messagesEnd = el;
             }}
-          />
+            className="clear-both"
+            // style={{ float: "left", clear: "both" }}
+          ></div>
         </div>
       </div>
-    </div>
+      <div className="bg-gray-100  px-4 fixed w-full md:w-96 bottom-0 right-0">
+        <input
+          className="border-2 rounded-lg border-red-500 p-2 w-full my-14 "
+          type="text"
+          onKeyPress={_handleInputKeyPress}
+          placeholder="Type here ..."
+          ref={(input) => {
+            talkInput = input;
+          }}
+        />
+      </div>
+    </>
   );
 }
 
