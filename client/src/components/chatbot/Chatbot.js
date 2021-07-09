@@ -86,6 +86,13 @@ function Chatbot() {
     df_event_query("Welcome");
   }, []);
 
+  function _handleQuickReplyPayload(event, payload, text) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    df_text_query(text);
+  }
+
   function renderCards(cards) {
     return cards.map((card, i) => <Card key={i} payload={card.structValue} />);
   }

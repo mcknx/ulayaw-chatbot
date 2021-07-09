@@ -1,0 +1,17 @@
+{
+  "text": "Bago tayo magsimula, maaari ko bang tanungin ang iyong pangalan?",
+  "quick_replies": [
+    {
+      "text": "Oo",
+      "payload": "training_yes"
+    },
+    {
+      "text": "Hindi",
+      "payload": "training_yes"
+    },
+    {
+      "text": "Magsurì",
+      "payload": "localhost:3000/about"
+    }
+  ]
+}
