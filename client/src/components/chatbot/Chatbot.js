@@ -91,7 +91,13 @@ function Chatbot() {
     event.preventDefault();
     event.stopPropagation();
 
-    df_text_query(text);
+    switch (payload) {
+      case "training_masterclass":
+        df_event_query("MASTERCLASS");
+      default:
+        df_text_query(text);
+        break;
+    }
   }
 
   function renderCards(cards) {
