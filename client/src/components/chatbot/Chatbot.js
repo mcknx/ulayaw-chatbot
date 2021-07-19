@@ -10,6 +10,8 @@ const cookies = new Cookies();
 
 function Chatbot() {
   const [messages, setMessages] = useState([]);
+  const [showBot, setShowBot] = useState(true);
+
   let messagesEnd = useRef(null);
   let talkInput = useRef(null);
   if (cookies.get("userID") === undefined) {
@@ -86,6 +88,18 @@ function Chatbot() {
   useEffect(() => {
     df_event_query("Welcome");
   }, []);
+
+  function show(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    setShowBot(true);
+  }
+
+  function hide(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    setShowBot(false);
+  }
 
   function _handleQuickReplyPayload(event, payload, text) {
     event.preventDefault();
@@ -179,28 +193,95 @@ function Chatbot() {
   }
   useEffect(() => {
     messagesEnd.scrollIntoView({ behavior: "smooth" });
-    talkInput.focus();
+    console.log(talkInput);
+    if (talkInput.current != null) {
+      talkInput.focus();
+    }
   });
   // jsx
-  return (
-    <>
-      <div
-        className=" w-full md:w-96  border-2 bottom-0  right-0  fixed bg-white h-full md:h-3/4 pb-52"
-        // style={{ height: 500 }}
-      >
-        <nav>
-          <div className="bg-gray-100 p-4">
-            <a href="/" className="brand-logo">
-              Ulayaw - Chatbot
-            </a>
-          </div>
-        </nav>
-
+  if (showBot) {
+    return (
+      <>
         <div
-          className="w-full h-full  overflow-auto space-y-2 "
-          //
+          className=" w-full md:w-96  border-2 bottom-0  right-0  fixed bg-white h-full md:h-3/4 pb-52"
+          // style={{ height: 500 }}
         >
-          <div className="mb-10 p-2 ">{renderMessages(messages)}</div>
+          <nav>
+            <div className="bg-gray-100 p-4 flex flex-row justify-between">
+              <a href="/" className="brand-logo">
+                Ulayaw - Chatbot
+              </a>
+              <ul className="right-0">
+                <li className="">
+                  <a
+                    href="/"
+                    // onClick={() => {
+                    //   setShowBot(!showBot);
+                    // }}
+
+                    onClick={hide}
+                  >
+                    Close
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+
+          <div
+            className="w-full h-full  overflow-auto space-y-2 "
+            //
+          >
+            <div className="mb-10 p-2 ">{renderMessages(messages)}</div>
+            <div
+              ref={(el) => {
+                messagesEnd = el;
+              }}
+              className="clear-both"
+              // style={{ float: "left", clear: "both" }}
+            ></div>
+          </div>
+        </div>
+        <div className="bg-gray-100  px-4 fixed w-full md:w-96 bottom-0 right-0">
+          <input
+            className="border-2 rounded-lg border-red-500 p-2 w-full my-14 "
+            type="text"
+            onKeyPress={_handleInputKeyPress}
+            placeholder="Type here ..."
+            ref={(input) => {
+              talkInput = input;
+            }}
+          />
+        </div>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <div
+          className=" w-full md:w-96  border-2 bottom-0  right-0  fixed bg-white   "
+          // style={{ height: 500 }}
+        >
+          <nav>
+            <div className="bg-gray-100 p-4 flex flex-row justify-between">
+              <a href="/" className="brand-logo">
+                Ulayaw - Chatbot
+              </a>
+              <ul className="right-0">
+                <li className="">
+                  <a
+                    href="/"
+                    // onClick={() => {
+                    //   setShowBot(!showBot);
+                    // }}
+                    onClick={show}
+                  >
+                    Show
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </nav>
           <div
             ref={(el) => {
               messagesEnd = el;
@@ -209,20 +290,9 @@ function Chatbot() {
             // style={{ float: "left", clear: "both" }}
           ></div>
         </div>
-      </div>
-      <div className="bg-gray-100  px-4 fixed w-full md:w-96 bottom-0 right-0">
-        <input
-          className="border-2 rounded-lg border-red-500 p-2 w-full my-14 "
-          type="text"
-          onKeyPress={_handleInputKeyPress}
-          placeholder="Type here ..."
-          ref={(input) => {
-            talkInput = input;
-          }}
-        />
-      </div>
-    </>
-  );
+      </>
+    );
+  }
 }
 
 // const Chatbot = () => <h2>Chatbot will be here</h2>;
