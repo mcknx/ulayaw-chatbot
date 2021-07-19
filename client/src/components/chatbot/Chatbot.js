@@ -5,15 +5,17 @@ import Card from "./Card";
 import Cookies from "universal-cookie";
 import { v4 as uuid } from "uuid";
 import QuickReplies from "./QuickReplies";
+import { withRouter } from "react-router-dom";
 
 const cookies = new Cookies();
 
-function Chatbot() {
+function Chatbot(props) {
   const [messages, setMessages] = useState([]);
   const [showBot, setShowBot] = useState(true);
-
+  const [shopWelcomeSent, setShopWelcomeSent] = useState(false);
   let messagesEnd = useRef(null);
   let talkInput = useRef(null);
+
   if (cookies.get("userID") === undefined) {
     cookies.set("userID", uuid(), { path: "/" });
   }
@@ -87,6 +89,20 @@ function Chatbot() {
   }
   useEffect(() => {
     df_event_query("Welcome");
+
+    if (window.location.pathname === "/about" && !shopWelcomeSent) {
+      df_event_query("WELCOME_SHOP");
+      setShowBot(true);
+      setShopWelcomeSent(true);
+    }
+
+    props.history.listen(() => {
+      if (props.history.location.pathname === "/about" && !shopWelcomeSent) {
+        df_event_query("WELCOME_SHOP");
+        setShowBot(true);
+        setShopWelcomeSent(true);
+      }
+    });
   }, []);
 
   function show(event) {
@@ -300,4 +316,4 @@ function Chatbot() {
 
 // const Chatbot = () => <h2>Chatbot will be here</h2>;
 
-export default Chatbot;
+export default withRouter(Chatbot);
