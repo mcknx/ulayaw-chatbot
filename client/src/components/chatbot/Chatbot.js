@@ -106,6 +106,9 @@ function Chatbot() {
     event.stopPropagation();
 
     switch (payload) {
+      case "recommended_yes":
+        df_event_query("SHOW_RECOMMENDATIONS");
+        break;
       case "training_masterclass":
         df_event_query("MASTERCLASS");
       default:
