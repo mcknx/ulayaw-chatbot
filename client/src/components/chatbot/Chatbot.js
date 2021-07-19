@@ -87,10 +87,11 @@ function Chatbot(props) {
       // setMessages(...messages, says);
     }
   }
-  useEffect(() => {
+  useEffect(async () => {
     df_event_query("Welcome");
 
     if (window.location.pathname === "/about" && !shopWelcomeSent) {
+      await resolveAfterXSeconds(1);
       df_event_query("WELCOME_SHOP");
       setShowBot(true);
       setShopWelcomeSent(true);
@@ -217,6 +218,14 @@ function Chatbot(props) {
       talkInput.focus();
     }
   });
+
+  function resolveAfterXSeconds(x) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(x);
+      }, x * 1000);
+    });
+  }
   // jsx
   if (showBot) {
     return (
