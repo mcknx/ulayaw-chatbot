@@ -68,6 +68,14 @@ module.exports = {
   },
 
   handleAction: function (responses) {
+    let queryResult = responses[0].queryResult;
+
+    switch (queryResult.action) {
+      case "recommendaction-yes":
+        if (queryResult.allRequiredParamsPresent) {
+        }
+        break;
+    }
     return responses;
   },
 };
