@@ -11,6 +11,7 @@ mongoose.connect(config.mongoURI, {
 
 require("./models/Registration");
 require("./models/Demand");
+require("./models/Coupons");
 
 app.use(express.json());
 app.use(

@@ -1,6 +1,7 @@
 const { WebhookClient } = require("dialogflow-fulfillment");
 const mongoose = require("mongoose");
 const Demand = mongoose.model("demand");
+const Coupon = mongoose.model("coupon");
 
 module.exports = (app) => {
   app.post("/", async (req, res) => {
@@ -10,7 +11,7 @@ module.exports = (app) => {
       agent.add(`Welcome to my Snoopy fulfillment!`);
     }
 
-    function learn(agent) {
+    async function learn(agent) {
       Demand.findOne(
         { course: agent.parameters.courses },
         function (err, course) {
@@ -25,6 +26,12 @@ module.exports = (app) => {
       );
       let responseText = `You want to learn about ${agent.parameters.courses}. 
               Here is a link to all of my courses: https://www.udemy.com/user/jana-bergant`;
+
+      let coupon = await Coupon.findOne({ course: agent.parameters.courses });
+      if (coupon !== null) {
+        responseText = `You want to learn about ${agent.parameters.courses}. 
+                  Here is a link to the course: ${coupon.link}`;
+      }
       agent.add(responseText);
     }
 
