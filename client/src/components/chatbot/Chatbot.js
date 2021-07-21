@@ -102,8 +102,7 @@ function Chatbot(props) {
 
         // Version 3
         // setMessages(...messages, says);
-      }
-      for (let msg of res.data.fulfillmentMessages) {
+
         // Version 1
         setMessages((prevMessages) => {
           return [...prevMessages, says];
