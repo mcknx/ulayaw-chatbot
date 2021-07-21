@@ -40,51 +40,91 @@ function Chatbot(props) {
     });
 
     // const res = await axios.post("/api/df_text_query", { text: queryText });
-    const res = await axios.post("/api/df_text_query", {
-      text: queryText,
-      userID: cookies.get("userID"),
-    });
+    try {
+      const res = await axios.post("/api/df_text_query", {
+        queryText,
+        userID: cookies.get("userID"),
+      });
 
-    for (let msg of res.data.fulfillmentMessages) {
+      for (let msg of res.data.fulfillmentMessages) {
+        says = {
+          speaks: "bot",
+          msg: msg,
+        };
+        // Version 1
+        // setMessages({ messages: [...messages, says] });
+
+        // Version 2
+        // setMessages([...messages, says]);
+
+        setMessages((prevMessages) => {
+          return [...prevMessages, says];
+        });
+      }
+    } catch (e) {
       says = {
         speaks: "bot",
-        msg: msg,
+
+        msg: {
+          text: {
+            text: "I'm having troubles. I need to terminate. will be back later",
+          },
+        },
       };
-      // Version 1
-      // setMessages({ messages: [...messages, says] });
-
-      // Version 2
-      // setMessages([...messages, says]);
-
       setMessages((prevMessages) => {
         return [...prevMessages, says];
       });
+      // this.setState({ messages: [...this.state.messages, says]});
+      // let that = this;
+      setTimeout(function () {
+        setShowBot(false);
+        // that.setState({ showBot: false });
+      }, 2000);
     }
   }
 
   async function df_event_query(eventName) {
-    // const res = await axios.post("/api/df_event_query", { event });
-    const res = await axios.post("/api/df_event_query", {
-      event: eventName,
-      userID: cookies.get("userID"),
-    });
-    // console.log(res);
-    for (let msg of res.data.fulfillmentMessages) {
+    // const res = await axios.post("/api/df_event_query", { event });ss
+    try {
+      const res = await axios.post("/api/df_event_query", {
+        event: eventName,
+        userID: cookies.get("userID"),
+      });
+      // console.log(res);
+      for (let msg of res.data.fulfillmentMessages) {
+        let says = {
+          speaks: "bot",
+          msg: msg,
+        };
+
+        // Version 2
+        // setMessages([...messages, says]);
+
+        // Version 3
+        // setMessages(...messages, says);
+
+        // Version 1
+        setMessages((prevMessages) => {
+          return [...prevMessages, says];
+        });
+      }
+    } catch (e) {
       let says = {
         speaks: "bot",
-        msg: msg,
+
+        msg: {
+          text: {
+            text: "I'm having troubles. I need to terminate. will be back later",
+          },
+        },
       };
 
-      // Version 1
       setMessages((prevMessages) => {
         return [...prevMessages, says];
       });
-
-      // Version 2
-      // setMessages([...messages, says]);
-
-      // Version 3
-      // setMessages(...messages, says);
+      setTimeout(function () {
+        setShowBot(false);
+      }, 2000);
     }
   }
   useEffect(async () => {

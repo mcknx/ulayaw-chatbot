@@ -11,7 +11,12 @@
     "start": "node index.js",
     "backend": "nodemon index.js",
     "frontend": "npm run start --prefix client",
+<<<<<<< HEAD
     "dev": "concurrently \"npm run backend\"  \"npm run start --prefix client\""
+=======
+    "dev": "concurrently \"npm run backend\"  \"npm run start --prefix client\"",
+    "heroku-postbuild": " npm install --prefix client && npm run build --prefix client"
+>>>>>>> d8cade8df74da6451d955755e579b708f8102bf5
   },
   "repository": {
     "type": "git",
