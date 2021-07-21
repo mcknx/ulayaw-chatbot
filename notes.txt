@@ -4,4 +4,4 @@ export GOOGLE_APPLICATION_CREDENTIALS=C:/Users/mckn/Music/school_files/Third_Yea
 
 
 npm run dev
-lt --port 5000
+lt --port 5000 (go to dialogflow fulfillment -> paste url)

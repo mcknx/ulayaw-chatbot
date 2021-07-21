@@ -10,6 +10,7 @@ mongoose.connect(config.mongoURI, {
 });
 
 require("./models/Registration");
+require("./models/Demand");
 
 app.use(express.json());
 app.use(
