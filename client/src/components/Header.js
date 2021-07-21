@@ -7,12 +7,12 @@ const Header = () => (
       <Link to={"/"}>Ulayaw</Link>
     </span>
     <ul className="flex self-center space-x-5 justify-end w-full">
-      <li className="hover:underline transform hover:scale-110 hover:text-red">
+      {/* <li className="hover:underline transform hover:scale-110 hover:text-red">
         <Link to={"/shop"}>Home</Link>
-      </li>
-      <li className="hover:underline transform hover:scale-110 hover:text-red">
+      </li> */}
+      {/* <li className="hover:underline transform hover:scale-110 hover:text-red">
         <Link to={"/about"}>About us</Link>
-      </li>
+      </li> */}
     </ul>
   </nav>
 );
