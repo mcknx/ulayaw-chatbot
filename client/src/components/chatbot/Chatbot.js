@@ -84,7 +84,7 @@ function Chatbot(props) {
   }
 
   async function df_event_query(eventName) {
-    // const res = await axios.post("/api/df_event_query", { event });
+    // const res = await axios.post("/api/df_event_query", { event });ss
     try {
       const res = await axios.post("/api/df_event_query", {
         event: eventName,
