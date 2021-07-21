@@ -19,6 +19,7 @@ app.use(
 );
 
 require("./routes/dialogFlowRoutes")(app);
+require("./routes/fulfillmentRoutes")(app);
 
 app.get("/", (req, res) => {
   res.send({ hi: "awawawawas" });

@@ -1,3 +1,7 @@
 export GOOGLE_APPLICATION_CREDENTIALS=/path-to-keys/key-file.json
 
 export GOOGLE_APPLICATION_CREDENTIALS=C:/Users/mckn/Music/school_files/Third_Year/summer/capstone/clientlantaw-chatbot-14940875ffc7.json
+
+
+npm run dev
+lt --port 5000

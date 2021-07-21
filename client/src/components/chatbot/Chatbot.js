@@ -19,7 +19,7 @@ function Chatbot(props) {
   if (cookies.get("userID") === undefined) {
     cookies.set("userID", uuid(), { path: "/" });
   }
-  console.log(cookies.get("userID"));
+  // console.log(cookies.get("userID"));
 
   async function df_text_query(queryText) {
     let says = {
@@ -213,7 +213,7 @@ function Chatbot(props) {
   }
   useEffect(() => {
     messagesEnd.scrollIntoView({ behavior: "smooth" });
-    console.log(talkInput);
+    // console.log(talkInput);
     if (talkInput.current != null) {
       talkInput.focus();
     }
