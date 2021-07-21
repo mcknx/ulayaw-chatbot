@@ -11,16 +11,10 @@
     "start": "node index.js",
     "backend": "nodemon index.js",
     "frontend": "npm run start --prefix client",
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "dev": "concurrently \"npm run backend\"  \"npm run start --prefix client\""
-=======
+
     "dev": "concurrently \"npm run backend\"  \"npm run start --prefix client\"",
     "heroku-postbuild": " npm install --prefix client && npm run build --prefix client"
->>>>>>> d8cade8df74da6451d955755e579b708f8102bf5
-=======
-    "dev": "concurrently \"npm run backend\"  \"npm run start --prefix client\""
->>>>>>> parent of a3d2cc0 (Part7 -  Build script for client - postbuild)
+
   },
   "repository": {
     "type": "git",
