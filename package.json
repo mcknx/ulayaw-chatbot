@@ -10,11 +10,9 @@
   "scripts": {
     "start": "node index.js",
     "backend": "nodemon index.js",
-    "frontend": "npm run start --prefix client",
-
-    "dev": "concurrently \"npm run backend\"  \"npm run start --prefix client\"",
-    "heroku-postbuild": " npm install --prefix client && npm run build --prefix client"
-
+    "frontend": "npm run start --prefix nextjs_client",
+    "dev": "concurrently \"npm run backend\"  \"npm run dev --prefix nextjs_client\"",
+    "heroku-postbuild": " npm install --prefix nextjs_client && npm run build --prefix nextjs_client"
   },
   "repository": {
     "type": "git",
