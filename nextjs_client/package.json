@@ -9,24 +9,24 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "autoprefixer": "^10.3.1",
     "axios": "^0.21.1",
     "firebase": "^8.10.0",
     "http-proxy-middleware": "^2.0.1",
     "next": "11.1.0",
-    "postcss": "^8.2.15",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-firebase-hooks": "^3.0.4",
     "react-hot-toast": "^2.1.1",
-    "tailwindcss": "^2.2.7",
     "universal-cookie": "^4.0.4",
     "uuid": "^8.3.2",
     "web-vitals": "^2.1.0"
   },
   "devDependencies": {
+    "autoprefixer": "^10.3.3",
     "eslint": "7.32.0",
-    "eslint-config-next": "11.1.0"
+    "eslint-config-next": "11.1.0",
+    "postcss": "^8.3.6",
+    "tailwindcss": "^2.2.9"
   },
   "description": "This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).",
   "main": "next.config.js",
