@@ -6,10 +6,9 @@ import { UserContext } from "../lib/context";
 
 // Top navbar
 export default function Navbar() {
-  // const { user, username } = useContext(UserContext);
-  const user = null
-  const username = null
-
+  const { user, username } = useContext(UserContext);
+  // const user = null;
+  // const username = null;
 
   // const router = useRouter();
 
@@ -32,7 +31,7 @@ export default function Navbar() {
           <>
             <li className="push-left">
               {/* <button onClick={signOut}>Sign Out</button> */}
-              <button >Sign Out</button>
+              <button>Sign Out</button>
             </li>
             <li>
               <Link href="/admin">
