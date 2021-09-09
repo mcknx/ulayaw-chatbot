@@ -1,8 +1,19 @@
+import React from "react";
+
+function UserProfilePage() {
+  return (
+    <main>
+      <h1>User Profile</h1>
+    </main>
+  );
+}
+
+export default UserProfilePage;
+
 // import { getUserWithUsername, postToJSON } from '@lib/firebase';
 // import UserProfile from '@components/UserProfile';
 // import Metatags from '@components/Metatags';
 // import PostFeed from '@components/PostFeed';
-
 
 // export async function getServerSideProps({ query }) {
 //   const { username } = query;
