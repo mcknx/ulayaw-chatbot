@@ -32,7 +32,9 @@ export default function Enter(props) {
 // Sign in with Google button
 function SignInButton() {
   const signInWithGoogle = async () => {
-    await auth.signInWithPopup(googleAuthProvider);
+    try {
+      await auth.signInWithPopup(googleAuthProvider);
+    } catch (error) {}
   };
 
   return (
@@ -51,7 +53,9 @@ function SignInButton() {
 function SignOutButton() {
   return <button onClick={() => auth.signOut()}>Sign Out</button>;
 }
-
+function UsernameForm() {
+  return <div>UsernameForm</div>;
+}
 // Username form
 // function UsernameForm() {
 //   const [formValue, setFormValue] = useState("");

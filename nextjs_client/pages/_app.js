@@ -5,11 +5,11 @@ import { useUserData } from "../lib/hooks";
 import { Toaster } from "react-hot-toast";
 
 function MyApp({ Component, pageProps }) {
-  // const userData = useUserData();
+  const userData = useUserData();
 
   return (
     <>
-      <UserContext.Provider value={{ user: {}, username: "mckeen" }}>
+      <UserContext.Provider value={userData}>
         <Navbar />
         <Component {...pageProps} />
         <Toaster />
