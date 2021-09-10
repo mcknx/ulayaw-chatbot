@@ -63,7 +63,18 @@ export default function Home(props) {
         title="Home Page"
         description="Get the latest posts on our site"
       /> */}
-
+      <div className="card card-info">
+        <h2>💨 Token of appreciation</h2>
+        <p>
+          First and foremost, ☝ I'd like to commend and thank 👉 fireship.io
+          🙌🙏 for creating this tutorial and providing a thorough step-by-step
+          🚶‍♀️ approach to creating a beautiful website like this.
+        </p>
+        <p>
+          welcome to this tutorial website{" "}
+          <i style={{ fontWeight: "bold " }}>by mckeen 👋</i>
+        </p>
+      </div>
       <div className="card card-info">
         <h2>💡 Next.js + Firebase - The Full Course</h2>
         <p>
