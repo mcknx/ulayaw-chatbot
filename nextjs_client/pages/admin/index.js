@@ -1,14 +1,14 @@
 import styles from "../../styles/admin.module.css";
-// // import PostFeed from "@components/PostFeed";
-// import { UserContext } from "@lib/context";
-// import { firestore, auth, serverTimestamp } from "@lib/firebase";
+import PostFeed from "../../components/PostFeed";
+import { UserContext } from "../../lib/context";
+import { firestore, auth, serverTimestamp } from "../../lib/firebase";
 
-// import { useContext, useState } from "react";
-// import { useRouter } from "next/router";
+import { useContext, useState } from "react";
+import { useRouter } from "next/router";
 
-// import { useCollection } from "react-firebase-hooks/firestore";
-// import kebabCase from "lodash.kebabcase";
-// import toast from "react-hot-toast";
+import { useCollection } from "react-firebase-hooks/firestore";
+import kebabCase from "lodash.kebabcase";
+import toast from "react-hot-toast";
 
 import AuthCheck from "../../components/AuthCheck";
 
@@ -16,8 +16,8 @@ export default function AdminPostsPage(props) {
   return (
     <main>
       <AuthCheck>
-        {/* <PostList />   */}
-        {/* <CreateNewPost /> */}
+        <PostList />
+        <CreateNewPost />
       </AuthCheck>
     </main>
   );
