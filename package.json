@@ -1,41 +1,40 @@
 {
-  "name": "ulayaw-chatbot",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "engines": {
-    "node": "14.15.4",
-    "npm": "6.14.10"
-  },
+  "name": "nextjs_client",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "start": "node index.js",
-    "backend": "nodemon index.js",
-    "frontend": "npm run start --prefix nextjs_client",
-    "dev": "concurrently \"npm run backend\"  \"npm run dev --prefix nextjs_client\"",
-    "heroku-postbuild": " npm install --prefix nextjs_client && npm run build --prefix nextjs_client"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mckeenasma/ulayaw-chatbot.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/mckeenasma/ulayaw-chatbot/issues"
-  },
-  "homepage": "https://github.com/mckeenasma/ulayaw-chatbot#readme",
   "dependencies": {
-    "actions-on-google": "^2.14.0",
-    "body-parser": "^1.19.0",
-    "dialogflow": "^1.2.0",
-    "dialogflow-fulfillment": "^0.6.1",
-    "express": "^4.17.1",
-    "lodash.debounce": "^4.0.8",
-    "mongoose": "^5.13.3"
+    "@hookform/error-message": "^2.0.0",
+    "axios": "^0.21.1",
+    "firebase": "^8.10.0",
+    "http-proxy-middleware": "^2.0.1",
+    "lodash.kebabcase": "^4.1.1",
+    "next": "11.1.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-firebase-hooks": "^3.0.4",
+    "react-hook-form": "^7.15.2",
+    "react-hot-toast": "^2.1.1",
+    "react-markdown": "^7.0.1",
+    "universal-cookie": "^4.0.4",
+    "uuid": "^8.3.2",
+    "web-vitals": "^2.1.0"
   },
   "devDependencies": {
-    "concurrently": "^6.2.0",
-    "nodemon": "^2.0.9"
-  }
+    "autoprefixer": "^10.3.3",
+    "eslint": "7.32.0",
+    "eslint-config-next": "11.1.0",
+    "postcss": "^8.3.6",
+    "tailwindcss": "^2.2.9"
+  },
+  "description": "This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).",
+  "main": "next.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
