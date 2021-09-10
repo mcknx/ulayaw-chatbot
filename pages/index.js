@@ -66,9 +66,9 @@ export default function Home(props) {
       <div className="card card-info">
         <h2>💨 Token of appreciation</h2>
         <p>
-          First and foremost, ☝ I'd like to commend and thank 👉 fireship.io
-          🙌🙏 for creating this tutorial and providing a thorough step-by-step
-          🚶‍♀️ approach to creating a beautiful website like this.
+          First and foremost, ☝ I&apos;d like to commend and thank 👉
+          fireship.io 🙌🙏 for creating this tutorial and providing a thorough
+          step-by-step 🚶‍♀️ approach to creating a beautiful website like this.
         </p>
         <p>
           welcome to this tutorial website{" "}
