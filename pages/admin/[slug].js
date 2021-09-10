@@ -1,4 +1,4 @@
-import styles from "../../styles/Admin.module.css";
+import styles from "../../styles/admin.module.css";
 import AuthCheck from "../../components/AuthCheck";
 import { firestore, auth, serverTimestamp } from "../../lib/firebase";
 import ImageUploader from "../../components/ImageUploader";
