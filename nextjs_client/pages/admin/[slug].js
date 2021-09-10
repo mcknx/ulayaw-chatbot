@@ -49,14 +49,14 @@ function PostManager() {
           </section>
 
           <aside>
-            {/* <h3>Tools</h3>
+            <h3>Tools</h3>
             <button onClick={() => setPreview(!preview)}>
               {preview ? "Edit" : "Preview"}
             </button>
             <Link href={`/${post.username}/${post.slug}`}>
               <button className="btn-blue">Live view</button>
             </Link>
-            <DeletePostButton postRef={postRef} /> */}
+            {/* <DeletePostButton postRef={postRef} /> */}
           </aside>
         </>
       )}
@@ -66,11 +66,11 @@ function PostManager() {
 
 function PostForm({ defaultValues, postRef, preview }) {
   const { register, errors, handleSubmit, formState, reset, watch } = useForm({
-    defaultValues,
+    defaultValues: {},
     mode: "onChange",
   });
 
-  // const { isValid, isDirty } = formState;
+  const { isValid, isDirty } = formState;
 
   const updatePost = async ({ content, published }) => {
     await postRef.update({
@@ -97,26 +97,26 @@ function PostForm({ defaultValues, postRef, preview }) {
 
         <textarea
           name="content"
-          ref={
-            register
-            //   ({
-            //   maxLength: { value: 20000, message: "content is too long" },
-            //   minLength: { value: 10, message: "content is too short" },
-            //   required: { value: true, message: "content is required" },
-            // })
-          }
-        ></textarea>
+          // ref={register({
+          //   maxLength: { value: 20000, message: 'content is too long' },
+          // minLength: { value: 10, message: 'content is too short' },
+          // required: { value: true, message: 'content is required' },
+          // })}
 
-        {errors.content && (
-          <p className="text-danger">{errors.content.message}</p>
-        )}
+          {...register("content", {
+            maxLength: { value: 20000, message: "content is too long" },
+            minLength: { value: 10, message: "content is too short" },
+            required: { value: true, message: "content is required" },
+          })}
+        ></textarea>
 
         <fieldset>
           <input
             className={styles.checkbox}
             name="published"
             type="checkbox"
-            ref={register}
+            // ref={register}
+            {...register("published")}
           />
           <label>Published</label>
         </fieldset>
@@ -124,7 +124,7 @@ function PostForm({ defaultValues, postRef, preview }) {
         <button
           type="submit"
           className="btn-green"
-          // disabled={!isDirty || !isValid}
+          disabled={!isDirty || !isValid}
         >
           Save Changes
         </button>
