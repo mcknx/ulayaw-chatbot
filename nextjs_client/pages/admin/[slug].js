@@ -2,6 +2,7 @@ import styles from "../../styles/Admin.module.css";
 import AuthCheck from "../../components/AuthCheck";
 import { firestore, auth, serverTimestamp } from "../../lib/firebase";
 // import ImageUploader from "../../components/ImageUploader";
+import { ErrorMessage } from "@hookform/error-message";
 
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -65,7 +66,15 @@ function PostManager() {
 }
 
 function PostForm({ defaultValues, postRef, preview }) {
-  const { register, errors, handleSubmit, formState, reset, watch } = useForm({
+  const {
+    register,
+    getValues,
+    handleSubmit,
+    formState: { errors },
+    formState,
+    reset,
+    watch,
+  } = useForm({
     defaultValues: {},
     mode: "onChange",
   });
@@ -94,21 +103,19 @@ function PostForm({ defaultValues, postRef, preview }) {
 
       <div className={preview ? styles.hidden : styles.controls}>
         {/* <ImageUploader /> */}
-
         <textarea
           name="content"
-          // ref={register({
-          //   maxLength: { value: 20000, message: 'content is too long' },
-          // minLength: { value: 10, message: 'content is too short' },
-          // required: { value: true, message: 'content is required' },
-          // })}
-
           {...register("content", {
             maxLength: { value: 20000, message: "content is too long" },
             minLength: { value: 10, message: "content is too short" },
             required: { value: true, message: "content is required" },
           })}
         ></textarea>
+        <ErrorMessage
+          errors={errors}
+          name="content"
+          render={({ message }) => <p className="text-danger">{message}</p>}
+        />
 
         <fieldset>
           <input
@@ -120,7 +127,6 @@ function PostForm({ defaultValues, postRef, preview }) {
           />
           <label>Published</label>
         </fieldset>
-
         <button
           type="submit"
           className="btn-green"
