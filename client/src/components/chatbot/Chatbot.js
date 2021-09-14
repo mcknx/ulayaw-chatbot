@@ -246,25 +246,28 @@ function Chatbot(props) {
     return (
       <>
         <div
-          className=" w-full border-2 md:w-96  shadow-lg bottom-0  right-0 md:bottom-5 md:mb-36  md:right-5  rounded-t-2xl fixed bg-white h-full md:h-3/4 "
+          className=" w-full border-2 border-white md:w-96  shadow-lg bottom-0  right-0 md:bottom-5 md:mb-36  md:right-5  rounded-t-[20px] fixed bg-white h-full md:h-3/4 "
           // style={{ height: 500 }}
         >
-          <nav className="">
+          <nav className="border-b-[3px] border-[#E4E4E4]">
             <div className="p-4 flex flex-row justify-between ">
-              <a href="/" className="brand-logo text-blue-400 font-semibold">
-                Ulayaw - Chatbot
+              <a
+                href="/"
+                className="brand-logo text-[#5DCFFF] text-[20px]  font-normal"
+              >
+                Ulayaw
               </a>
               <ul className="right-0">
-                <li className="text-white font-semibold rounded-full bg-blue-500 h-5 w-5 flex justify-center ">
+                <li className="text-white font-semibold rounded-full bg-[#5DCFFF] h-[28px] w-[28px] flex justify-center ">
                   <a
                     href="/"
                     // onClick={() => {
                     //   setShowBot(!showBot);
                     // }}
-                    className=" text-xs"
+                    className=" text-[19px]"
                     onClick={hide}
                   >
-                    x{" "}
+                    ✖
                   </a>
                 </li>
               </ul>
@@ -303,7 +306,7 @@ function Chatbot(props) {
     return (
       <>
         <div
-          className=" w-full md:w-96  border-2 bottom-0  right-0  fixed bg-white   "
+          className=" w-full md:w-96  border-2 border-white bottom-0  right-0  fixed bg-white   "
           // style={{ height: 500 }}
         >
           <nav>
