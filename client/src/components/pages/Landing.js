@@ -15,18 +15,20 @@ const Landing = () => {
           <label className="text-[48px] leading-tight">
             Kaibigan sa kalusugang pangkaisipan.
           </label>
-          <label className="text-[30px] ">
+          <label className="text-[30px] text-[#5A676D] ">
             Ipahayag ang iyong nararamdaman.
           </label>
 
           {/* buttons-upper */}
           <div className="text-[24px] font-medium flex flex-row space-x-[14px]">
-            <div className="w-[183px] mt-[48px] h-[57px] bg-[#5DCFFF] rounded-[15px]  text-center py-2 text-[#29363C] ">
-              <label> Assessment</label>
+            <div className="w-[183px] mt-[48px] h-[57px] bg-[#5DCFFF] rounded-[15px]  text-center py-2 text-[#29363C] cursor-pointer transform hover:scale-[1.1]">
+              Assessment
             </div>
-            <div className="border-[1px] border-[#3E3E3E] w-[382px] mt-[48px] h-[57px] rounded-[5px] text-[#737373] font-normal px-6 py-2">
-              <label> Enter a code</label>
-            </div>
+            <input
+              className="border-[1px] border-[#3E3E3E] w-[382px] mt-[48px] h-[57px] rounded-[5px] text-[#737373] font-normal px-6 py-2  focus:ring-[#5DCFFF] transform hover:scale-[1.010]"
+              type="text"
+              placeholder="Enter a code"
+            />
           </div>
 
           <div className="text-center text-[#ACACAC] w-[579px] mt-[23px] border-t-[1px] border-[#3E3E3E]">
@@ -35,7 +37,7 @@ const Landing = () => {
 
           {/* buttons-lower */}
           <div className="text-[24px] font-medium flex flex-row space-x-[14px]">
-            <div className="w-[579px] mt-[23px] h-[57px] bg-[#5DCFFF] rounded-[15px]  text-center py-2 text-[#29363C] ">
+            <div className="w-[579px] mt-[23px] h-[57px] bg-[#5DCFFF] rounded-[15px]  text-center py-2 text-[#29363C] transform hover:scale-[1.1] cursor-pointer">
               <label> Conversation</label>
             </div>
           </div>
