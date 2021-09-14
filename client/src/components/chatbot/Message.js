@@ -3,7 +3,7 @@ import React from "react";
 function Message({ speaks, text }) {
   // console.log(speaks);
   return (
-    <div className="border-2 border-black rounded-lg  mb-2">
+    <div className=" rounded-lg  mb-2 text-sm ">
       <div>
         {speaks === "bot" && (
           <MessageFormat speaks={speaks} text={text} float={"left"} />
@@ -22,15 +22,19 @@ function MessageFormat({ speaks, text, float }) {
     <div
       className={
         float === "left"
-          ? "flex justify-start space-x-2 bg-blue-100 p-2 rounded-lg"
-          : "flex flex-row-reverse space-x-2 space-x-reverse bg-red-100 p-2 rounded-lg"
+          ? "flex justify-start space-x-2 bg-blue-100 p-2 rounded-lg bottom-0 "
+          : "flex flex-row-reverse space-x-2 space-x-reverse bg-red-100 p-2 rounded-lg "
       }
     >
-      <div className="bg-red-500 rounded-full p-2 text-white self-center h-10 w-10 ">
-        <a href="/">{speaks}</a>
+      <div
+        className={float === "left" ? "flex justify-end flex-col" : "hidden"}
+      >
+        <div className=" bg-red-500 rounded-full flex justify-center  text-white h-10 w-10 ">
+          <a href="/">{speaks}</a>
+        </div>
       </div>
 
-      <div className="self-center">
+      <div className="self-center overflow-ellipsis">
         <span>{text}</span>
       </div>
     </div>

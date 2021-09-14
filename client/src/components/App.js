@@ -8,9 +8,9 @@ import Shop from "./shop/Shop";
 import Chatbot from "./chatbot/Chatbot";
 
 const App = () => (
-  <div className="flex justify-center m-2 md:m-20">
+  <div className="flex justify-center  ">
     <BrowserRouter>
-      <div className="container">
+      <div className="w-full ">
         <Header />
         <Route exact path="/" component={Landing} />
         {/* <Route exact path="/about" component={About} /> */}

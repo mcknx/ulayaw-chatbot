@@ -2,8 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const Header = () => (
-  <nav className="border-2 border-black flex justify-center p-4 md:p-10">
-    <span className="self-center text-xl md:text-2xl w-40 ">
+  <nav className="bg-[#5dcfff] flex justify-center p-4 md:p-10">
+    <span className="text-white self-center text-xl md:text-4xl w-40 ">
       <Link to={"/"}>Ulayaw</Link>
     </span>
     <ul className="flex self-center space-x-5 justify-end w-full">

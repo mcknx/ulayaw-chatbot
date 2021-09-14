@@ -13,6 +13,8 @@ function Chatbot(props) {
   const [messages, setMessages] = useState([]);
   const [showBot, setShowBot] = useState(true);
   const [shopWelcomeSent, setShopWelcomeSent] = useState(false);
+  const [welcomeSent, setWelcomeSent] = useState(false);
+
   let messagesEnd = useRef(null);
   let talkInput = useRef(null);
 
@@ -89,6 +91,19 @@ function Chatbot(props) {
   }
   useEffect(async () => {
     df_event_query("Welcome");
+
+    // if (window.location.pathname === "/" && !welcomeSent) {
+    //   await resolveAfterXSeconds(1);
+    //   df_event_query("Welcome");
+    //   setWelcomeSent(true);
+    // }
+
+    // props.history.listen(() => {
+    //   if (props.history.location.pathname === "/" && !welcomeSent) {
+    //     df_event_query("Welcome");
+    //     setWelcomeSent(true);
+    //   }
+    // });
 
     if (window.location.pathname === "/about" && !shopWelcomeSent) {
       await resolveAfterXSeconds(1);
@@ -231,25 +246,25 @@ function Chatbot(props) {
     return (
       <>
         <div
-          className=" w-full md:w-96  border-2 bottom-0  right-0  fixed bg-white h-full md:h-3/4 pb-52"
+          className=" w-full border-2 md:w-96  shadow-lg bottom-0  right-0 md:bottom-5 md:mb-36  md:right-5  rounded-t-2xl fixed bg-white h-full md:h-3/4 "
           // style={{ height: 500 }}
         >
-          <nav>
-            <div className="bg-gray-100 p-4 flex flex-row justify-between">
-              <a href="/" className="brand-logo">
+          <nav className="">
+            <div className="p-4 flex flex-row justify-between ">
+              <a href="/" className="brand-logo text-blue-400 font-semibold">
                 Ulayaw - Chatbot
               </a>
               <ul className="right-0">
-                <li className="">
+                <li className="text-white font-semibold rounded-full bg-blue-500 h-5 w-5 flex justify-center ">
                   <a
                     href="/"
                     // onClick={() => {
                     //   setShowBot(!showBot);
                     // }}
-
+                    className=" text-xs"
                     onClick={hide}
                   >
-                    Close
+                    x{" "}
                   </a>
                 </li>
               </ul>
@@ -269,17 +284,18 @@ function Chatbot(props) {
               // style={{ float: "left", clear: "both" }}
             ></div>
           </div>
-        </div>
-        <div className="bg-gray-100  px-4 fixed w-full md:w-96 bottom-0 right-0">
-          <input
-            className="border-2 rounded-lg border-red-500 p-2 w-full my-14 "
-            type="text"
-            onKeyPress={_handleInputKeyPress}
-            placeholder="Type here ..."
-            ref={(input) => {
-              talkInput = input;
-            }}
-          />
+          <div className="   fixed w-full md:w-96 bottom-0 right-0 md:bottom-5  md:right-5 flex flex-row border-2 rounded-b-lg">
+            <input
+              className="  p-4 outline-none w-full "
+              type="text"
+              onKeyPress={_handleInputKeyPress}
+              placeholder="Iyong Mensahe ..."
+              ref={(input) => {
+                talkInput = input;
+              }}
+            />
+            <button className=" p-4">👉</button>
+          </div>
         </div>
       </>
     );
@@ -291,7 +307,7 @@ function Chatbot(props) {
           // style={{ height: 500 }}
         >
           <nav>
-            <div className="bg-gray-100 p-4 flex flex-row justify-between">
+            <div className="bg-gray-100 p-4 flex flex-row justify-between rounded-full ">
               <a href="/" className="brand-logo">
                 Ulayaw - Chatbot
               </a>
