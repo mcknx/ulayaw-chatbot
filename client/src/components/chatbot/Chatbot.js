@@ -6,6 +6,7 @@ import Cookies from "universal-cookie";
 import { v4 as uuid } from "uuid";
 import QuickReplies from "./QuickReplies";
 import { withRouter } from "react-router-dom";
+import "../../styles/chatbot.css";
 
 const cookies = new Cookies();
 
@@ -14,6 +15,7 @@ function Chatbot(props) {
   const [showBot, setShowBot] = useState(true);
   const [shopWelcomeSent, setShopWelcomeSent] = useState(false);
   const [welcomeSent, setWelcomeSent] = useState(false);
+  const [showModal, setShowModal] = useState(true);
 
   let messagesEnd = useRef(null);
   let talkInput = useRef(null);
@@ -241,14 +243,11 @@ function Chatbot(props) {
       }, x * 1000);
     });
   }
-  // jsx
-  if (showBot) {
-    return (
-      <>
-        <div
-          className=" w-full border-2 border-white md:w-96  shadow-lg bottom-0  right-0 md:bottom-5 md:mb-36  md:right-5  rounded-t-[20px] fixed bg-white h-full md:h-3/4 "
-          // style={{ height: 500 }}
-        >
+  function DisplayBot({ talkInput, messagesEnd }) {
+    if (showBot) {
+      return (
+        <div className="flex flex-col border-white md:w-96  shadow-lg w-full border-2  bottom-0  right-0 md:bottom-5   md:right-5  rounded-t-[20px] fixed bg-white h-full md:h-3/4 ">
+          {/* nav */}
           <nav className="border-b-[3px] border-[#E4E4E4]">
             <div className="p-4 flex flex-row justify-between ">
               <a
@@ -273,12 +272,12 @@ function Chatbot(props) {
               </ul>
             </div>
           </nav>
-
+          {/* body */}
           <div
-            className="w-full h-full  overflow-auto space-y-2 "
+            className="h-full  overflow-auto space-y-2 "
             //
           >
-            <div className="mb-10 p-2 ">{renderMessages(messages)}</div>
+            <div className=" p-2 ">{renderMessages(messages)}</div>
             <div
               ref={(el) => {
                 messagesEnd = el;
@@ -287,7 +286,8 @@ function Chatbot(props) {
               // style={{ float: "left", clear: "both" }}
             ></div>
           </div>
-          <div className="   fixed w-full md:w-96 bottom-0 right-0 md:bottom-5  md:right-5 flex flex-row border-2 rounded-b-lg">
+          {/* input */}
+          <div className="    w-full md:w-96  flex flex-row border-2 rounded-b-lg">
             <input
               className="  p-4 outline-none w-full "
               type="text"
@@ -300,48 +300,228 @@ function Chatbot(props) {
             <button className=" p-4">👉</button>
           </div>
         </div>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <div
-          className=" w-full md:w-96  border-2 border-white bottom-0  right-0  fixed bg-white   "
-          // style={{ height: 500 }}
-        >
-          <nav>
-            <div className="bg-gray-100 p-4 flex flex-row justify-between rounded-full ">
-              <a href="/" className="brand-logo">
-                Ulayaw - Chatbot
+      );
+    } else {
+      return (
+        <div>
+          <div
+            className=" w-full md:w-96  border-2 border-white bottom-0  right-0  fixed bg-white   "
+            // style={{ height: 500 }}
+          >
+            <nav>
+              <div className="bg-gray-100 p-4 flex flex-row justify-between rounded-full ">
+                <a href="/" className="brand-logo">
+                  Ulayaw - Chatbot
+                </a>
+                <ul className="right-0">
+                  <li className="">
+                    <a
+                      href="/"
+                      // onClick={() => {
+                      //   setShowBot(!showBot);
+                      // }}
+                      onClick={show}
+                    >
+                      Show
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </nav>
+            <div
+              ref={(el) => {
+                messagesEnd = el;
+              }}
+              className="clear-both"
+              // style={{ float: "left", clear: "both" }}
+            ></div>
+          </div>
+        </div>
+      );
+    }
+  }
+  // jsx
+  return (
+    <div>
+      {showBot ? (
+        <div className="flex flex-col  md:w-96  shadow-lg w-full border-2  bottom-0 bg-white right-0 md:bottom-5   md:right-5  rounded-t-[20px] fixed  h-full md:h-3/4 ">
+          {/* nav */}
+          <nav className="border-b-[3px] border-[#E4E4E4]">
+            <div className="p-4 flex flex-row justify-between ">
+              <a
+                href="/"
+                className="brand-logo text-[#5DCFFF] text-[20px]  font-normal"
+              >
+                Ulayaw
               </a>
               <ul className="right-0">
-                <li className="">
+                <li className="text-white font-semibold rounded-full bg-[#5DCFFF] h-[28px] w-[28px] flex justify-center ">
                   <a
                     href="/"
                     // onClick={() => {
                     //   setShowBot(!showBot);
                     // }}
-                    onClick={show}
+                    className=" text-[19px]"
+                    onClick={hide}
                   >
-                    Show
+                    ✖
                   </a>
                 </li>
               </ul>
             </div>
           </nav>
+          {/* body */}
           <div
-            ref={(el) => {
-              messagesEnd = el;
-            }}
-            className="clear-both"
-            // style={{ float: "left", clear: "both" }}
-          ></div>
+            className="h-full  overflow-auto space-y-2 "
+            //
+          >
+            <div className=" p-2 ">{renderMessages(messages)}</div>
+            <div
+              ref={(el) => {
+                messagesEnd = el;
+              }}
+              className="clear-both"
+              // style={{ float: "left", clear: "both" }}
+            ></div>
+          </div>
+          {/* input */}
+          <div className="    w-full md:w-96  flex flex-row border-2 rounded-b-lg">
+            <input
+              className="  p-4 outline-none w-full "
+              type="text"
+              onKeyPress={_handleInputKeyPress}
+              placeholder="Iyong Mensahe ..."
+              ref={(input) => {
+                talkInput = input;
+              }}
+            />
+            <button className=" p-4">👉</button>
+          </div>
         </div>
-      </>
-    );
-  }
+      ) : (
+        <div>
+          <div
+            className=" h-[50px]  bottom-10  right-10  fixed  "
+            // style={{ height: 500 }}
+          >
+            <nav>
+              {/* border-[2px] border-[#5DCFFF] */}
+              <div className=" flex flex-row justify-between rounded-full cursor-pointer shadow-lg ">
+                <span
+                  className=" rounded-full flex justify-center  text-white h-16   shadow-lg bg-[#5DCFFF] bg-opacity-[0.70] p-1 transform hover:scale-[1.02] hover:border-[#5DCFFF]"
+                  onClick={show}
+                >
+                  <img src="ulayaw.png" />
+                  <span className=" h-2 w-2 shadow-lg animate-pulse  rounded-full absolute right-0 top-1 bg-green-400 "></span>
+
+                  <span className=" absolute w-[125px] px-2 border-2 py-2 shadow-lg   rounded-lg text-center right-[70px] top-2 bg-white text-black hover:border-[#5DCFFF]">
+                    <p>kamusta! 👋</p>
+                  </span>
+
+                  {/* <a href="/">{speaks}</a> */}
+                </span>
+
+                {/* <a href="/" className="brand-logo">
+                  Ulayaw - Chatbot
+                </a> */}
+                {/* <ul className="right-0">
+                  <li className="">
+                    <a
+                      href="/"
+                      // onClick={() => {
+                      //   setShowBot(!showBot);
+                      // }}
+                      onClick={show}
+                    >
+                      Show
+                    </a>
+                  </li>
+                </ul> */}
+              </div>
+            </nav>
+            <div
+              ref={(el) => {
+                messagesEnd = el;
+              }}
+              className="clear-both"
+              // style={{ float: "left", clear: "both" }}
+            ></div>
+          </div>
+        </div>
+      )}
+      {/* <DisplayBot talkInput={talkInput} messagesEnd={messagesEnd} /> */}
+      {showModal ? (
+        <ModalTermsAndConditions
+          showModal={showModal}
+          setShowModal={setShowModal}
+        />
+      ) : (
+        ""
+      )}
+    </div>
+  );
 }
 
-// const Chatbot = () => <h2>Chatbot will be here</h2>;
+function ModalTermsAndConditions({ showModal, setShowModal }) {
+  return (
+    <div className="fixed top-0 w-full h-full bg-black bg-opacity-[0.75] ">
+      <div className="h-full flex flex-col  justify-center align-center">
+        {/* header */}
+        <div className="w-3/4 rounded-t-[10px] text-[20px] lg:text-[26px] p-[18px] lg:p-[28px]  text-white self-center bg-[#5DCFFF] font-semibold">
+          <p>Terms and Condition</p>
+        </div>
+
+        {/* body */}
+        <div className="w-3/4 rounded-b-[10px] text-[12px] lg:text-[16px] p-[18px] px-[71px] py-[55px] self-center bg-white grid ">
+          <p className="text-justify">
+            RA 10173 or the Data Privacy Act protects individuals from
+            unauthorized processing of personal information. The researchers
+            will adhere to this law in order to protect the data privacy and
+            confidentiality of all the respondents. Any identifiable information
+            obtained in connection with this study will remain confidential,
+            except if necessary, to protect your rights or welfare. <br />{" "}
+            <br />
+            This certificate means that the researcher can resist the release of
+            information about your participation to people who are not connected
+            with the study. When the research results are published or discussed
+            in conferences, no identifiable information will be used. In
+            addition, since the data gathering process will be conducted online,
+            the researchers will highly secure the data obtained in a password
+            protected computer after immediate retrieval from Conversation
+            (DialogFlow & Ulayaw). <br />
+            <br /> We would like to get your location as well for research
+            purposes. The access of data will be restricted to the researchers
+            only.
+          </p>
+
+          {/* agree */}
+          <form className="mt-[20px] ">
+            <label className=" space-x-[10px]  text-[#5DCFFF] inline-block p-4 hover:bg-gray-200 rounded-lg cursor-pointer select-none w-full">
+              <input
+                className="self-center"
+                name="agreed"
+                type="checkbox"
+                // checked={}
+                // onChange={}
+              />
+              <p className="font-bold cursor-pointer inline-block">
+                I Agree to the Terms and Agreement
+              </p>
+            </label>
+          </form>
+          {/* footer */}
+          <button
+            className="mt-[20px] text-white  px-[13px] py-[8px] justify-self-end lg:w-[70px] w-[60px] rounded-[5px] bg-[#5DCFFF]"
+            onClick={() => {
+              setShowModal(!showModal);
+            }}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default withRouter(Chatbot);

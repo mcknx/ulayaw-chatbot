@@ -2,12 +2,15 @@ import React from "react";
 
 const Landing = () => {
   return (
-    <div className="container mx-auto my-auto md:pt-[100px] 2xl:pt-[200px] md:transform md:scale-[.79] 2xl:scale-[1]">
+    <div className="container mx-auto my-auto md:pt-[100px] 2xl:pt-[200px] md:transform md:scale-[.79] 2xl:scale-[1] ">
       <div className="md:grid md:grid-cols-12 gap-4 ">
         {/* left */}
         <div className="col-span-5 flex justify-center ">
           <label>
-            <img className="h-full md:h-[400px]" src="home_ulayaw.png" />
+            <img
+              className="h-full md:h-[400px] md:w-[400px]"
+              src="home_ulayaw.png"
+            />
           </label>
         </div>
         {/* right */}
@@ -31,7 +34,7 @@ const Landing = () => {
             />
           </div>
 
-          <div className="text-center text-[#ACACAC] w-[579px] mt-[23px] border-t-[1px] border-[#3E3E3E]">
+          <div className="text-center text-[#7a6d6d] w-[579px] mt-[23px] border-t-[1px] border-[#3E3E3E]">
             or
           </div>
 

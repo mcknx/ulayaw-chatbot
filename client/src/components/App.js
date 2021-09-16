@@ -8,7 +8,7 @@ import Shop from "./shop/Shop";
 import Chatbot from "./chatbot/Chatbot";
 
 const App = () => (
-  <div className="flex justify-center  ">
+  <div className="flex justify-center">
     <BrowserRouter>
       <div className="w-full ">
         <Header />
