@@ -7,6 +7,7 @@ module.exports = (app) => {
   app.post("/", async (req, res) => {
     const agent = new WebhookClient({ request: req, response: res });
 
+    console.log("agent", agent);
     function snoopy(agent) {
       agent.add(`Welcome to my Snoopy fulfillment!`);
     }

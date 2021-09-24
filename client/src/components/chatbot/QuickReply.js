@@ -6,7 +6,7 @@ const QuickReply = (props) => {
       <a
         style={{ margin: 3 }}
         href="/"
-        className="bg-gray-500 rounded-full p-2 text-white self-center h-10  "
+        className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10  "
         onClick={(event) =>
           props.click(
             event,

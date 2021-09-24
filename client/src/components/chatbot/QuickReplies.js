@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import QuickReply from "./QuickReply";
 
 function QuickReplies(props) {
+  const [isClicked, setIsClicked] = useState();
   function _handleClick(event, payload, text) {
     props.replyClick(event, payload, text);
   }
@@ -21,24 +22,21 @@ function QuickReplies(props) {
   }
 
   return (
-    <div className="border-2 border-black rounded-lg bg-blue-100 p-2 mb-2">
-      <div className="py-2">
-        <div className="flex space-x-2 space-y-5 flex-wrap">
-          <div className="">
-            <a
-              href="/"
-              className="bg-red-500 rounded-full p-2 text-white self-center h-10 w-10 "
-            >
-              {props.speaks}
-            </a>
-          </div>
-          <div className="space-y-6 space-x-2  ">
-            <div>{props.text && <p>{props.text.stringValue}</p>}</div>
-            <div className="flex flex-wrap">
-              {renderQuickReplies(props.payload)}
-            </div>
-          </div>
+    <div className={"flex justify-center space-x-2  p-2 rounded-lg bottom-0 "}>
+      {/* <div className={"flex justify-end flex-col"}>
+        <div className=" rounded-full flex justify-center  text-white h-10 w-10  ">
+          <img src="ulayaw.png" />
         </div>
+      </div> */}
+
+      <div
+        className={
+          "rounded-[10px] self-center overflow-ellipsis  px-4 py-2  text-black font-medium text-left "
+        }
+      >
+        <span className="flex flex-wrap">
+          {renderQuickReplies(props.payload)}
+        </span>
       </div>
     </div>
   );

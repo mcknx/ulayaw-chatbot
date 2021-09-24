@@ -12,7 +12,7 @@ const cookies = new Cookies();
 
 function Chatbot(props) {
   const [messages, setMessages] = useState([]);
-  const [showBot, setShowBot] = useState(true);
+  const [showBot, setShowBot] = useState(false);
   const [shopWelcomeSent, setShopWelcomeSent] = useState(false);
   const [welcomeSent, setWelcomeSent] = useState(false);
   const [showModal, setShowModal] = useState(true);
@@ -216,6 +216,7 @@ function Chatbot(props) {
       // console.log(returnedMessages);
 
       return returnedMessages.map((message, i) => {
+        console.log(i);
         return renderOneMessage(message, i);
       });
     } else {
@@ -243,125 +244,27 @@ function Chatbot(props) {
       }, x * 1000);
     });
   }
-  function DisplayBot({ talkInput, messagesEnd }) {
-    if (showBot) {
-      return (
-        <div className="flex flex-col border-white md:w-96  shadow-lg w-full border-2  bottom-0  right-0 md:bottom-5   md:right-5  rounded-t-[20px] fixed bg-white h-full md:h-3/4 ">
-          {/* nav */}
-          <nav className="border-b-[3px] border-[#E4E4E4]">
-            <div className="p-4 flex flex-row justify-between ">
-              <a
-                href="/"
-                className="brand-logo text-[#5DCFFF] text-[20px]  font-normal"
-              >
-                Ulayaw
-              </a>
-              <ul className="right-0">
-                <li className="text-white font-semibold rounded-full bg-[#5DCFFF] h-[28px] w-[28px] flex justify-center ">
-                  <a
-                    href="/"
-                    // onClick={() => {
-                    //   setShowBot(!showBot);
-                    // }}
-                    className=" text-[19px]"
-                    onClick={hide}
-                  >
-                    ✖
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </nav>
-          {/* body */}
-          <div
-            className="h-full  overflow-auto space-y-2 "
-            //
-          >
-            <div className=" p-2 ">{renderMessages(messages)}</div>
-            <div
-              ref={(el) => {
-                messagesEnd = el;
-              }}
-              className="clear-both"
-              // style={{ float: "left", clear: "both" }}
-            ></div>
-          </div>
-          {/* input */}
-          <div className="    w-full md:w-96  flex flex-row border-2 rounded-b-lg">
-            <input
-              className="  p-4 outline-none w-full "
-              type="text"
-              onKeyPress={_handleInputKeyPress}
-              placeholder="Iyong Mensahe ..."
-              ref={(input) => {
-                talkInput = input;
-              }}
-            />
-            <button className=" p-4">👉</button>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <div
-            className=" w-full md:w-96  border-2 border-white bottom-0  right-0  fixed bg-white   "
-            // style={{ height: 500 }}
-          >
-            <nav>
-              <div className="bg-gray-100 p-4 flex flex-row justify-between rounded-full ">
-                <a href="/" className="brand-logo">
-                  Ulayaw - Chatbot
-                </a>
-                <ul className="right-0">
-                  <li className="">
-                    <a
-                      href="/"
-                      // onClick={() => {
-                      //   setShowBot(!showBot);
-                      // }}
-                      onClick={show}
-                    >
-                      Show
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </nav>
-            <div
-              ref={(el) => {
-                messagesEnd = el;
-              }}
-              className="clear-both"
-              // style={{ float: "left", clear: "both" }}
-            ></div>
-          </div>
-        </div>
-      );
-    }
-  }
+
   // jsx
   return (
     <div>
       {showBot ? (
-        <div className="flex flex-col  md:w-96  shadow-lg w-full border-2  bottom-0 bg-white right-0 md:bottom-5   md:right-5  rounded-t-[20px] fixed  h-full md:h-3/4 ">
+        <div className="flex flex-col  md:w-96  shadow-lg w-full border-2  bottom-0 bg-white right-0 md:bottom-5   md:right-5  rounded-[20px] fixed  h-full md:h-3/4 ">
           {/* nav */}
           <nav className="border-b-[3px] border-[#E4E4E4]">
             <div className="p-4 flex flex-row justify-between ">
-              <a
-                href="/"
-                className="brand-logo text-[#5DCFFF] text-[20px]  font-normal"
-              >
-                Ulayaw
-              </a>
-              <ul className="right-0">
-                <li className="text-white font-semibold rounded-full bg-[#5DCFFF] h-[28px] w-[28px] flex justify-center ">
+              <div className="flex  text-[#5DCFFF] text-[20px]  font-normal">
+                <span className="mr-2 self-center h-2 w-2 shadow-lg   rounded-full  bg-green-400 "></span>
+                <p>Ulayaw</p>
+              </div>
+              <ul className="right-0 cursor-pointer text-white font-semibold rounded-full bg-[#5DCFFF] h-[28px] w-[28px] flex justify-center transform hover:scale-[1.050]">
+                <li className=" ">
                   <a
                     href="/"
                     // onClick={() => {
                     //   setShowBot(!showBot);
                     // }}
-                    className=" text-[19px]"
+                    className=" text-[19px] "
                     onClick={hide}
                   >
                     ✖
@@ -385,9 +288,9 @@ function Chatbot(props) {
             ></div>
           </div>
           {/* input */}
-          <div className="    w-full md:w-96  flex flex-row border-2 rounded-b-lg">
+          <label className="  border-[#E4E4E4]  w-full md:w-96  flex flex-row border-t-2 rounded-b-[20px] ">
             <input
-              className="  p-4 outline-none w-full "
+              className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-b-[20px]"
               type="text"
               onKeyPress={_handleInputKeyPress}
               placeholder="Iyong Mensahe ..."
@@ -395,12 +298,14 @@ function Chatbot(props) {
                 talkInput = input;
               }}
             />
-            <button className=" p-4">👉</button>
-          </div>
+            <button className="absolute p-4 transform hover:scale-[1.1] right-0">
+              👉
+            </button>
+          </label>
         </div>
       ) : (
-        <div>
-          <div
+        <button>
+          <button
             className=" h-[50px]  bottom-10  right-10  fixed  "
             // style={{ height: 500 }}
           >
@@ -408,13 +313,13 @@ function Chatbot(props) {
               {/* border-[2px] border-[#5DCFFF] */}
               <div className=" flex flex-row justify-between rounded-full cursor-pointer shadow-lg ">
                 <span
-                  className=" rounded-full flex justify-center  text-white h-16   shadow-lg bg-[#5DCFFF] bg-opacity-[0.70] p-1 transform hover:scale-[1.02] hover:border-[#5DCFFF]"
+                  className=" rounded-full flex justify-center text-white h-16   shadow-lg bg-[#5DCFFF]  p-1 transform hover:scale-[1.02] "
                   onClick={show}
                 >
                   <img src="ulayaw.png" />
                   <span className=" h-2 w-2 shadow-lg animate-pulse  rounded-full absolute right-0 top-1 bg-green-400 "></span>
 
-                  <span className=" absolute w-[125px] px-2 border-2 py-2 shadow-lg   rounded-lg text-center right-[70px] top-2 bg-white text-black hover:border-[#5DCFFF]">
+                  <span className=" absolute w-[125px] px-2 border-2 py-2 shadow-lg   rounded-lg text-center right-[70px] top-2 bg-white text-black border-[#5DCFFF]">
                     <p>kamusta! 👋</p>
                   </span>
 
@@ -446,8 +351,8 @@ function Chatbot(props) {
               className="clear-both"
               // style={{ float: "left", clear: "both" }}
             ></div>
-          </div>
-        </div>
+          </button>
+        </button>
       )}
       {/* <DisplayBot talkInput={talkInput} messagesEnd={messagesEnd} /> */}
       {showModal ? (

@@ -24,11 +24,11 @@ const Landing = () => {
 
           {/* buttons-upper */}
           <div className="text-[24px] font-medium flex flex-row space-x-[14px]">
-            <div className="w-[183px] mt-[48px] h-[57px] bg-[#5DCFFF] rounded-[15px]  text-center py-2 text-[#29363C] cursor-pointer transform hover:scale-[1.1]">
+            <button className="w-[183px] mt-[48px] h-[57px] bg-[#5DCFFF] rounded-[15px]  text-center py-2 text-[#29363C] cursor-pointer transform hover:scale-[1.010]">
               Assessment
-            </div>
+            </button>
             <input
-              className="border-[1px] border-[#3E3E3E] w-[382px] mt-[48px] h-[57px] rounded-[5px] text-[#737373] font-normal px-6 py-2  focus:ring-[#5DCFFF] transform hover:scale-[1.010]"
+              className="border-[1px] border-[#3E3E3E] w-[382px] mt-[48px] h-[57px] rounded-[5px] text-[#737373] font-normal px-6 py-2  focus:ring-[#5DCFFF] transform hover:scale-[1.005]"
               type="text"
               placeholder="Enter a code"
             />
@@ -39,10 +39,10 @@ const Landing = () => {
           </div>
 
           {/* buttons-lower */}
-          <div className="text-[24px] font-medium flex flex-row space-x-[14px]">
-            <div className="w-[579px] mt-[23px] h-[57px] bg-[#5DCFFF] rounded-[15px]  text-center py-2 text-[#29363C] transform hover:scale-[1.1] cursor-pointer">
-              <label> Conversation</label>
-            </div>
+          <div className="text-[24px] font-medium flex flex-row space-x-[14px] w-[579px]">
+            <button className="w-full mt-[23px] h-[57px] bg-[#5DCFFF] rounded-[15px]  text-center py-2 text-[#29363C] transform hover:scale-[1.005] cursor-pointer">
+              <p> Conversation</p>
+            </button>
           </div>
         </div>
       </div>
