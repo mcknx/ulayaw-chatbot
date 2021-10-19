@@ -3,9 +3,8 @@ const { Schema } = mongoose;
 
 const registrationSchema = new Schema({
   name: String,
-  address: String,
-  phone: String,
-  email: String,
+  age: Number,
+  gender: String,
   registerDate: Date,
 });
 

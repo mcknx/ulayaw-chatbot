@@ -28,6 +28,7 @@
   "dependencies": {
     "actions-on-google": "^2.14.0",
     "body-parser": "^1.19.0",
+    "corenlp-client": "^1.0.0",
     "dialogflow": "^1.2.0",
     "dialogflow-fulfillment": "^0.6.1",
     "express": "^4.17.1",

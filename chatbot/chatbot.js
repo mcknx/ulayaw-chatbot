@@ -75,7 +75,7 @@ module.exports = {
     let self = module.exports;
 
     switch (queryResult.action) {
-      case "recommendaction-yes":
+      case "ulayaw_demographics-agree":
         if (queryResult.allRequiredParamsPresent) {
           self.saveRegistration(queryResult.parameters.fields);
         }
@@ -84,11 +84,11 @@ module.exports = {
     return responses;
   },
   saveRegistration: async function (fields) {
+    console.log(fields.age);
     const registration = new Registration({
       name: fields.name.stringValue,
-      address: fields.address.stringValue,
-      phone: fields.phone.stringValue,
-      email: fields.email.stringValue,
+      age: fields.age.numberValue,
+      gender: fields.gender.stringValue,
       dateSent: Date.now(),
     });
     try {
