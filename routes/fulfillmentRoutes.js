@@ -6,13 +6,27 @@ module.exports = (app) => {
   app.post("/", async (req, res) => {
     const agent = new WebhookClient({ request: req, response: res });
 
-    console.log("agent", agent);
+    console.log("intent:" + agent.intent);
+    console.log("parameters:" + JSON.stringify(agent.parameters));
+    console.log("contexts:" + JSON.stringify(agent.contexts));
+    console.log("messages:" + JSON.stringify(agent.consoleMessages));
+    // console.log("agent", agent);
     function snoopy(agent) {
       agent.add(`Welcome to my Snoopy fulfillment!`);
     }
     // async
-    function ask_thought_more(agent) {
-      agent.add(`halloooooo`);
+    function abc_welcome(agent) {
+      agent.add(
+        `Bago tayo mag umpisa, simulan muna natin sa paghinga ng malalim. 😑😤💨`
+      );
+      agent.add(
+        `Mas nakabubuti kung maikli lamang na pahiwatig upang aking lubos na maintindihan ang iyong saloobin.`
+      );
+
+      let loop = true;
+      while (loop) {
+        agent.setFollowupEvent("ABC_ASK_MORE_THOUGHT");
+      }
       // Thought.findOne(
       //   { course: agent.parameters.courses },
       //   function (err, course) {
@@ -41,7 +55,7 @@ module.exports = (app) => {
     }
     let intentMap = new Map();
     intentMap.set("snoopy", snoopy);
-    intentMap.set("ulayaw.abc.ask_thought_more", ask_thought_more);
+    intentMap.set("ulayaw.abc.welcome", abc_welcome);
     intentMap.set("Default Fallback Intent", fallback);
 
     agent.handleRequest(intentMap);
