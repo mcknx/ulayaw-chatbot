@@ -5,6 +5,8 @@ function QuickReplies(props) {
   const [isClicked, setIsClicked] = useState();
   function _handleClick(event, payload, text) {
     props.replyClick(event, payload, text);
+
+    //
   }
 
   function renderQuickReply(reply, i) {

@@ -1,8 +1,17 @@
-import React from "react";
-
-const Landing = () => {
+import React, { useContext } from "react";
+import { ThoughtDiaryContext } from "../../Context/ThoughtDiaryContext";
+const Landing = (props) => {
+  const { showThoughtDiaryTool, setShowThoughtDiaryTool } =
+    useContext(ThoughtDiaryContext);
+  console.log(showThoughtDiaryTool);
   return (
-    <div className="container mx-auto my-auto md:pt-[100px] 2xl:pt-[200px] md:transform md:scale-[.79] 2xl:scale-[1] ">
+    <div
+      className={
+        showThoughtDiaryTool
+          ? "hidden "
+          : "container mx-auto my-auto md:pt-[100px] 2xl:pt-[200px] md:transform md:scale-[.79] 2xl:scale-[1]"
+      }
+    >
       <div className="md:grid md:grid-cols-12 gap-4 ">
         {/* left */}
         <div className="col-span-5 flex justify-center ">

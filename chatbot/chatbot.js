@@ -84,7 +84,7 @@ module.exports = {
     return responses;
   },
   saveRegistration: async function (fields) {
-    console.log(fields.age);
+    // console.log(fields.age);
     const registration = new Registration({
       name: fields.name.stringValue,
       age: fields.age.numberValue,
