@@ -11,6 +11,13 @@ import { withRouter } from "react-router-dom";
 import "../../styles/chatbot.css";
 import { ThoughtDiaryContext } from "../../Context/ThoughtDiaryContext";
 import { GetAdverseAnswerContext } from "../../Context/GetAdverseAnswerContext";
+import { GetHotEmotionCAnswerContext } from "../../Context/GetHotEmotionCAnswerContext.js";
+import { GetOtherEmotionCAnswerContext } from "../../Context/GetOtherEmotionCAnswerContext.js";
+import { ShowMoodsContext } from "../../Context/ShowMoodsContext";
+import { ShowChatBox } from "../../Context/ShowChatBox";
+import { ThoughtDiaryFocusContext } from "../../Context/ThoughtDiaryFocusContext";
+import { MaxInputContext } from "../../Context/MaxInputContext";
+import { GetOtherEmotionAllContext } from "../../Context/GetOtherEmotionAllContext";
 
 const cookies = new Cookies();
 
@@ -22,12 +29,17 @@ function Chatbot(props) {
   const [claimCode, setClaimCode] = useState(false);
   const [correctCode, setCorrectCode] = useState(false);
   const [assessmentScore, setAssessmentScore] = useState();
+  // const { showMoods, setShowMoods } = useContext(ShowMoodsContext);
+  const { showChatBox, setShowChatBox } = useContext(ShowChatBox);
+  const { maxInput, setMaxInput } = useContext(MaxInputContext);
 
   // Step 1: Start by getting the mood
   const [selectedMoods, setSelectedMoods] = useState([]);
   const [getMoodStep1, setGetMoodStep1] = useState(false);
   const [getMoodWhenStartedStep1, setGetMoodWhenStartedStep1] = useState("");
-
+  const { focusThoughtDiaryLetter, setFocusThoughtDiaryLetter } = useContext(
+    ThoughtDiaryFocusContext
+  );
   // Step 2: Intro or Not Intro Thought Diary
   const { showThoughtDiaryTool, setShowThoughtDiaryTool } =
     useContext(ThoughtDiaryContext);
@@ -40,6 +52,26 @@ function Chatbot(props) {
   );
   const [getAdverseStep3UseState, setGetAdverseStep3UseState] = useState(null);
 
+  // Step 4: Get C) the Consequences part
+  const [getMoodHot, setGetMoodHot] = useState(false);
+  const [getMoodOther, setGetMoodOther] = useState(false);
+  const [getOtherEmotionCAnswerChatB, setGetOtherEmotionCAnswerChatB] =
+    useState([]);
+  const [getMoodAfterFeelngs, setGetMoodAfterFeelings] = useState("");
+  const { getHotEmotionCAnswer, setGetHotEmotionCAnswer } = useContext(
+    GetHotEmotionCAnswerContext
+  );
+  const { getOtherEmotionCAnswer, setGetOtherEmotionCAnswer } = useContext(
+    GetOtherEmotionCAnswerContext
+  );
+  const [showMoodsHot, setShowMoodsHot] = useState(false);
+  const [showMoodsOther, setShowMoodsOther] = useState(false);
+  const { getOtherEmotionAll, setGetOtherEmotionAll } = useContext(
+    GetOtherEmotionAllContext
+  );
+
+  // Step 5:
+
   let messagesEnd = useRef(null);
   let talkInput = useRef(null);
 
@@ -47,9 +79,12 @@ function Chatbot(props) {
     cookies.set("userID", uuid(), { path: "/" });
   }
 
-  async function df_text_query(queryText) {
+  async function df_text_query(queryText, dfQuery, speaker) {
+    console.log(speaker);
+    if (speaker === undefined) speaker = "user";
     let says = {
-      speaks: "user",
+      // speaks: "user",
+      speaks: speaker,
       msg: {
         text: {
           text: queryText,
@@ -61,21 +96,24 @@ function Chatbot(props) {
       return [...prevMessages, says];
     });
 
-    const res = await axios.post("/api/df_text_query", {
-      text: queryText,
-      userID: cookies.get("userID"),
-    });
-
-    for (let msg of res.data.fulfillmentMessages) {
-      says = {
-        speaks: "bot",
-        msg: msg,
-      };
-
-      setMessages((prevMessages) => {
-        return [...prevMessages, says];
+    if (dfQuery) {
+      const res = await axios.post("/api/df_text_query", {
+        text: queryText,
+        userID: cookies.get("userID"),
       });
+
+      for (let msg of res.data.fulfillmentMessages) {
+        says = {
+          speaks: "bot",
+          msg: msg,
+        };
+
+        setMessages((prevMessages) => {
+          return [...prevMessages, says];
+        });
+      }
     }
+
     console.log(messages);
   }
 
@@ -171,9 +209,29 @@ function Chatbot(props) {
         // _handleGetAdverseStep3(e);
         setGetAdverseStep3UseState(e.target.value);
         setActivateGetAdverseStep3(2);
+        setShowChatBox(false);
         // console.log(getAdverseStep3);
+      } else if (getMoodOther) {
+        df_text_query(e.target.value, false);
+        let chat = e.target.value;
+        setGetOtherEmotionAll((prevChats) => {
+          return [...prevChats, chat];
+        });
+        setMaxInput(maxInput + 1);
+        // console.log(messages[messages.length - 1]);
+        // console.log(getOtherEmotionCAnswerChatB, "othes");
+
+        // combining chatbox & emotions
+        if (maxInput === 4) {
+          setShowChatBox(false);
+          df_event_query("ABC_THOUGHT_DIARY_C_AFTER_MOODS");
+        }
+        console.log(getOtherEmotionAll, "just the two of us");
+
+        // console.log(getMoodAfterFeelngs);
+        // setGetMoodFeelings(true);
       } else {
-        if (e.target.value !== "") df_text_query(e.target.value);
+        if (e.target.value !== "") df_text_query(e.target.value, true);
       }
 
       e.target.value = "";
@@ -186,14 +244,18 @@ function Chatbot(props) {
   }
 
   function _handleQuickReplyPayload(event, payload, text) {
+    if (text != "I have a code") {
+      df_text_query(text, false);
+    }
+
     event.preventDefault();
     event.stopPropagation();
 
-    if (payload === "long time ago" || payload === "recently") {
-      setGetMoodWhenStartedStep1(payload);
-      // console.log(getMoodWhenStartedStep1);
-      return df_event_query("ABC_THOUGHT_DIARY_NOT_INTRO");
-    }
+    // if (payload === "long time ago" || payload === "recently") {
+    //   setGetMoodWhenStartedStep1(payload);
+    //   // console.log(getMoodWhenStartedStep1);
+
+    // }
 
     console.log(payload);
 
@@ -205,20 +267,34 @@ function Chatbot(props) {
         df_event_query("MASTERCLASS");
         break;
       case "training_demographics-continue":
+        // setShowMoods(true);
         df_event_query("ABC_GETMOOD");
         break;
       case "abc_continue_step_1":
         df_event_query("ABC_GETMOOD");
         break;
-      case "show_thought_diary":
+      case "proceed_to_a":
+        setFocusThoughtDiaryLetter("a");
         df_event_query("ABC_THOUGHT_DIARY_EXPLAINING_A");
+        break;
+      case "show_thought_diary":
+        setGetMoodWhenStartedStep1(text);
+        return df_event_query("ABC_THOUGHT_DIARY_NOT_INTRO");
+      case "yes_mood_different":
+        // setShowMoods(true);
+        break;
+      case "abc_explaining_c_show":
+        // setShowMoods(true);
+        break;
+      case "abc_explaining_c_type":
+        // setShowMoods(false);
         break;
 
       // case "exit_ulayaw":
       // df_event_query("ABC_GETMOOD");
 
       // case "training_assessment-continue":
-      //   df_event_query("ULAYAW_ASSESSMENT");
+      //   break;
 
       // renderOneMessageStatic("code");
       // console.log("training_assessment captured");
@@ -226,7 +302,7 @@ function Chatbot(props) {
       // break;
       // break;
       default:
-        df_text_query(text);
+        df_text_query(text, true);
         break;
     }
   }
@@ -243,9 +319,52 @@ function Chatbot(props) {
   }
 
   function _handleMoodResult() {
+    df_text_query(_handleMoods(selectedMoods), false);
+    df_event_query("ABC_STEP1_MOOD_ASSESS");
     setGetMoodStep1(true);
+    // setShowMoods(false);
     // df_event_query("ASSESSMENT_DONE");
     // setClaimCode(false);
+  }
+
+  function _handleHotMoodResult() {
+    setGetMoodHot(true);
+    df_text_query(_handleMoods(selectedMoods), false);
+    df_event_query("ABC_THOUGHT_DIARY_C_OTHER_MOOD");
+
+    // setShowMoods(false);
+    // df_event_query("ASSESSMENT_DONE");
+    // setClaimCode(false);
+  }
+
+  function _handleOtherMoodResult() {
+    setGetMoodOther(true);
+    setShowMoodsOther(false);
+    df_text_query(_handleMoods(getOtherEmotionCAnswer), false);
+    if (maxInput === 5) {
+      df_text_query(_handleMoods(getOtherEmotionCAnswer), false);
+      df_event_query("ABC_THOUGHT_DIARY_C_AFTER_MOODS");
+      setShowChatBox(true);
+    }
+    // setShowMoods(false);
+
+    // setClaimCode(false);
+  }
+  function _handleTypeToChatbox(type) {
+    if (type === "emotions") {
+      setShowChatBox(true);
+      if (maxInput === 5) {
+        df_event_query("ABC_THOUGHT_DIARY_C_AFTER_MOODS");
+      } else {
+        setGetMoodOther(true);
+      }
+    }
+    if (type === "thoughts") {
+    }
+    if (type === "for") {
+    }
+    if (type === "against") {
+    }
   }
 
   function renderCards(cards) {
@@ -344,14 +463,18 @@ function Chatbot(props) {
     ) {
       // return renderOneMessageStatic("Tama ang code congrats!");
       return (
-        <MultipleChoice
-          key={i}
-          _handleAssessmentResult={_handleAssessmentResult}
-          speaks={message.speaks}
-          payload={message.msg.payload.fields.multiple_choice.listValue.values}
-          setAssessmentScore={setAssessmentScore}
-          assessmentScore={assessmentScore}
-        />
+        <>
+          <MultipleChoice
+            key={i}
+            _handleAssessmentResult={_handleAssessmentResult}
+            speaks={message.speaks}
+            payload={
+              message.msg.payload.fields.multiple_choice.listValue.values
+            }
+            setAssessmentScore={setAssessmentScore}
+            assessmentScore={assessmentScore}
+          />
+        </>
       );
     } else if (
       message.msg &&
@@ -372,16 +495,20 @@ function Chatbot(props) {
       message.msg.payload.fields.get_mood
     ) {
       return (
-        <GetMoods
-          key={i}
-          _handleMoodResult={_handleMoodResult}
-          speaks={message.speaks}
-          payload={message.msg.payload.fields.get_mood.listValue.values}
-          selectedMoods={selectedMoods}
-          setSelectedMoods={setSelectedMoods}
-          // setAssessmentScore={setAssessmentScore}
-          // assessmentScore={assessmentScore}
-        />
+        <>
+          <GetMoods
+            key={i}
+            _handleMoodResult={_handleMoodResult}
+            hotEmotion={true}
+            speaks={message.speaks}
+            payload={message.msg.payload.fields.get_mood.listValue.values}
+            selectedMoods={selectedMoods}
+            setSelectedMoods={setSelectedMoods}
+            showAtEntrance={true}
+            // setAssessmentScore={setAssessmentScore}
+            // assessmentScore={assessmentScore}
+          />
+        </>
       );
     } else if (
       message.msg &&
@@ -392,24 +519,29 @@ function Chatbot(props) {
     ) {
       return (
         <>
-          {/* {renderOneMessageStatic(
-            "Do you have any ideas when these mood(s) first appeared?"
-          )} */}
+          {/* {getMoodStep1
+            ? renderOneMessageStatic(
+                "Do you have any ideas when these mood(s) first appeared?"
+              )
+            : ""} */}
+
           {renderOneMessageStatic(
             message.msg.payload.fields.mood_assess_text.stringValue
           )}
-
           <QuickReplies
             text={
-              message.msg.payload.fields.text
-                ? message.msg.payload.fields.text
+              message.msg.payload.fields.mood_assess_text.stringValue
+                ? message.msg.payload.fields.mood_assess_text.stringValue
                 : null
             }
             key={i}
             replyClick={_handleQuickReplyPayload}
-            onChange={() => setShowThoughtDiaryTool(true)}
+            onChange={() => {
+              setShowThoughtDiaryTool(true);
+            }}
             speaks={message.speaks}
             payload={message.msg.payload.fields.mood_assess.listValue.values}
+            showDiary={true}
           />
           {/* {console.log(message)} */}
         </>
@@ -426,27 +558,34 @@ function Chatbot(props) {
             "Do you have any ideas when these mood(s) first appeared?"
           )} */}
 
-          <div
-            className={
-              "flex justify-center space-x-2  p-2 rounded-lg bottom-0 "
-            }
-          >
+          {!showThoughtDiaryTool ? (
             <div
               className={
-                "rounded-[10px] self-center overflow-ellipsis  px-4 py-2  text-black font-medium text-left "
+                "flex justify-center space-x-2  p-2 rounded-lg bottom-0 "
               }
             >
-              <span className="flex flex-wrap">
-                <a
-                  style={{ margin: 3 }}
-                  onClick={() => setShowThoughtDiaryTool(true)}
-                  className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
-                >
-                  Show Thought Diary
-                </a>
-              </span>
+              <div
+                className={
+                  "rounded-[10px] self-center overflow-ellipsis  px-4 py-2  text-black font-medium text-left "
+                }
+              >
+                <span className="flex flex-wrap">
+                  <a
+                    style={{ margin: 3 }}
+                    onClick={() => {
+                      setShowThoughtDiaryTool(true);
+                      // setShowChatBox(true);
+                    }}
+                    className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                  >
+                    Show Thought Diary
+                  </a>
+                </span>
+              </div>
             </div>
-          </div>
+          ) : (
+            ""
+          )}
 
           {showThoughtDiaryTool
             ? renderOneMessageStatic(
@@ -466,6 +605,7 @@ function Chatbot(props) {
                 replyClick={_handleQuickReplyPayload}
                 speaks={message.speaks}
                 payload={message.msg.payload.fields.show_diary.listValue.values}
+                // dontShowChatBox={true}
               />
             </div>
           ) : (
@@ -477,13 +617,19 @@ function Chatbot(props) {
       message.msg &&
       message.msg.payload &&
       message.msg.payload.fields &&
-      message.msg.payload.fields.explaining_A_question_1
+      message.msg.payload.fields.agree_a
     ) {
       return (
         <>
           {renderOneMessageStatic(
-            `So, when you mention '${getMoodWhenStartedStep1}' what time and place do you think you first noticed the change in your mood? Answer this question: Was it yesterday? last week? last month? last year? last decade? When did it occur? at school? at work? at home? while playing? while working? Try to put it in a lesser sentence so that we can fit it here in the thought diary.`
+            `So, when you mention '${getMoodWhenStartedStep1}' what time and place do you think you first noticed the change in your mood? `
           )}
+
+          {renderOneMessageStatic(
+            `Answer this question: 
+            ${" "} Was it yesterday? last week? last month? last year? last decade? When did it occur? at school? at work? at home? while playing? while working? Try to put it in a lesser sentence so that we can fit it here in the thought diary. `
+          )}
+
           {activateGetAdverseStep3 === 0 ? setActivateGetAdverseStep3(1) : ""}
 
           {activateGetAdverseStep3 === 2
@@ -493,7 +639,7 @@ function Chatbot(props) {
               )
             : ""}
 
-          {activateGetAdverseStep3 === 2 ? (
+          {activateGetAdverseStep3 === 2 && getAdverseStep3 === null ? (
             <div
               className={
                 "flex justify-center space-x-2  p-2 rounded-lg bottom-0 "
@@ -508,8 +654,11 @@ function Chatbot(props) {
                   <a
                     style={{ margin: 3 }}
                     onClick={() => {
+                      df_text_query(getAdverseStep3UseState, false);
                       df_event_query("ABC_THOUGHT_DIARY_EXPLAINING_C");
                       setGetAdverseStep3(getAdverseStep3UseState);
+                      setFocusThoughtDiaryLetter("c");
+                      setShowChatBox(false);
                     }}
                     className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
                   >
@@ -532,20 +681,144 @@ function Chatbot(props) {
       return (
         <>
           {renderOneMessageStatic(
-            `So you mentioned earlier about your present mood(s): '${_handleHotMood()}' 
-            Is it still the ones you feel when we go back to the time after you said this: '${getAdverseStep3}' or is your mood different back then? If yes can you identify it again for me?`
+            `So you mentioned earlier about your present mood(s): '${_handleMoods(
+              getHotEmotionCAnswer
+            )}' `
           )}
 
-          <GetMoods
-            key={i}
-            _handleMoodResult={_handleMoodResult}
-            speaks={message.speaks}
-            payload={message.msg.payload.fields.get_mood_hot.listValue.values}
-            selectedMoods={selectedMoods}
-            setSelectedMoods={setSelectedMoods}
-            // setAssessmentScore={setAssessmentScore}
-            // assessmentScore={assessmentScore}
-          />
+          {renderOneMessageStatic(
+            `Is it still the ones you feel when we go back to the time after you said this: '${getAdverseStep3}' or is your mood different back then? If yes can you identify your mood back then again for me? `
+          )}
+
+          {!getMoodHot ? (
+            <div
+              className={
+                "flex justify-center space-x-2  p-2 rounded-lg bottom-0 "
+              }
+            >
+              <div
+                className={
+                  "rounded-[10px] self-center overflow-ellipsis  px-4 py-2  text-black font-medium text-left "
+                }
+              >
+                <span className="flex flex-wrap">
+                  <a
+                    style={{ margin: 3 }}
+                    onClick={() => {
+                      setShowMoodsHot(true);
+                      // console.log(getHotEmotionCAnswer, "different mood");
+                    }}
+                    className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                  >
+                    Different Mood
+                  </a>
+                  <a
+                    style={{ margin: 3 }}
+                    onClick={() => {
+                      // console.log(getHotEmotionCAnswer, "same mood");
+                      _handleHotMoodResult();
+                      setShowMoodsHot(false);
+                    }}
+                    className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                  >
+                    Same Mood
+                  </a>
+                </span>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+
+          {showMoodsHot ? (
+            <GetMoods
+              key={i}
+              hotEmotion={true}
+              _handleMoodResult={_handleHotMoodResult}
+              speaks={message.speaks}
+              payload={message.msg.payload.fields.get_mood_hot.listValue.values}
+              selectedMoods={selectedMoods}
+              setSelectedMoods={setSelectedMoods}
+              showAtEntrance={showMoodsHot}
+              // dontShowChatBox={true}
+              // setAssessmentScore={setAssessmentScore}
+              // assessmentScore={assessmentScore}
+            />
+          ) : (
+            ""
+          )}
+        </>
+      );
+    } else if (
+      message.msg &&
+      message.msg.payload &&
+      message.msg.payload.fields &&
+      message.msg.payload.fields.get_mood_other &&
+      getMoodHot
+    ) {
+      return (
+        <>
+          <div
+            className={
+              "flex justify-center space-x-2  p-2 rounded-lg bottom-0 "
+            }
+          >
+            <div
+              className={
+                "rounded-[10px] self-center overflow-ellipsis  px-4 py-2  text-black font-medium text-left "
+              }
+            >
+              {maxInput != 5 ? (
+                <span className="flex flex-wrap">
+                  {!showMoodsOther ? (
+                    <a
+                      style={{ margin: 3 }}
+                      onClick={() => {
+                        setShowMoodsOther(!showMoodsOther);
+                        // console.log(getHotEmotionCAnswer, "different mood");
+                      }}
+                      className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                    >
+                      Show Emotions
+                    </a>
+                  ) : (
+                    ""
+                  )}
+
+                  <a
+                    style={{ margin: 3 }}
+                    onClick={() => {
+                      // _handleOtherMoodResult();
+                      _handleTypeToChatbox("emotions");
+                    }}
+                    className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                  >
+                    Type to chatbox
+                  </a>
+                </span>
+              ) : (
+                ""
+              )}
+            </div>
+          </div>
+          {showMoodsOther ? (
+            <GetMoods
+              key={i}
+              otherEmotion={true}
+              _handleMoodResult={_handleOtherMoodResult}
+              speaks={message.speaks}
+              payload={
+                message.msg.payload.fields.get_mood_other.listValue.values
+              }
+              selectedMoods={selectedMoods}
+              setSelectedMoods={setSelectedMoods}
+              showAtEntrance={showMoodsOther}
+              // setAssessmentScore={setAssessmentScore}
+              // assessmentScore={assessmentScore}
+            />
+          ) : (
+            ""
+          )}
         </>
       );
     }
@@ -559,16 +832,41 @@ function Chatbot(props) {
     // }
   }
 
-  function _handleHotMood() {
+  function _handleMoods(moodContainer) {
     let res = "";
-    for (let i = 0; i < selectedMoods.length; i++) {
-      if (i === selectedMoods.length - 1) {
-        res += selectedMoods[i].mood_text + ".";
-      } else {
-        res += selectedMoods[i].mood_text + ",";
+    let firstHit = -1;
+    for (let i = 0; i < moodContainer.length; i++) {
+      if (moodContainer[i].select && firstHit === -1) {
+        firstHit = i;
+      }
+      if (moodContainer[i].select && i != firstHit) {
+        res += ",";
+      }
+      if (moodContainer[i].select) {
+        res += moodContainer[i].mood_text;
       }
     }
+    res += ".";
     return res;
+  }
+  // function _handleMoods(moodContainer) {
+  //   let res = "";
+  //   for (let i = 0; i < moodContainer.length; i++) {
+  //     if (i === moodContainer.length - 1) {
+  //       if (moodContainer[i].select === true) {
+  //         res += moodContainer[i].mood_text + ".";
+  //       }
+  //     } else {
+  //       if (moodContainer[i].select === true) {
+  //         res += moodContainer[i].mood_text + ",";
+  //       }
+  //     }
+  //   }
+  //   return res;
+  // }
+
+  function _handleAfterFeelings() {
+    return getMoodAfterFeelngs;
   }
 
   function renderMessages(returnedMessages) {
@@ -587,6 +885,9 @@ function Chatbot(props) {
   }
 
   useEffect(() => {
+    if (showChatBox && showBot) {
+      talkInput.focus();
+    }
     messagesEnd.scrollIntoView({ behavior: "smooth" });
     // console.log(talkInput);
     if (talkInput.current != null) {
@@ -687,24 +988,28 @@ function Chatbot(props) {
               ></div>
             </div>
             {/* input */}
-            <label className="  border-[#E4E4E4]  w-full md:w-96  xl:w-[500px] flex flex-row border-t-2 rounded-b-[20px] ">
-              <input
-                className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-b-[20px]"
-                type="text"
-                onKeyPress={_handleInputKeyPress}
-                placeholder="Iyong Mensahe ..."
-                ref={(input) => {
-                  talkInput = input;
-                }}
-                disabled={!cookies.get("termsAndConditions")}
-              />
-              <button
-                className="absolute p-4 transform hover:scale-[1.1] right-0"
-                disabled={!cookies.get("termsAndConditions")}
-              >
-                👉
-              </button>
-            </label>
+            {showChatBox ? (
+              <label className="  border-[#E4E4E4]  w-full md:w-96  xl:w-[500px] flex flex-row border-t-2 rounded-b-[20px] ">
+                <input
+                  className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-b-[20px]"
+                  type="text"
+                  onKeyPress={_handleInputKeyPress}
+                  placeholder="Iyong Mensahe ..."
+                  ref={(input) => {
+                    talkInput = input;
+                  }}
+                  disabled={!cookies.get("termsAndConditions")}
+                />
+                <button
+                  className="absolute p-4 transform hover:scale-[1.1] right-0"
+                  disabled={!cookies.get("termsAndConditions")}
+                >
+                  👉
+                </button>
+              </label>
+            ) : (
+              ""
+            )}
           </div>
         ) : (
           <button>
@@ -850,6 +1155,32 @@ function ThoughtDiary() {
   const { getAdverseStep3, setGetAdverseStep3 } = useContext(
     GetAdverseAnswerContext
   );
+  const { getHotEmotionCAnswer, setGetHotEmotionCAnswer } = useContext(
+    GetHotEmotionCAnswerContext
+  );
+  const { getOtherEmotionCAnswer, setGetOtherEmotionCAnswer } = useContext(
+    GetOtherEmotionCAnswerContext
+  );
+  const { focusThoughtDiaryLetter, setFocusThoughtDiaryLetter } = useContext(
+    ThoughtDiaryFocusContext
+  );
+  let firstHit = -1;
+  let firstHitOther = -1;
+
+  function _handleMoodResultGetHotEmotionCAnswer(item, i) {
+    // console.log(item, i, getHotEmotionCAnswer.length - 1, "test");
+
+    if (item.select) {
+      return item.mood_text;
+    }
+  }
+  function _handleMoodResultGetOtherEmotionCAnswer(item, i) {
+    // console.log(item, i, getHotEmotionCAnswer.length - 1, "test");
+
+    if (item.select) {
+      return item.mood_text;
+    }
+  }
   return (
     <div className="left-0 top-0 w-[full] h-screen bg-[#3D829F] bg-opacity-[0.60] z-20">
       <div className=" left-0 w-[1780px] pl-[24px] pt-[26px] h-full  ">
@@ -859,78 +1190,155 @@ function ThoughtDiary() {
         </div>
 
         {/* body */}
-        <div className="w-3/4 rounded-[15px]  self-center bg-white grid grid-cols-4  h-[750px] text-[#4CC2F4] text-[20px] font-semibold">
+        {/* bg-black bg-opacity-[0.75] text-opacity-0  */}
+        <div
+          className={
+            focusThoughtDiaryLetter != null
+              ? "bg-[#5DCFFF] w-3/4 rounded-[15px]  self-center grid grid-cols-4  h-[750px]  text-white font-semibold "
+              : "w-3/4 rounded-[15px]  self-center grid grid-cols-4  h-[750px] text-[#4CC2F4] text-[20px] font-semibold bg-white"
+          }
+        >
           {/* A and C */}
           <div className="grid grid-rows-2">
             {/* section 1 */}
-            <div className="border-b-4 border-[#86A1AC] p-4">
-              <label className="text-[20px]">A)</label>
-              <div className="flex flex-col leading-none  text-[32px] text-center pt-4">
-                <label className="text-[14px] text-[#BF2C53] opacity-75 font-bold">
-                  an actual event or situation, a thought, the cause, mental
-                  picture or physical trigger.
-                </label>
-                <label>
-                  {/* Crying out loud last week */}
-                  {getAdverseStep3}
-                </label>
+            <div
+              className={
+                focusThoughtDiaryLetter === "a"
+                  ? "border-b-4 border-[#86A1AC] bg-white text-[#4CC2F4]"
+                  : "border-b-4 border-[#86A1AC]"
+              }
+            >
+              <div className=" p-4 break-words max-w-[300px]">
+                <label className="text-[20px] ">A)</label>
+                <div className="flex flex-col leading-none  text-[32px] text-center pt-4">
+                  <label className="text-[14px] text-[#BF2C53]  font-bold">
+                    something happens to you or in the environment around you.
+                    <br />
+                    <label className="font-normal">
+                      (What happened? What did I do? What did others do? What
+                      idea occurred to me? What’s stressing me out?)
+                    </label>
+                  </label>
+                  <label className="">
+                    {/* Crying out loud last week */}
+                    {getAdverseStep3}
+                  </label>
+                </div>
               </div>
             </div>
             {/* section 2 */}
-            <div className="p-4">
-              <label className="text-[20px]">C)</label>
-              <div className=" text-center">
+            <div
+              className={
+                focusThoughtDiaryLetter === "c"
+                  ? " bg-white p-4 text-[#4CC2F4]"
+                  : " p-4"
+              }
+            >
+              <label className="text-[20px] ">C)</label>
+              <div className=" text-center break-words max-w-[300px]">
                 {/* Hot emotion section */}
                 <label className="flex flex-col leading-none">
-                  <label className="text-[14px] text-[#BF2C53] opacity-75 font-bold">
+                  <label className="text-[14px] text-[#BF2C53]  font-bold">
                     hot emotion: rated 7/10
                   </label>
-                  <label className="">
-                    Sad<span className="text-[50px] leading-[0px]">,</span> Low
-                    feeling<span className="text-[50px] leading-[0px]">.</span>
+                  <label className="text-[#4CC2F4]">
+                    {getHotEmotionCAnswer != null ||
+                    (getHotEmotionCAnswer != undefined &&
+                      getAdverseStep3 != null) ||
+                    getAdverseStep3 != undefined
+                      ? getHotEmotionCAnswer.map((item, i) => {
+                          // console.log(firstHit === -1, firstHit);
+                          if (item.select && firstHit === -1) {
+                            firstHit = i;
+                          }
+                          return (
+                            <>
+                              {item.select && i != firstHit ? (
+                                <span className="text-[50px] leading-[0px]">
+                                  ,
+                                </span>
+                              ) : (
+                                ""
+                              )}
+                              {_handleMoodResultGetHotEmotionCAnswer(item, i)}
+                            </>
+                          );
+                        })
+                      : ""}
+                    <span className="text-[50px] leading-[0px]">.</span>
+                    {/* {count === 1 ? (
+                      <span className="text-[50px] leading-[0px]">.</span>
+                    ) : (
+                      ""
+                    )} */}
+
+                    {/* Sad<span className="text-[50px] leading-[0px]">,</span> Low
+                    feeling<span className="text-[50px] leading-[0px]">.</span> */}
                   </label>
                 </label>
 
                 {/* Other emotions section */}
                 <label className="pt-10 flex flex-col leading-none">
-                  <label className="text-[14px] text-blue-900 opacity-75 font-bold">
+                  <label className="text-[14px] text-blue-900  font-bold">
                     other emotions you feel
                   </label>
-                  <label className="">
-                    Heavy<span className="text-[50px] leading-[0px]">,</span>{" "}
+                  <label className="text-[#4CC2F4]">
+                    {getOtherEmotionCAnswer != null ||
+                    getOtherEmotionCAnswer != undefined
+                      ? getOtherEmotionCAnswer.map((item, i) => {
+                          // console.log(firstHit === -1, firstHit);
+                          if (item.select && firstHitOther === -1) {
+                            firstHitOther = i;
+                          }
+                          return (
+                            <>
+                              {item.select && i != firstHitOther ? (
+                                <span className="text-[50px] leading-[0px]">
+                                  ,
+                                </span>
+                              ) : (
+                                ""
+                              )}
+                              {_handleMoodResultGetOtherEmotionCAnswer(item, i)}
+                            </>
+                          );
+                        })
+                      : ""}
+                    <span className="text-[50px] leading-[0px]">.</span>
+                    {/* Heavy<span className="text-[50px] leading-[0px]">,</span>{" "}
                     Low Energy
                     <span className="text-[50px] leading-[0px]">,</span> Tired
-                    <span className="text-[50px] leading-[0px]">.</span>
+                    <span className="text-[50px] leading-[0px]">.</span> */}
                   </label>
                 </label>
               </div>
             </div>
           </div>
           {/* B */}
-          <div className="border-l-4 border-[#86A1AC]">
-            <div className=" grid grid-rows-2 ">
-              {/* section 1 */}
-              <div className="pb-4 p-4">
-                <label className="text-[20px]">B)</label>
+          <div className="border-l-4 border-[#86A1AC] grid grid-rows-2 ">
+            {/* section 1 */}
+            <div className="pb-4 p-4  ">
+              <label className="text-[20px] text-[#4CC2F4]">B)</label>
+              <div className="text-center break-words max-w-[330px]">
                 {/* hot thought */}
                 <label className="flex flex-col leading-none">
-                  <label className="text-[14px] text-[#BF2C53] opacity-75 font-bold">
+                  <label className="text-[14px] text-[#BF2C53]  font-bold">
                     the hot thought
                   </label>
                   <label className="">
-                    I'm always going to feel depressed
-                    <span className="text-[50px] leading-[0px]">.</span>
+                    {/* I'm always going to feel depressed
+                    <span className="text-[50px] leading-[0px]">.</span> */}
                   </label>
                 </label>
 
                 {/* other thoughts */}
                 <label className="flex flex-col leading-none pt-10">
-                  <label className="text-[14px] text-blue-900 opacity-75 font-bold">
+                  <label className="text-[14px] text-blue-900  font-bold">
                     other thoughts
                   </label>
                   {/* other thoughts instances */}
                   <div className="leading-normal flex flex-col">
-                    <label className="">
+                    {/* <label className="">
                       This isn't going to work
                       <span className="text-[50px] leading-[0px]">,</span>
                     </label>
@@ -949,31 +1357,32 @@ function ThoughtDiary() {
                     <label className="">
                       I don't belong here
                       <span className="text-[50px] leading-[0px]">.</span>
-                    </label>
+                    </label> */}
                   </div>
                 </label>
               </div>
-              {/* section 2 */}
-              <div className="pt-11 p-4">
-                {/* The hot thought Unhelpful Thinking Styles */}
-                <label className="flex flex-col leading-none">
-                  <label className="text-[14px] text-[#BF2C53] opacity-75 font-bold">
-                    the hot thought unhelpful thinking style
-                  </label>
-                  <label className="">
-                    Jumping to Conclusions
-                    <span className="text-[50px] leading-[0px]">.</span>
-                  </label>
+            </div>
+            {/* section 2 */}
+            <div className="pt-11 p-4 text-center break-words max-w-[330px]">
+              {/* The hot thought Unhelpful Thinking Styles */}
+              <label className="flex flex-col leading-none">
+                <label className="text-[14px] text-[#BF2C53]  font-bold">
+                  the hot thought unhelpful thinking style
                 </label>
+                <label className="">
+                  {/* Jumping to Conclusions
+                    <span className="text-[50px] leading-[0px]">.</span> */}
+                </label>
+              </label>
 
-                {/* Other Unhelpful Thinking Styles  */}
-                <label className="flex flex-col leading-none pt-10">
-                  <label className="text-[14px] text-blue-900 opacity-75 font-bold">
-                    other mentioned unhelpful thinking styles
-                  </label>
-                  {/* other thoughts instances */}
-                  <div className="leading-none flex flex-col">
-                    <label className="">
+              {/* Other Unhelpful Thinking Styles  */}
+              <label className="flex flex-col leading-none pt-10">
+                <label className="text-[14px] text-blue-900  font-bold">
+                  other mentioned unhelpful thinking styles
+                </label>
+                {/* other thoughts instances */}
+                <div className="leading-none flex flex-col">
+                  {/* <label className="">
                       (2) Black & White Thinking
                       <span className="text-[50px] leading-[0px]">,</span>
                     </label>
@@ -981,26 +1390,25 @@ function ThoughtDiary() {
                     <label className="">
                       Overgeneralisation
                       <span className="text-[50px] leading-[0px]">.</span>
-                    </label>
-                  </div>
-                </label>
-              </div>
+                    </label> */}
+                </div>
+              </label>
             </div>
           </div>
           {/* D */}
-          <div className="border-l-4 border-[#86A1AC] ">
-            <div className="grid grid-rows-2">
-              {/* section 1 */}
-              <div className="pb-4 p-4">
-                <label className="text-[20px]">D)</label>
-                {/* for evidence */}
+          <div className="border-l-4 border-[#86A1AC] grid grid-rows-2">
+            {/* section 1 */}
+            <div className="pb-4 p-4">
+              <label className="text-[20px] text-[#4CC2F4]">D)</label>
+              {/* for evidence */}
+              <div className="text-center break-words max-w-[330px]">
                 <label className="flex flex-col leading-none">
-                  <label className="text-[14px] text-[#BF2C53] opacity-75 font-bold">
+                  <label className="text-[14px] text-[#BF2C53]  font-bold">
                     for evidence
                   </label>
 
                   <div className="leading-none flex flex-col">
-                    <label className="pb-4">
+                    {/* <label className="pb-4">
                       {" "}
                       I've been depressed for three years
                       <span className="text-[50px] leading-[0px]">,</span>
@@ -1012,20 +1420,21 @@ function ThoughtDiary() {
                     <label className="pb-4">
                       I'm always gonne be this way
                       <span className="text-[50px] leading-[0px]">,</span>
-                    </label>
+                    </label> */}
                   </div>
                 </label>
               </div>
-              {/* section 2 */}
-              <div className="pb-4 p-4">
-                {/* against evidence */}
-                <label className="flex flex-col leading-none">
-                  <label className="text-[14px] text-[#BF2C53] opacity-75 font-bold">
-                    against evidence
-                  </label>
+            </div>
+            {/* section 2 */}
+            <div className="pb-4 p-4 text-center break-words max-w-[330px]">
+              {/* against evidence */}
+              <label className="flex flex-col leading-none">
+                <label className="text-[14px] text-[#BF2C53]  font-bold">
+                  against evidence
+                </label>
 
-                  <div className="leading-none flex flex-col ">
-                    <label className="pb-4">
+                <div className="leading-none flex flex-col ">
+                  {/* <label className="pb-4">
                       {" "}
                       Sometimes I feel ok
                       <span className="text-[50px] leading-[0px]">,</span>
@@ -1049,14 +1458,13 @@ function ThoughtDiary() {
                     <label className="pb-4">
                       I have some friends who recover from depression{" "}
                       <span className="text-[50px] leading-[0px]">.</span>
-                    </label>
-                  </div>
-                </label>
-              </div>
+                    </label> */}
+                </div>
+              </label>
             </div>
           </div>
           <div className="border-l-4 border-[#86A1AC] p-4">
-            <label className="text-[20px]">E)</label>
+            <label className="text-[20px] text-[#4CC2F4]">E)</label>
           </div>
         </div>
       </div>

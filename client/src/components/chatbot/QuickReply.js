@@ -1,19 +1,26 @@
-import React from "react";
+import React, { useContext } from "react";
+import { ShowChatBox } from "../../Context/ShowChatBox";
 
 const QuickReply = (props) => {
+  const { showChatBox, setShowChatBox } = useContext(ShowChatBox);
+
   if (props.reply.structValue.fields.payload) {
     return (
       <a
         style={{ margin: 3 }}
         href="/"
         className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10  "
-        onClick={(event) =>
+        onClick={(event) => {
           props.click(
             event,
             props.reply.structValue.fields.payload.stringValue,
             props.reply.structValue.fields.text.stringValue
-          )
-        }
+          );
+          // console.log(props.showDiary, "diary");
+          if (props.showDiary) setShowChatBox(false);
+          else setShowChatBox(true);
+          // if (props.dontShowChatBox) setShowChatBox(false);
+        }}
       >
         {props.reply.structValue.fields.text.stringValue}
       </a>

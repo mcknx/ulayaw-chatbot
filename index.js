@@ -1,5 +1,9 @@
 const express = require("express");
 // const bodyParser = require("body-parser");
+// var bodyParser = require("body-parser");
+var cookieParser = require("cookie-parser");
+var session = require("express-session");
+var morgan = require("morgan");
 const app = express();
 
 const config = require("./config/keys");
@@ -19,6 +23,46 @@ app.use(
     extended: true,
   })
 );
+
+// app.use(cookieParser());
+// app.use(
+//   session({
+//     key: "user_sid",
+//     secret: "somerandonstuffs",
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//       expires: 600000,
+//     },
+//   })
+// );
+
+// app.use((req, res, next) => {
+//   if (req.cookies.user_sid && !req.session.user) {
+//     res.clearCookie("user_sid");
+//   }
+//   next();
+// });
+
+// var sessionChecker = (req, res, next) => {
+//   if (req.session.user && req.cookies.user_sid) {
+//     res.redirect("/");
+//   } else {
+//     next();
+//   }
+// };
+
+// app.get("/", sessionChecker, (req, res) => {
+//   res.redirect("/login");
+// });
+
+// app.route("/login").get(sessionChecker, (req, res) => {
+//   res.sendFile(__dirname + "/public/login.html");
+// });
+
+// app.route("/signup").get(sessionChecker, (req, res) => {
+//   res.sendFile(__dirname + "/public/signup.html");
+// });
 
 require("./routes/dialogFlowRoutes")(app);
 require("./routes/fulfillmentRoutes")(app);

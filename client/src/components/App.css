@@ -1,0 +1,15 @@
+.paginationBttns {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 29px;
+  user-select: none;
+}
+
+.paginationActive a {
+  color: rgba(12, 134, 186, var(--tw-text-opacity));
+  border: 1px solid rgba(12, 134, 186, var(--tw-text-opacity));
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 7px;
+}

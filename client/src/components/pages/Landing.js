@@ -1,13 +1,25 @@
 import React, { useContext } from "react";
 import { ThoughtDiaryContext } from "../../Context/ThoughtDiaryContext";
+import { ShowMoodsContext } from "../../Context/ShowMoodsContext";
+
 const Landing = (props) => {
   const { showThoughtDiaryTool, setShowThoughtDiaryTool } =
     useContext(ThoughtDiaryContext);
   console.log(showThoughtDiaryTool);
+
+  const { showMoods, setShowMoods } = useContext(ShowMoodsContext);
+
   return (
     <div
+      // className={
+      //   showThoughtDiaryTool
+      //     ? "hidden "
+      //     : "container mx-auto my-auto md:pt-[100px] 2xl:pt-[200px] md:transform md:scale-[.79] 2xl:scale-[1]"
+      // }
       className={
-        showThoughtDiaryTool
+        showMoods
+          ? "hidden"
+          : showThoughtDiaryTool
           ? "hidden "
           : "container mx-auto my-auto md:pt-[100px] 2xl:pt-[200px] md:transform md:scale-[.79] 2xl:scale-[1]"
       }

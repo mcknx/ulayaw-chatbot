@@ -1,6 +1,5 @@
 {
-  "get_mood": [
-    "tired",
+  "get_mood_other": [
     "low",
     "sad",
     "annoyed",
@@ -13,10 +12,52 @@
     "hopeless",
     "lonely",
     "nervous",
-    "stressed",
     "heavy",
     "tired",
-    "low energy",
-    "demotivated"
+    "demotivated",
+    "stressed"
+  ],
+  "get_mood_nothing": [
+    {
+      "payload": "abc_explaining_c_nothing",
+      "text": "Nothing"
+    },
+    {
+      "text": "Type to chatbox",
+      "payload": "abc_explaining_c_type"
+    }
   ]
 }
+
+
+
+              {getMoodOther
+                ? renderOneMessageStatic(
+                    "So what did you do after you experienced this feeling(s)?"
+                  )
+                : ""}
+              {getMoodOther ? (
+                <QuickReplies
+                  text={
+                    message.msg.payload.fields.text
+                      ? message.msg.payload.fields.text
+                      : null
+                  }
+                  key={i}
+                  replyClick={_handleQuickReplyPayload}
+                  // onChange={() => setShowThoughtDiaryTool(true)}
+                  speaks={message.speaks}
+                  payload={
+                    message.msg.payload.fields.get_mood_nothing.listValue.values
+                  }
+                />
+              ) : (
+                ""
+              )}
+              {getMoodFeelings
+                ? renderOneMessageStatic(
+                    `Okay so I had taken note of your mood(s) and feeling(s): '${_handleMoods(
+                      getHotEmotionCAnswer
+                    )}', '${_handleAfterFeelings()}'`
+                  )
+                : ""}
