@@ -1,11 +1,15 @@
 import React, { useState, useContext } from "react";
 import { MaxInputContext } from "../../../Context/MaxInputContext.js";
 import { GetOtherEmotionCAnswerContext } from "../../../Context/GetOtherEmotionCAnswerContext.js";
-import toast, { Toaster } from "react-hot-toast";
+import { GetOtherEmotionAllContext } from "../../../Context/GetOtherEmotionAllContext.js";
+
 const Mood = (props) => {
   const { maxInput, setMaxInput } = useContext(MaxInputContext);
   const { getOtherEmotionCAnswer, setGetOtherEmotionCAnswer } = useContext(
     GetOtherEmotionCAnswerContext
+  );
+  const { getOtherEmotionAll, setGetOtherEmotionAll } = useContext(
+    GetOtherEmotionAllContext
   );
   function _handleCheck(event) {
     let res = false;
@@ -110,9 +114,21 @@ const Mood = (props) => {
                     console.log(maxInput, "Please ");
                     if (check && maxInput < 5) {
                       setMaxInput(maxInput + 1);
+                      setGetOtherEmotionAll((prevChats) => {
+                        return [...prevChats, props.mood.mood_text];
+                      });
                       m.select = check;
                     }
                     if (!check && maxInput >= 1) {
+                      var index = getOtherEmotionAll.findIndex(
+                        (x) => x === props.mood.mood_text
+                      );
+                      if (index != -1) {
+                        let g = [...getOtherEmotionAll];
+                        g.splice(index, 1);
+                        setGetOtherEmotionAll(g);
+                      }
+
                       setMaxInput(maxInput - 1);
                       m.select = check;
                     }
@@ -126,6 +142,7 @@ const Mood = (props) => {
 
                     // }
                   }
+                  console.log(getOtherEmotionAll);
                   ys.push({
                     select: m.select,
                     mood_text: m.mood_text,

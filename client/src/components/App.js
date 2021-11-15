@@ -9,6 +9,9 @@ import { ShowChatBox } from "../Context/ShowChatBox";
 import { ThoughtDiaryFocusContext } from "../Context/ThoughtDiaryFocusContext";
 import { MaxInputContext } from "../Context/MaxInputContext";
 import { GetOtherEmotionAllContext } from "../Context/GetOtherEmotionAllContext";
+import { HotEmotionRateContext } from "../Context/HotEmotionRateContext";
+import { GetHotThoughtBContext } from "../Context/GetHotThoughtBContext";
+import { GetOtherThoughtBContext } from "../Context/GetOtherThoughtBContext";
 
 import "./App.css";
 import Header from "./Header";
@@ -28,6 +31,9 @@ function App() {
   const [focusThoughtDiaryLetter, setFocusThoughtDiaryLetter] = useState(null);
   const [maxInput, setMaxInput] = useState(0);
   const [getOtherEmotionAll, setGetOtherEmotionAll] = useState([]);
+  const [getHotEmotionRate, setGetHotEmotionRate] = useState(0);
+  const [getHotThoughtB, setGetHotThoughtB] = useState([]);
+  const [getOtherThoughtB, setGetOtherThoughtB] = useState([]);
 
   return (
     <ShowMoodsContext.Provider
@@ -95,20 +101,41 @@ function App() {
                               setGetOtherEmotionAll,
                             }}
                           >
-                            <Route
-                              exact
-                              path="/"
-                              // showThoughtDiaryTool={showThoughtDiaryTool}
-                              // setShowThoughtDiaryTool={setShowThoughtDiaryTool}
-                              component={Landing}
-                            />
+                            <HotEmotionRateContext.Provider
+                              value={{
+                                getHotEmotionRate,
+                                setGetHotEmotionRate,
+                              }}
+                            >
+                              <GetOtherThoughtBContext.Provider
+                                value={{
+                                  getOtherThoughtB,
+                                  setGetOtherThoughtB,
+                                }}
+                              >
+                                <GetHotThoughtBContext.Provider
+                                  value={{
+                                    getHotThoughtB,
+                                    setGetHotThoughtB,
+                                  }}
+                                >
+                                  <Route
+                                    exact
+                                    path="/"
+                                    // showThoughtDiaryTool={showThoughtDiaryTool}
+                                    // setShowThoughtDiaryTool={setShowThoughtDiaryTool}
+                                    component={Landing}
+                                  />
 
-                            {/* <Route exact path="/about" component={About} /> */}
-                            {/* <Route exact path="/shop" component={Shop} /> */}
-                            <Chatbot
-                            // showThoughtDiaryTool={showThoughtDiaryTool}
-                            // setShowThoughtDiaryTool={setShowThoughtDiaryTool}
-                            />
+                                  {/* <Route exact path="/about" component={About} /> */}
+                                  {/* <Route exact path="/shop" component={Shop} /> */}
+                                  <Chatbot
+                                  // showThoughtDiaryTool={showThoughtDiaryTool}
+                                  // setShowThoughtDiaryTool={setShowThoughtDiaryTool}
+                                  />
+                                </GetHotThoughtBContext.Provider>
+                              </GetOtherThoughtBContext.Provider>
+                            </HotEmotionRateContext.Provider>
                           </GetOtherEmotionAllContext.Provider>
                         </MaxInputContext.Provider>
                       </ThoughtDiaryFocusContext.Provider>

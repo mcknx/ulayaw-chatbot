@@ -18,6 +18,9 @@ import { ShowChatBox } from "../../Context/ShowChatBox";
 import { ThoughtDiaryFocusContext } from "../../Context/ThoughtDiaryFocusContext";
 import { MaxInputContext } from "../../Context/MaxInputContext";
 import { GetOtherEmotionAllContext } from "../../Context/GetOtherEmotionAllContext";
+import { HotEmotionRateContext } from "../../Context/HotEmotionRateContext";
+import { GetHotThoughtBContext } from "../../Context/GetHotThoughtBContext";
+import { GetOtherThoughtBContext } from "../../Context/GetOtherThoughtBContext";
 
 const cookies = new Cookies();
 
@@ -55,9 +58,9 @@ function Chatbot(props) {
   // Step 4: Get C) the Consequences part
   const [getMoodHot, setGetMoodHot] = useState(false);
   const [getMoodOther, setGetMoodOther] = useState(false);
-  const [getOtherEmotionCAnswerChatB, setGetOtherEmotionCAnswerChatB] =
-    useState([]);
-  const [getMoodAfterFeelngs, setGetMoodAfterFeelings] = useState("");
+  const [getAfterFeelings, setGetAfterFeelings] = useState(false);
+  const [getAfterFeelingsChat, setGetAfterFeelingsChat] = useState("");
+
   const { getHotEmotionCAnswer, setGetHotEmotionCAnswer } = useContext(
     GetHotEmotionCAnswerContext
   );
@@ -69,8 +72,20 @@ function Chatbot(props) {
   const { getOtherEmotionAll, setGetOtherEmotionAll } = useContext(
     GetOtherEmotionAllContext
   );
+  const [getRateEmotion, setGetRateEmotion] = useState(false);
+  const { getHotEmotionRate, setGetHotEmotionRate } = useContext(
+    HotEmotionRateContext
+  );
 
-  // Step 5:
+  // Step 5: Get B)
+  const [getHotThoughtBool, setGetHotThoughtBool] = useState(false);
+  const [getOtherThoughtBool, setGetOtherThoughtBool] = useState(false);
+  const { getHotThoughtB, setGetHotThoughtB } = useContext(
+    GetHotThoughtBContext
+  );
+  const { getOtherThoughtB, setGetOtherThoughtB } = useContext(
+    GetOtherThoughtBContext
+  );
 
   let messagesEnd = useRef(null);
   let talkInput = useRef(null);
@@ -212,24 +227,110 @@ function Chatbot(props) {
         setShowChatBox(false);
         // console.log(getAdverseStep3);
       } else if (getMoodOther) {
-        df_text_query(e.target.value, false);
-        let chat = e.target.value;
-        setGetOtherEmotionAll((prevChats) => {
-          return [...prevChats, chat];
-        });
-        setMaxInput(maxInput + 1);
-        // console.log(messages[messages.length - 1]);
-        // console.log(getOtherEmotionCAnswerChatB, "othes");
+        if (e.target.value !== "") {
+          df_text_query(e.target.value, false);
+          let chat = e.target.value;
+          setGetOtherEmotionAll((prevChats) => {
+            return [...prevChats, chat];
+          });
+          setMaxInput(maxInput + 1);
+          // console.log(messages[messages.length - 1]);
+          // console.log(getOtherEmotionCAnswerChatB, "othes");
 
-        // combining chatbox & emotions
-        if (maxInput === 4) {
-          setShowChatBox(false);
-          df_event_query("ABC_THOUGHT_DIARY_C_AFTER_MOODS");
+          // combining chatbox & emotions
+          if (maxInput === 4) {
+            setShowChatBox(true);
+            setGetMoodOther(false);
+            setMaxInput(0);
+            df_event_query("ABC_THOUGHT_DIARY_C_AFTER_MOODS");
+          }
+          // console.log(getOtherEmotionAll, "just the two of us");
+
+          // console.log(getMoodAfterFeelngs);
+          // setGetMoodFeelings(true);
+        } else {
+          df_text_query("Please put anything in the chatbox", false, "bot");
         }
-        console.log(getOtherEmotionAll, "just the two of us");
+      } else if (getRateEmotion) {
+        let chat = e.target.value;
+        if (e.target.value !== "") {
+          if (parseInt(chat) != NaN) {
+            chat = parseInt(chat);
+            if (chat <= 0 || chat > 10) {
+              df_text_query("Please put a number between (1-10)", false, "bot");
+            } else {
+              if (chat > 0 && chat < 6) {
+                df_text_query(chat, false);
+                df_text_query(
+                  `Okay, that wasn't so strong. However, you mentioned experiencing these things that affected you.'${_handleMoods(
+                    getHotEmotionCAnswer
+                  )}' and
+                '${_handleShowList(getOtherEmotionAll)}'`,
+                  false,
+                  "bot"
+                );
+              }
+              if (chat > 5 && chat <= 10) {
+                df_text_query(chat, false);
+                df_text_query(
+                  `Okay, that's pretty strong. It's not surprising that you've noticed that these things affected you. '${_handleMoods(
+                    getHotEmotionCAnswer
+                  )}' and
+                  '${_handleShowList(getOtherEmotionAll)}'`,
+                  false,
+                  "bot"
+                );
+              }
+              df_text_query(
+                `Okay, so now we kind of have an idea that this is what happened. '${getAdverseStep3}'. This is the time and place you noticed the change in your mood. `,
+                false,
+                "bot"
+              );
+              df_text_query(
+                `And these are the emotions you noticed. '${_handleMoods(
+                  getHotEmotionCAnswer
+                )}' and
+                '${_handleShowList(
+                  getOtherEmotionAll
+                )}'. And you mentioned that you're still feeling some of them now `,
+                false,
+                "bot"
+              );
+              df_event_query("ABC_THOUGHT_DIARY_B");
+              setGetRateEmotion(false);
+              setGetAfterFeelings(false);
+              setGetOtherThoughtBool(true);
+              setShowChatBox(true);
+              setGetHotEmotionRate(chat);
+            }
+            console.log(chat);
+          }
+        } else {
+          df_text_query("Please put anything in the chatbox", false, "bot");
+        }
+      } else if (getAfterFeelings) {
+        let chat = e.target.value;
+        if (e.target.value !== "") {
+          setGetAfterFeelingsChat(chat);
+          setGetRateEmotion(true);
+          df_event_query("ABC_THOUGHT_DIARY_C_RATE_EMOTION");
+          df_text_query(chat, false);
+        } else {
+          df_text_query("Please put anything in the chatbox", false, "bot");
+        }
 
-        // console.log(getMoodAfterFeelngs);
-        // setGetMoodFeelings(true);
+        // console.log(getAfterFeelingsChat);
+        // setGetRateEmotion(true);
+        // setShowChatBox(false);
+        // df_event_query("ABC_THOUGHT_DIARY_C_RATE_EMOTION");
+      } else if (getOtherThoughtBool) {
+        let chat = e.target.value;
+        if (e.target.value !== "") {
+          setGetOtherThoughtB();
+          df_text_query(chat, false);
+        } else {
+          df_text_query("Please put anything in the chatbox", false, "bot");
+        }
       } else {
         if (e.target.value !== "") df_text_query(e.target.value, true);
       }
@@ -283,10 +384,17 @@ function Chatbot(props) {
       case "yes_mood_different":
         // setShowMoods(true);
         break;
-      case "abc_explaining_c_show":
+      case "abc_explaining_c_nothing":
+        df_event_query("ABC_THOUGHT_DIARY_C_RATE_EMOTION");
+        setGetRateEmotion(true);
+        setShowChatBox(false);
+        // console.log("event");
         // setShowMoods(true);
         break;
       case "abc_explaining_c_type":
+        setShowChatBox(true);
+        setGetAfterFeelings(true);
+        // _handleTypeToChatbox("after_feelings");
         // setShowMoods(false);
         break;
 
@@ -342,7 +450,9 @@ function Chatbot(props) {
     setShowMoodsOther(false);
     df_text_query(_handleMoods(getOtherEmotionCAnswer), false);
     if (maxInput === 5) {
+      setGetMoodOther(false);
       df_text_query(_handleMoods(getOtherEmotionCAnswer), false);
+      setMaxInput(0);
       df_event_query("ABC_THOUGHT_DIARY_C_AFTER_MOODS");
       setShowChatBox(true);
     }
@@ -354,10 +464,15 @@ function Chatbot(props) {
     if (type === "emotions") {
       setShowChatBox(true);
       if (maxInput === 5) {
+        setGetMoodOther(false);
+        setMaxInput(0);
         df_event_query("ABC_THOUGHT_DIARY_C_AFTER_MOODS");
       } else {
         setGetMoodOther(true);
       }
+    }
+
+    if (type === "after_feelings") {
     }
     if (type === "thoughts") {
     }
@@ -768,7 +883,7 @@ function Chatbot(props) {
                 "rounded-[10px] self-center overflow-ellipsis  px-4 py-2  text-black font-medium text-left "
               }
             >
-              {maxInput != 5 ? (
+              {maxInput != 5 && getOtherEmotionAll.length < 5 ? (
                 <span className="flex flex-wrap">
                   {!showMoodsOther ? (
                     <a
@@ -821,6 +936,52 @@ function Chatbot(props) {
           )}
         </>
       );
+    } else if (
+      message.msg &&
+      message.msg.payload &&
+      message.msg.payload.fields &&
+      message.msg.payload.fields.rate_emotion
+    ) {
+      return (
+        <>
+          {/* {console.log(getRateEmotion, "waw sadsad")} */}
+
+          {renderOneMessageStatic(`Okay, so I understand that you've had to
+              deal with a lot of the consequences. However, these are only a few
+              of the ones I noted. '${_handleMoods(getHotEmotionCAnswer)}' and
+              '${_handleShowList(getOtherEmotionAll)}'`)}
+          {getAfterFeelings
+            ? renderOneMessageStatic(`And you did this after experiencing the
+              consequences.'${getAfterFeelingsChat}'`)
+            : ""}
+          {renderOneMessageStatic(
+            `Okay, so that '${_handleMoods(
+              getHotEmotionCAnswer
+            )}' feeling, um... When you say you felt it '${getMoodWhenStartedStep1}' give me an idea of how strong it was.`
+          )}
+          {renderOneMessageStatic(
+            `If you had to give it a rating out of ten (1-10), how would you rate it?`
+          )}
+        </>
+      );
+    } else if (
+      message.msg &&
+      message.msg.payload &&
+      message.msg.payload.fields &&
+      message.msg.payload.fields.explaining_b
+    ) {
+      return (
+        <>
+          {/* {console.log(getRateEmotion, "waw sadsad")} */}
+
+          {renderOneMessageStatic(
+            `Okay, so what was on your mind if we could go back '${getMoodWhenStartedStep1}' to the time and place when you said: '${getAdverseStep3}'. `
+          )}
+          {renderOneMessageStatic(`Answer the question "What was going through my head at the time? 
+                
+                Try to put it in a lesser sentence so that we can fit it here in the thought diary. `)}
+        </>
+      );
     }
 
     //  else if (
@@ -849,6 +1010,17 @@ function Chatbot(props) {
     res += ".";
     return res;
   }
+
+  function _handleShowList(listContainer) {
+    return listContainer.map((item, i) => {
+      let res = "";
+      // if (i != 0) {
+      //   res += ",";
+      // }
+      res += item;
+      return res;
+    });
+  }
   // function _handleMoods(moodContainer) {
   //   let res = "";
   //   for (let i = 0; i < moodContainer.length; i++) {
@@ -864,10 +1036,6 @@ function Chatbot(props) {
   //   }
   //   return res;
   // }
-
-  function _handleAfterFeelings() {
-    return getMoodAfterFeelngs;
-  }
 
   function renderMessages(returnedMessages) {
     if (cookies.get("termsAndConditions")) {
@@ -1164,6 +1332,13 @@ function ThoughtDiary() {
   const { focusThoughtDiaryLetter, setFocusThoughtDiaryLetter } = useContext(
     ThoughtDiaryFocusContext
   );
+
+  const { getOtherEmotionAll, setGetOtherEmotionAll } = useContext(
+    GetOtherEmotionAllContext
+  );
+  const { getHotEmotionRate, setGetHotEmotionRate } = useContext(
+    HotEmotionRateContext
+  );
   let firstHit = -1;
   let firstHitOther = -1;
 
@@ -1174,12 +1349,23 @@ function ThoughtDiary() {
       return item.mood_text;
     }
   }
-  function _handleMoodResultGetOtherEmotionCAnswer(item, i) {
+  function _handleMoodResultGetOtherEmotionAll(item, i) {
     // console.log(item, i, getHotEmotionCAnswer.length - 1, "test");
 
-    if (item.select) {
-      return item.mood_text;
+    // item.select
+    if (item) {
+      return item;
     }
+  }
+  function _handleShowList(listContainer) {
+    return listContainer.map((item, i) => {
+      let res = "";
+      // if (i != 0) {
+      //   res += ",";
+      // }
+      res += item;
+      return res;
+    });
   }
   return (
     <div className="left-0 top-0 w-[full] h-screen bg-[#3D829F] bg-opacity-[0.60] z-20">
@@ -1239,7 +1425,7 @@ function ThoughtDiary() {
                 {/* Hot emotion section */}
                 <label className="flex flex-col leading-none">
                   <label className="text-[14px] text-[#BF2C53]  font-bold">
-                    hot emotion: rated 7/10
+                    hot emotion: rated {getHotEmotionRate}/10
                   </label>
                   <label className="text-[#4CC2F4]">
                     {getHotEmotionCAnswer != null ||
@@ -1283,23 +1469,24 @@ function ThoughtDiary() {
                     other emotions you feel
                   </label>
                   <label className="text-[#4CC2F4]">
-                    {getOtherEmotionCAnswer != null ||
-                    getOtherEmotionCAnswer != undefined
-                      ? getOtherEmotionCAnswer.map((item, i) => {
+                    {getOtherEmotionAll != null ||
+                    getOtherEmotionAll != undefined
+                      ? getOtherEmotionAll.map((item, i) => {
                           // console.log(firstHit === -1, firstHit);
-                          if (item.select && firstHitOther === -1) {
-                            firstHitOther = i;
-                          }
+                          // if (item.select && firstHitOther === -1) {
+                          //   firstHitOther = i;
+                          // }
                           return (
                             <>
-                              {item.select && i != firstHitOther ? (
+                              {/* .select && i != firstHitOther */}
+                              {i != 0 ? (
                                 <span className="text-[50px] leading-[0px]">
                                   ,
                                 </span>
                               ) : (
                                 ""
                               )}
-                              {_handleMoodResultGetOtherEmotionCAnswer(item, i)}
+                              {_handleMoodResultGetOtherEmotionAll(item, i)}
                             </>
                           );
                         })
@@ -1338,6 +1525,7 @@ function ThoughtDiary() {
                   </label>
                   {/* other thoughts instances */}
                   <div className="leading-normal flex flex-col">
+                    {/* {_handleShowList(getOtherThoughtB[0])} */}
                     {/* <label className="">
                       This isn't going to work
                       <span className="text-[50px] leading-[0px]">,</span>
