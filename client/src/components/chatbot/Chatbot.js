@@ -1619,7 +1619,7 @@ function Chatbot(props) {
     let UTSformat = { title: getUTS, thought: item };
     if (getUTSContainerState.length === 0) {
       setGetUTSCointainerState([item]);
-      setGetUTSCointainer(UTSformat);
+      setGetUTSCointainer([UTSformat]);
     } else {
       setGetUTSCointainerState((x) => {
         return [...getUTSContainerState, item];
