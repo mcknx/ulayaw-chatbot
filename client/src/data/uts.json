@@ -1,0 +1,97 @@
+{
+  "UTS_Description": "When a person experiences an unhelpful emotion, such as depression or anxiety, it is usually preceded by a number of unhelpful self-statements and thoughts. Often there is a pattern to such thoughts and we call these unhelpful thinking styles. One of the things we notice is that people use unhelpful thinking styles as an automatic habit – it is something we are often unaware of. When a person consistently and constantly uses some of these styles of thinking, they can often cause themselves a great deal of emotional distress. This information describes a number of unhelpful thinking styles. As you read through them, you might notice some thinking patterns and styles that you consistently use. Some of these unhelpful thinking styles might sound similar to one another. They are not meant to be distinct categories but may help you to see if there is a pattern to your thoughts.",
+  "Types": [
+    {
+      "title": "Mental Filter",
+      "Description": "This thinking style involves a filtering in and filtering out process – a sort of tunnel vision, focusing on only 1 part of a situation and ignoring the rest. Usually this means looking at the negative parts of a situation and forgetting the positive parts, and the whole picture is coloured by what may be a single negative detail. ",
+      "DisputationQ": [
+        "Consider the whole picture",
+        "Am I taking all the information into account?",
+        "What else is going on that I’m ignoring?"
+      ]
+    },
+    {
+      "title": "Jumping to Conclusions",
+      "Description": "We jump to conclusions when we assume that we know what someone else is thinking (mind reading) and when we make predictions about what is going to  happen in the future (predictive thinking)",
+      "DisputationQ": [
+        "You know what they say about assuming…",
+        "How do I know this?",
+        "What are some alternative explanations for this?",
+        "If I was feeling differently, would I still think this?"
+      ]
+    },
+    {
+      "title": "Personalisation",
+      "Description": "This involves blaming yourself for everything that goes wrong or could go wrong, even when you may only be partly responsible or not responsible at all. You might be taking 100 per cent responsibility for the occurrence of external events",
+      "DisputationQ": [
+        "Find all the causes",
+        "Was this entirely my responsibility?",
+        "What other factors might have affected the outcome?"
+      ]
+    },
+    {
+      "title": "Catastrophising",
+      "Description": "Catastrophising occurs when we blow things out of proportion, and we view the situation as terrible, awful, dreadful, and horrible, even though the reality is that the problem is quite small",
+      "DisputationQ": [
+        "Put it in perspective",
+        "What are the possible outcomes – best, worst, most likely?",
+        "Am I jumping ahead of myself?",
+        "How important is this in the scheme of things?"
+      ]
+    },
+    {
+      "title": "Black and white thinking",
+      "Description": "This thinking style involves seeing only 1 extreme or the other. You are either wrong or right, good or bad and so on. There are no in- betweens or shades of grey",
+      "DisputationQ": [
+        "Find the shades of grey",
+        "Am I being extreme or rigid?",
+        "Is there an in-between where things are not perfect but not a disaster?"
+      ]
+    },
+    {
+      "title": "Shoulding and musting",
+      "Description": "Sometimes by saying “I should…” or “I must…” you can put unreasonable demands or pressure on yourself and others. Although these statements are not always unhelpful – for example “I should not get drunk and drive home” – they can sometimes create unrealistic expectations",
+      "DisputationQ": [
+        "Be flexible",
+        "Is this a strict rule, or is it a desire or possibility that didn’t work in this instance?",
+        "Can I replace this with a “could” or “would have liked to”?"
+      ]
+    },
+    {
+      "title": "Overgeneralisation",
+      "Description": "When we overgeneralise, we take 1 instance in the past or present, and impose it on all current or future situations. If we say “You always…” or “Everyone…”, or “I never…” then we are probably overgeneralising",
+      "DisputationQ": [
+        "Be specific",
+        "Does this apply to all situations or am I overgeneralising?",
+        "What are the facts and what are my interpretations?"
+      ]
+    },
+    {
+      "title": "Labelling",
+      "Description": "We label ourselves and others when we make global statements based on behaviour in specific situations. We might use this label even though there are many more examples that aren’t consistent with that label",
+      "DisputationQ": [
+        "Judge the situation, not the person",
+        "Does this behaviour or situation reflect how things always are?",
+        "Are there examples where this label hasn’t been true?"
+      ]
+    },
+    {
+      "title": "Emotional reasoning",
+      "Description": "This thinking style involves basing your view of situations or yourself on the way you are feeling. For example, the only evidence that something bad is going to happen is that you feel like something bad is going to happen",
+      "DisputationQ": [
+        "Acknowledge the good",
+        "Am I downplaying or ignoring some of the evidence?",
+        "What are the good things in this situation?"
+      ]
+    },
+    {
+      "title": "Magnification and minimisation",
+      "Description": "In this thinking style, you magnify the positive attributes of other people and minimise your own positive attributes. It’s as though you’re explaining away your own positive characteristics",
+      "DisputationQ": [
+        "Acknowledge the good",
+        "Am I downplaying or ignoring some of the evidence?",
+        "What are the good things in this situation?"
+      ]
+    }
+  ]
+}

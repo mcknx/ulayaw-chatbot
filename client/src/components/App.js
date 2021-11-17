@@ -12,6 +12,13 @@ import { GetOtherEmotionAllContext } from "../Context/GetOtherEmotionAllContext"
 import { HotEmotionRateContext } from "../Context/HotEmotionRateContext";
 import { GetHotThoughtBContext } from "../Context/GetHotThoughtBContext";
 import { GetOtherThoughtBContext } from "../Context/GetOtherThoughtBContext";
+import { ShowUTSContext } from "../Context/ShowUTSContext";
+import { GetUTSContext } from "../Context/GetUTSContext";
+import { GetUTSContainerContext } from "../Context/GetUTSContainerContext";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { HotThoughtRateContext } from "../Context/HotThoughtRateContext";
+import { GetForEvidenceDContext } from "../Context/GetForEvidenceDContext";
 
 import "./App.css";
 import Header from "./Header";
@@ -20,6 +27,9 @@ import Landing from "./pages/Landing";
 import About from "./pages/About";
 import Shop from "./shop/Shop";
 import Chatbot from "./chatbot/Chatbot";
+// import PetCard from "./PetCard";
+import Basket from "./Basket";
+import UTS from "./UTS";
 
 function App() {
   const [showThoughtDiaryTool, setShowThoughtDiaryTool] = useState(false);
@@ -34,120 +44,167 @@ function App() {
   const [getHotEmotionRate, setGetHotEmotionRate] = useState(0);
   const [getHotThoughtB, setGetHotThoughtB] = useState([]);
   const [getOtherThoughtB, setGetOtherThoughtB] = useState([]);
+  const [showUTS, setShowUTS] = useState(false);
+  const [getUTS, setGetUTS] = useState();
+  const [getUTSContainer, setGetUTSCointainer] = useState([]);
+  const [getHotThoughtRate, setGetHotThoughtRate] = useState(0);
+  const [getForEvidenceD, setGetForEvidenceD] = useState([]);
 
   return (
-    <ShowMoodsContext.Provider
-      value={{
-        showMoods,
-        setShowMoods,
-      }}
-    >
-      <div
-        className={
-          showMoods
-            ? "flex justify-center bg-[#3D829F] bg-opacity-[0.75] w-full h-full absolute"
-            : "flex justify-center"
-        }
+    <DndProvider backend={HTML5Backend}>
+      <ShowMoodsContext.Provider
+        value={{
+          showMoods,
+          setShowMoods,
+        }}
       >
-        <BrowserRouter>
-          <div className="w-full ">
-            <Header />
+        <div
+          className={
+            showMoods
+              ? "flex justify-center bg-[#3D829F] bg-opacity-[0.75] w-full h-full absolute"
+              : "flex justify-center"
+          }
+        >
+          <BrowserRouter>
+            <div className="w-full ">
+              <Header />
 
-            <ThoughtDiaryContext.Provider
-              value={{
-                showThoughtDiaryTool,
-                setShowThoughtDiaryTool,
-              }}
-            >
-              <GetAdverseAnswerContext.Provider
+              <ThoughtDiaryContext.Provider
                 value={{
-                  getAdverseStep3,
-                  setGetAdverseStep3,
+                  showThoughtDiaryTool,
+                  setShowThoughtDiaryTool,
                 }}
               >
-                <GetHotEmotionCAnswerContext.Provider
+                <GetAdverseAnswerContext.Provider
                   value={{
-                    getHotEmotionCAnswer,
-                    setGetHotEmotionCAnswer,
+                    getAdverseStep3,
+                    setGetAdverseStep3,
                   }}
                 >
-                  <GetOtherEmotionCAnswerContext.Provider
+                  <GetHotEmotionCAnswerContext.Provider
                     value={{
-                      getOtherEmotionCAnswer,
-                      setGetOtherEmotionCAnswer,
+                      getHotEmotionCAnswer,
+                      setGetHotEmotionCAnswer,
                     }}
                   >
-                    <ShowChatBox.Provider
+                    <GetOtherEmotionCAnswerContext.Provider
                       value={{
-                        showChatBox,
-                        setShowChatBox,
+                        getOtherEmotionCAnswer,
+                        setGetOtherEmotionCAnswer,
                       }}
                     >
-                      <ThoughtDiaryFocusContext.Provider
+                      <ShowChatBox.Provider
                         value={{
-                          focusThoughtDiaryLetter,
-                          setFocusThoughtDiaryLetter,
+                          showChatBox,
+                          setShowChatBox,
                         }}
                       >
-                        <MaxInputContext.Provider
+                        <ThoughtDiaryFocusContext.Provider
                           value={{
-                            maxInput,
-                            setMaxInput,
+                            focusThoughtDiaryLetter,
+                            setFocusThoughtDiaryLetter,
                           }}
                         >
-                          <GetOtherEmotionAllContext.Provider
+                          <MaxInputContext.Provider
                             value={{
-                              getOtherEmotionAll,
-                              setGetOtherEmotionAll,
+                              maxInput,
+                              setMaxInput,
                             }}
                           >
-                            <HotEmotionRateContext.Provider
+                            <GetOtherEmotionAllContext.Provider
                               value={{
-                                getHotEmotionRate,
-                                setGetHotEmotionRate,
+                                getOtherEmotionAll,
+                                setGetOtherEmotionAll,
                               }}
                             >
-                              <GetOtherThoughtBContext.Provider
+                              <HotEmotionRateContext.Provider
                                 value={{
-                                  getOtherThoughtB,
-                                  setGetOtherThoughtB,
+                                  getHotEmotionRate,
+                                  setGetHotEmotionRate,
                                 }}
                               >
-                                <GetHotThoughtBContext.Provider
+                                <GetOtherThoughtBContext.Provider
                                   value={{
-                                    getHotThoughtB,
-                                    setGetHotThoughtB,
+                                    getOtherThoughtB,
+                                    setGetOtherThoughtB,
                                   }}
                                 >
-                                  <Route
-                                    exact
-                                    path="/"
-                                    // showThoughtDiaryTool={showThoughtDiaryTool}
-                                    // setShowThoughtDiaryTool={setShowThoughtDiaryTool}
-                                    component={Landing}
-                                  />
+                                  <GetHotThoughtBContext.Provider
+                                    value={{
+                                      getHotThoughtB,
+                                      setGetHotThoughtB,
+                                    }}
+                                  >
+                                    <ShowUTSContext.Provider
+                                      value={{
+                                        showUTS,
+                                        setShowUTS,
+                                      }}
+                                    >
+                                      <GetUTSContext.Provider
+                                        value={{
+                                          getUTS,
+                                          setGetUTS,
+                                        }}
+                                      >
+                                        <GetUTSContainerContext.Provider
+                                          value={{
+                                            getUTSContainer,
+                                            setGetUTSCointainer,
+                                          }}
+                                        >
+                                          <HotThoughtRateContext.Provider
+                                            value={{
+                                              getHotThoughtRate,
+                                              setGetHotThoughtRate,
+                                            }}
+                                          >
+                                            <GetForEvidenceDContext.Provider
+                                              value={{
+                                                getForEvidenceD,
+                                                setGetForEvidenceD,
+                                              }}
+                                            >
+                                              <Route
+                                                exact
+                                                path="/"
+                                                // showThoughtDiaryTool={showThoughtDiaryTool}
+                                                // setShowThoughtDiaryTool={setShowThoughtDiaryTool}
+                                                component={Landing}
+                                              />
 
-                                  {/* <Route exact path="/about" component={About} /> */}
-                                  {/* <Route exact path="/shop" component={Shop} /> */}
-                                  <Chatbot
-                                  // showThoughtDiaryTool={showThoughtDiaryTool}
-                                  // setShowThoughtDiaryTool={setShowThoughtDiaryTool}
-                                  />
-                                </GetHotThoughtBContext.Provider>
-                              </GetOtherThoughtBContext.Provider>
-                            </HotEmotionRateContext.Provider>
-                          </GetOtherEmotionAllContext.Provider>
-                        </MaxInputContext.Provider>
-                      </ThoughtDiaryFocusContext.Provider>
-                    </ShowChatBox.Provider>
-                  </GetOtherEmotionCAnswerContext.Provider>
-                </GetHotEmotionCAnswerContext.Provider>
-              </GetAdverseAnswerContext.Provider>
-            </ThoughtDiaryContext.Provider>
-          </div>
-        </BrowserRouter>
-      </div>
-    </ShowMoodsContext.Provider>
+                                              {/* <Route exact path="/about" component={About} /> */}
+                                              {/* <Route exact path="/shop" component={Shop} /> */}
+                                              <Chatbot
+                                              // showThoughtDiaryTool={showThoughtDiaryTool}
+                                              // setShowThoughtDiaryTool={setShowThoughtDiaryTool}
+                                              />
+
+                                              {/* dnd */}
+                                              {/* <PetCard /> */}
+                                              {/* <Basket /> */}
+                                              {/* <Pet /> */}
+                                            </GetForEvidenceDContext.Provider>
+                                          </HotThoughtRateContext.Provider>
+                                        </GetUTSContainerContext.Provider>
+                                      </GetUTSContext.Provider>
+                                    </ShowUTSContext.Provider>
+                                  </GetHotThoughtBContext.Provider>
+                                </GetOtherThoughtBContext.Provider>
+                              </HotEmotionRateContext.Provider>
+                            </GetOtherEmotionAllContext.Provider>
+                          </MaxInputContext.Provider>
+                        </ThoughtDiaryFocusContext.Provider>
+                      </ShowChatBox.Provider>
+                    </GetOtherEmotionCAnswerContext.Provider>
+                  </GetHotEmotionCAnswerContext.Provider>
+                </GetAdverseAnswerContext.Provider>
+              </ThoughtDiaryContext.Provider>
+            </div>
+          </BrowserRouter>
+        </div>
+      </ShowMoodsContext.Provider>
+    </DndProvider>
   );
 }
 export default App;

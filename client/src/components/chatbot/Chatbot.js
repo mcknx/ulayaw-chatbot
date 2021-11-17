@@ -21,6 +21,15 @@ import { GetOtherEmotionAllContext } from "../../Context/GetOtherEmotionAllConte
 import { HotEmotionRateContext } from "../../Context/HotEmotionRateContext";
 import { GetHotThoughtBContext } from "../../Context/GetHotThoughtBContext";
 import { GetOtherThoughtBContext } from "../../Context/GetOtherThoughtBContext";
+import { ShowUTSContext } from "../../Context/ShowUTSContext";
+import { GetUTSContext } from "../../Context/GetUTSContext";
+import { GetUTSContainerContext } from "../../Context/GetUTSContainerContext";
+import { HotThoughtRateContext } from "../../Context/HotThoughtRateContext";
+import { GetForEvidenceDContext } from "../../Context/GetForEvidenceDContext";
+
+import { useDrop } from "react-dnd";
+import UTSCard from "./UTSCard";
+import UTS from "../UTS";
 
 const cookies = new Cookies();
 
@@ -35,14 +44,15 @@ function Chatbot(props) {
   // const { showMoods, setShowMoods } = useContext(ShowMoodsContext);
   const { showChatBox, setShowChatBox } = useContext(ShowChatBox);
   const { maxInput, setMaxInput } = useContext(MaxInputContext);
+  const { focusThoughtDiaryLetter, setFocusThoughtDiaryLetter } = useContext(
+    ThoughtDiaryFocusContext
+  );
 
   // Step 1: Start by getting the mood
   const [selectedMoods, setSelectedMoods] = useState([]);
   const [getMoodStep1, setGetMoodStep1] = useState(false);
   const [getMoodWhenStartedStep1, setGetMoodWhenStartedStep1] = useState("");
-  const { focusThoughtDiaryLetter, setFocusThoughtDiaryLetter } = useContext(
-    ThoughtDiaryFocusContext
-  );
+
   // Step 2: Intro or Not Intro Thought Diary
   const { showThoughtDiaryTool, setShowThoughtDiaryTool } =
     useContext(ThoughtDiaryContext);
@@ -78,13 +88,36 @@ function Chatbot(props) {
   );
 
   // Step 5: Get B)
-  const [getHotThoughtBool, setGetHotThoughtBool] = useState(false);
   const [getOtherThoughtBool, setGetOtherThoughtBool] = useState(false);
   const { getHotThoughtB, setGetHotThoughtB } = useContext(
     GetHotThoughtBContext
   );
   const { getOtherThoughtB, setGetOtherThoughtB } = useContext(
     GetOtherThoughtBContext
+  );
+
+  // Step 5: Give UTS
+  const { showUTS, setShowUTS } = useContext(ShowUTSContext);
+  const [getUTSBool, setGetUTSBool] = useState(false);
+  const [getUTSThoughtBool, setGetUTSThoughtBool] = useState(true);
+  const [getUTSState, setGetUTSState] = useState("");
+  const { getUTS, setGetUTS } = useContext(GetUTSContext);
+  const [getUTSContainerState, setGetUTSCointainerState] = useState([]);
+  const { getUTSContainer, setGetUTSCointainer } = useContext(
+    GetUTSContainerContext
+  );
+  const [getRateThought, setGetRateThought] = useState(false);
+
+  // Step 5: Get Hot Thought
+  const [getHotThoughtBool, setGetHotThoughtBool] = useState(true);
+  const { getHotThoughtRate, setGetHotThoughtRate } = useContext(
+    HotThoughtRateContext
+  );
+
+  // Step 6: Explain D
+  const [getExplainDBool, setGetExplainDBool] = useState(false);
+  const { getForEvidenceD, setGetForEvidenceD } = useContext(
+    GetForEvidenceDContext
   );
 
   let messagesEnd = useRef(null);
@@ -159,9 +192,10 @@ function Chatbot(props) {
   }
   useEffect(async () => {
     df_event_query("Welcome");
+    await resolveAfterXSeconds(5);
 
     // if (window.location.pathname === "/" && !welcomeSent) {
-    //   await resolveAfterXSeconds(1);
+
     //   df_event_query("Welcome");
     //   setWelcomeSent(true);
     // }
@@ -262,9 +296,8 @@ function Chatbot(props) {
               if (chat > 0 && chat < 6) {
                 df_text_query(chat, false);
                 df_text_query(
-                  `Okay, that wasn't so strong. However, you mentioned experiencing these things that affected you.'${_handleMoods(
-                    getHotEmotionCAnswer
-                  )}' and
+                  `Okay, that wasn't so strong. However, you mentioned experiencing these things that affected you.
+                  '${_handleMoods(getHotEmotionCAnswer)}' and
                 '${_handleShowList(getOtherEmotionAll)}'`,
                   false,
                   "bot"
@@ -273,10 +306,11 @@ function Chatbot(props) {
               if (chat > 5 && chat <= 10) {
                 df_text_query(chat, false);
                 df_text_query(
-                  `Okay, that's pretty strong. It's not surprising that you've noticed that these things affected you. '${_handleMoods(
+                  `Okay, that's pretty strong. It's not surprising that you've noticed that these things affected you. 
+                  
+                  '${_handleMoods(
                     getHotEmotionCAnswer
-                  )}' and
-                  '${_handleShowList(getOtherEmotionAll)}'`,
+                  )}' and '${_handleShowList(getOtherEmotionAll)}'`,
                   false,
                   "bot"
                 );
@@ -296,12 +330,25 @@ function Chatbot(props) {
                 false,
                 "bot"
               );
-              df_event_query("ABC_THOUGHT_DIARY_B");
+
+              df_text_query(
+                `Okay, so what was on your mind if we could go back '${getMoodWhenStartedStep1}' to the time and place when you said: '${getAdverseStep3}'.`,
+                false,
+                "bot"
+              );
+
+              df_text_query(
+                `Answer the question "What was going through my head at the time?`,
+                false,
+                "bot"
+              );
+
               setGetRateEmotion(false);
               setGetAfterFeelings(false);
               setGetOtherThoughtBool(true);
               setShowChatBox(true);
               setGetHotEmotionRate(chat);
+              setFocusThoughtDiaryLetter("a_b");
             }
             console.log(chat);
           }
@@ -326,8 +373,177 @@ function Chatbot(props) {
       } else if (getOtherThoughtBool) {
         let chat = e.target.value;
         if (e.target.value !== "") {
-          setGetOtherThoughtB();
-          df_text_query(chat, false);
+          if (maxInput === 0) {
+            setShowChatBox(true);
+            df_text_query(chat, false);
+            df_text_query(
+              `Are you starting to get a feeling now for why that '${_handleMoods(
+                getHotEmotionCAnswer
+              )}' kind of feeling might have been so ${
+                getHotEmotionRate > 5 ? "Strong" : "Slightly Strong"
+              }. It's quite a good match if we look at B) and C)`,
+              false,
+              "bot"
+            );
+
+            setFocusThoughtDiaryLetter("b_c");
+            df_text_query(
+              `Is there any other thoughts that you have? if we could go back "recently" to the time and place when you said: ${getAdverseStep3}`,
+              false,
+              "bot"
+            );
+
+            setMaxInput(2);
+          }
+
+          if (maxInput === 2) {
+            df_text_query(chat, false);
+            df_text_query(
+              `Okay, given that you think that way, when we look at the C) column, it's kind of a match for you that you couldn't figure out why you were feeling that way.`,
+              false,
+              "bot"
+            );
+            df_text_query(
+              `Give me 2 more of your thoughts during that time.`,
+              false,
+              "bot"
+            );
+
+            setFocusThoughtDiaryLetter("b_c");
+            setMaxInput(3);
+          }
+          if (maxInput === 3) {
+            df_text_query(chat, false);
+            df_text_query(
+              `Was there any other thoughts that you noticed at the time?
+              `,
+              false,
+              "bot"
+            );
+
+            setFocusThoughtDiaryLetter("b");
+            setMaxInput(4);
+          }
+
+          if (maxInput === 4) {
+            df_text_query(chat, false);
+            df_text_query(
+              `Okay wow, that's a lot of things. And looking at that I'm thinking there's quite a few things that it might be really helpful for us to have a bit of a look at.
+              `,
+              false,
+              "bot"
+            );
+            df_text_query(
+              `Um, because if these things were true: '${_handleShowList(
+                getOtherThoughtB
+              )}'
+              `,
+              false,
+              "bot"
+            );
+            df_text_query(
+              `then we'd really have a problem, like it would require a professional to kind of focus on fixing that problem.
+              `,
+              false,
+              "bot"
+            );
+            df_text_query(
+              `But I'm wondering whether some of these thoughts could be a reflection of your true problem; they could be the one component that, although not exactly accurate, are a component of your true problem.
+              `,
+              false,
+              "bot"
+            );
+            df_text_query(
+              `And if that's true we might be able to adjust them or think a little differently about the situation and hopefully feel a bit differently as a result.
+              `,
+              false,
+              "bot"
+            );
+
+            setGetOtherThoughtBool(false);
+            setShowChatBox(false);
+            setFocusThoughtDiaryLetter("b");
+            df_event_query("ABC_THOUGHT_DIARY_B");
+          }
+
+          // console.log(maxInput, "count", getOtherThoughtB.length, "lengt8h");
+          setGetOtherThoughtB((prevChats) => {
+            return [...prevChats, chat];
+          });
+        } else {
+          df_text_query("Please put anything in the chatbox", false, "bot");
+        }
+      } else if (getRateThought) {
+        let chat = e.target.value;
+        // console.log(getUTS.length);
+        if (e.target.value !== "") {
+          if (parseInt(chat) != NaN) {
+            chat = parseInt(chat);
+            df_text_query(chat, false, "user");
+            if (chat <= 0 || chat > 100) {
+              df_text_query(
+                "Please put a number between (1-100)",
+                false,
+                "bot"
+              );
+            } else {
+              if (chat > 0 && chat < 51) {
+                df_text_query(
+                  `Woah, okay so you're believing this slight strongly. `,
+                  false,
+                  "bot"
+                );
+                df_text_query(
+                  `Okay let's do it again. I'd like you to give me a thought that is most likely related to your emotions. That is, the one thought that makes you feel worse, as stated in the C) column. One that's most distressing for you.`,
+                  false,
+                  "bot"
+                );
+                setFocusThoughtDiaryLetter("b_c");
+                df_event_query("ABC_THOUGHT_DIARY_GET_HOT_THOUGHT");
+              }
+            }
+            if (chat > 50 && chat <= 100) {
+              setGetHotThoughtRate(chat);
+              df_text_query(
+                `Woah, okay so you're believing this strongly. `,
+                false,
+                "bot"
+              );
+              df_text_query(
+                `I believe your feelings in C) would be different if you were able to believe this "hot thought" lesser than 50. You would have felt a little better than what you mentioned in the C) column.`,
+                false,
+                "bot"
+              );
+              df_text_query(
+                `That is why when I see you've rated it as ${chat}% percent then I knew it was the one that is most likely connected with your emotions.`,
+                false,
+                "bot"
+              );
+              setGetExplainDBool(true);
+              df_event_query("ABC_THOUGHT_EXPLAIN_D");
+              setFocusThoughtDiaryLetter("b_c");
+              setShowChatBox(false);
+              setMaxInput(0);
+            }
+            console.log(chat);
+          }
+        } else {
+          df_text_query("Please put anything in the chatbox", false, "bot");
+        }
+      } else if (getExplainDBool) {
+        let chat = e.target.value;
+        // console.log(getUTS.length);
+
+        if (e.target.value !== "") {
+          // if (maxInput === 1) {
+          df_text_query(chat, false, "user");
+          setShowChatBox(false);
+          setGetForEvidenceD((x) => {
+            return [...x, chat];
+          });
+          console.log(getForEvidenceD, "getForEvidenceD");
+          df_event_query("ABC_THOUGHT_EXPLAIN_D");
+          // }
         } else {
           df_text_query("Please put anything in the chatbox", false, "bot");
         }
@@ -397,7 +613,91 @@ function Chatbot(props) {
         // _handleTypeToChatbox("after_feelings");
         // setShowMoods(false);
         break;
+      case "explaining_b_get_thought_other_done":
+        setMaxInput(0);
+        setShowChatBox(false);
+        df_text_query(
+          `Okay, um, before  we kind of leap into that, the idea of kind of challenging or getting curious about some of those thoughts.
+          `,
+          false,
+          "bot"
+        );
+        df_text_query(
+          `There's one more thing thing I wanted to do and that was to have a look and see if we could notice any of those unhelpful thinking styles.
+            `,
+          false,
+          "bot"
+        );
+        df_text_query(
+          `Now, I'm just going to show you this graphic interface about unhelpful thinking styles.
+            `,
+          false,
+          "bot"
+        );
 
+        df_text_query(
+          `I want you to remember that these were the things that are really common when people are having problem and they start to think in these characteristic ways and some of them you'll notice happening for you a lot of the time and some not so much.
+            `,
+          false,
+          "bot"
+        );
+        df_event_query("ABC_THOUGHT_DIARY_SHOW_UTS");
+        setFocusThoughtDiaryLetter("b");
+        // console.log(getOtherThoughtBool, "getOtherThoughtBool");
+        // console.log(giveUTS, "giveUTS");
+        // setMaxInput(0);
+        // setGiveUTS(true);
+        // _handleTypeToChatbox("after_feelings");
+        // setShowMoods(false);
+        break;
+      case "explaining_b_get_uts":
+        setShowUTS(true);
+
+        // setGiveUTS(true);
+        // setGetUTSAnswer()
+
+        df_text_query(
+          `I'm just wondering that when you look at these thoughts here: 
+          '${_handleShowList(getOtherThoughtB)}'`,
+          false,
+          "bot"
+        );
+        df_text_query(
+          `
+          Is there any of those unhelpful thinking styles that pop out at you that will let you think. "Yeah I reckon that could be a bit of what's happening".
+          
+            `,
+          false,
+          "bot"
+        );
+        df_text_query(
+          `Read the Description only for now, disregard the Disputation Questions.`,
+          false,
+          "bot"
+        );
+        df_text_query(
+          `Are you ready to start identifying your unhelpful thinking styles?`,
+          false,
+          "bot"
+        );
+
+        df_event_query("ABC_THOUGHT_DIARY_SHOW_CONFIRM_UTS");
+        setFocusThoughtDiaryLetter("b_uts");
+        setShowChatBox(false);
+
+        // _handleTypeToChatbox("after_feelings");
+        // setShowMoods(false);
+        break;
+      case "explaining_b_confirm_uts":
+        setGetUTSBool(true);
+        setShowChatBox(false);
+        // setGetUTS(true);
+        df_text_query(
+          `Click one of the Unhelpful Thinking Styles below! `,
+          false,
+          "bot"
+        );
+        break;
       // case "exit_ulayaw":
       // df_event_query("ABC_GETMOOD");
 
@@ -451,7 +751,7 @@ function Chatbot(props) {
     df_text_query(_handleMoods(getOtherEmotionCAnswer), false);
     if (maxInput === 5) {
       setGetMoodOther(false);
-      df_text_query(_handleMoods(getOtherEmotionCAnswer), false);
+      // df_text_query(_handleMoods(getOtherEmotionCAnswer), false);
       setMaxInput(0);
       df_event_query("ABC_THOUGHT_DIARY_C_AFTER_MOODS");
       setShowChatBox(true);
@@ -470,9 +770,6 @@ function Chatbot(props) {
       } else {
         setGetMoodOther(true);
       }
-    }
-
-    if (type === "after_feelings") {
     }
     if (type === "thoughts") {
     }
@@ -688,6 +985,7 @@ function Chatbot(props) {
                   <a
                     style={{ margin: 3 }}
                     onClick={() => {
+                      // df_text_query("Show Thought Diary", false);
                       setShowThoughtDiaryTool(true);
                       // setShowChatBox(true);
                     }}
@@ -968,19 +1266,141 @@ function Chatbot(props) {
       message.msg &&
       message.msg.payload &&
       message.msg.payload.fields &&
-      message.msg.payload.fields.explaining_b
+      message.msg.payload.fields.show_uts
     ) {
       return (
         <>
-          {/* {console.log(getRateEmotion, "waw sadsad")} */}
-
-          {renderOneMessageStatic(
-            `Okay, so what was on your mind if we could go back '${getMoodWhenStartedStep1}' to the time and place when you said: '${getAdverseStep3}'. `
-          )}
-          {renderOneMessageStatic(`Answer the question "What was going through my head at the time? 
-                
-                Try to put it in a lesser sentence so that we can fit it here in the thought diary. `)}
+          <QuickReplies
+            text={
+              message.msg.payload.fields.show_uts.stringValue
+                ? message.msg.payload.fields.show_uts.stringValue
+                : null
+            }
+            key={i}
+            replyClick={_handleQuickReplyPayload}
+            // onChange={() => {
+            //   setShowThoughtDiaryTool(true);
+            // }}
+            speaks={message.speaks}
+            payload={message.msg.payload.fields.show_uts.listValue.values}
+            showUTS={true}
+          />
+          {/* {console.log(message)} */}
         </>
+      );
+    } else if (
+      message.msg &&
+      message.msg.payload &&
+      message.msg.payload.fields &&
+      message.msg.payload.fields.select_UTS_thought &&
+      getUTSThoughtBool
+    ) {
+      return (
+        <div
+          className={"flex justify-center space-x-2  p-2 rounded-lg bottom-0 "}
+        >
+          <div
+            className={
+              "rounded-[10px] self-center overflow-ellipsis  px-4 py-2  text-black font-medium text-left "
+            }
+          >
+            <span className="flex flex-wrap">
+              {getOtherThoughtB.map((item, i) => {
+                if (getUTSContainerState.length != 0) {
+                  if (!getUTSContainerState.includes(item)) {
+                    return (
+                      <a
+                        style={{ margin: 3 }}
+                        onClick={() => {
+                          _handleUTSQuickReply(item, i);
+                        }}
+                        className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                      >
+                        {item}
+                      </a>
+                    );
+                  }
+                } else {
+                  return (
+                    <a
+                      style={{ margin: 3 }}
+                      onClick={() => {
+                        _handleUTSQuickReply(item, i);
+                      }}
+                      className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                    >
+                      {item}
+                    </a>
+                  );
+                }
+              })}
+            </span>
+          </div>
+        </div>
+      );
+    } else if (
+      message.msg &&
+      message.msg.payload &&
+      message.msg.payload.fields &&
+      message.msg.payload.fields.select_HOT_thought &&
+      getHotThoughtBool
+    ) {
+      return (
+        <div
+          className={"flex justify-center space-x-2  p-2 rounded-lg bottom-0 "}
+        >
+          <div
+            className={
+              "rounded-[10px] self-center overflow-ellipsis  px-4 py-2  text-black font-medium text-left "
+            }
+          >
+            <span className="flex flex-wrap">
+              {getOtherThoughtB.map((item, i) => {
+                return (
+                  <a
+                    style={{ margin: 3 }}
+                    onClick={() => {
+                      _handleHotThoughtQuickReply(item, i);
+                    }}
+                    className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                  >
+                    {item}
+                  </a>
+                );
+              })}
+            </span>
+          </div>
+        </div>
+      );
+    } else if (
+      message.msg &&
+      message.msg.payload &&
+      message.msg.payload.fields &&
+      message.msg.payload.fields.explain_d &&
+      getExplainDBool
+    ) {
+      return (
+        <div
+          className={"flex justify-center space-x-2  p-2 rounded-lg bottom-0 "}
+        >
+          <div
+            className={
+              "rounded-[10px] self-center overflow-ellipsis  px-4 py-2  text-black font-medium text-left "
+            }
+          >
+            <span className="flex flex-wrap">
+              <a
+                style={{ margin: 3 }}
+                onClick={() => {
+                  _handleExplainDQuickReply();
+                }}
+                className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+              >
+                Okay, continue.
+              </a>
+            </span>
+          </div>
+        </div>
       );
     }
 
@@ -1014,12 +1434,298 @@ function Chatbot(props) {
   function _handleShowList(listContainer) {
     return listContainer.map((item, i) => {
       let res = "";
-      // if (i != 0) {
-      //   res += ",";
-      // }
-      res += item;
+      if (item != undefined) {
+        res += item;
+      }
+
       return res;
     });
+  }
+  function _handleUTSMean() {
+    if (getUTS === "Mental Filter") {
+      df_text_query(
+        `So, this could indicate that you were focusing only on one part of a situation and ignoring the rest. Usually this means looking at the negative parts of a situation and forgetting the positive parts, and the whole picture is coloured by what may be a single negative detail.`,
+        false,
+        "bot"
+      );
+    }
+    if (getUTS === "Jumping to Conclusions") {
+      df_text_query(
+        `So, this could imply that you assume that you know what someone else is thinking (mind reading) and when you make predictions about what is going to  happen in the future (predictive thinking)`,
+        false,
+        "bot"
+      );
+    }
+    if (getUTS === "Personalisation") {
+      df_text_query(
+        `So then that might kind of give us a bit of an idea that you were blaming yourself for everything that goes wrong or could go wrong, even when you may only be partly responsible or not responsible at all. You might be taking 100 per cent responsibility for the occurrence of external events`,
+        false,
+        "bot"
+      );
+    }
+    if (getUTS === "Catastrophising") {
+      df_text_query(
+        `So that may give us a hint as to why we see the situation as terrible, awful, dreadful, and horrible, despite the fact that the problem is quite minor.`,
+        false,
+        "bot"
+      );
+    }
+    if (getUTS === "Black and white thinking") {
+      df_text_query(
+        `So, this could imply that you were only seeing one extreme or the other. You are either incorrect or correct, good or bad, and so on. There are no shades of grey or in-betweens.`,
+        false,
+        "bot"
+      );
+    }
+    if (getUTS === "Shoulding and musting") {
+      df_text_query(
+        `So, this could indicate that sometimes by saying “I should…” or “I must…” you can put unreasonable demands or pressure on yourself and others. Although these statements are not always unhelpful – for example “I should not get drunk and drive home” – they can sometimes create unrealistic expectations.`,
+        false,
+        "bot"
+      );
+    }
+    if (getUTS === "Overgeneralisation") {
+      df_text_query(
+        `So, this could imply that you take a single incident from the past or present and apply it to all current or future situations. If you say "you always...", "everyone...", or "I never...", you're probably overgeneralizing.`,
+        false,
+        "bot"
+      );
+    }
+    if (getUTS === "Labelling") {
+      df_text_query(
+        `So, this could imply that you label yourself and others when making broad statements based on behavior in specific situations. You could use this label despite the fact that there are far more cases that are inconsistent with it.`,
+        false,
+        "bot"
+      );
+    }
+    if (getUTS === "Emotional reasoning") {
+      df_text_query(
+        `So, this could indicate that you were basing your view of situations or yourself on the way you are feeling. For example, the only evidence that something bad is going to happen is that you feel like something bad is going to happen.`,
+        false,
+        "bot"
+      );
+    }
+    if (getUTS === "Magnification and minimisation") {
+      df_text_query(
+        `So, this could indicate that you you magnify or exaggerate the positive attributes of other people and minimise your own positive attributes. It’s as though you’re explaining away your own positive characteristics.`,
+        false,
+        "bot"
+      );
+    }
+  }
+
+  function _handleHotThoughtQuickReply(item, i) {
+    df_text_query(item, false, "user");
+
+    setShowChatBox(true);
+    setGetHotThoughtB(item);
+    df_text_query(
+      "Okay, I see. That's the one we are going to focus on.",
+      false,
+      "bot"
+    );
+    df_text_query(
+      `How much do you believe that this is the one that is most likely connected with your emotions? ${item}`,
+      false,
+      "bot"
+    );
+    df_text_query(
+      `If you had to rate it out of a hundred say like a percentage: 1-100%`,
+      false,
+      "bot"
+    );
+    df_text_query(
+      `Greater than 50% is considered to be worse, while less than 50% is considered to be slightly better.`,
+      false,
+      "bot"
+    );
+
+    setGetRateThought(true);
+    setGetHotThoughtBool(false);
+  }
+
+  function _handleExplainDQuickReply() {
+    if (maxInput === 0) {
+      df_text_query(
+        `Um, so I think this is really gonna be worth working on. So now we are going to move on to D) part of the thought diary. `,
+        false,
+        "bot"
+      );
+
+      df_text_query(
+        `So this bit is called D) for disputation. So this is the section where we try to be a bit curios about the thoughts rather than just taking them to be facts. `,
+        false,
+        "bot"
+      );
+
+      df_text_query(
+        `We're going to check them out a little bit. And so the first bit as you can see on the thought diary, it's looking at evidence for and against. So is there any evidence for the thought and is there any evidence against the thought.`,
+        false,
+        "bot"
+      );
+      df_text_query(
+        `So if we can take a look at the graphic if you can hover one of the Unhelpful Thinking Styles, you can see the Disputation Questions.`,
+        false,
+        "bot"
+      );
+      df_event_query("ABC_THOUGHT_EXPLAIN_D");
+    }
+    if (maxInput === 1) {
+      df_text_query(
+        `So we'll start with for. These ones you probably find are coming to mind pretty easy. `,
+        false,
+        "bot"
+      );
+      df_text_query(
+        `So I'm just gonna focus on the for. And then tell me what would be your sort of your main reasons in choosing this belief: "${getHotThoughtB}"`,
+        false,
+        "bot"
+      );
+      df_text_query(
+        `What leads you to think this way? For how long do you think you were having this belief? days? weeks? months? or even years?
+         
+        Try to be as factual as possible`,
+        false,
+        "bot"
+      );
+      setShowChatBox(true);
+    }
+    if (maxInput === 2) {
+      df_text_query(
+        `Okay, I can imagine that would be the main piece of evidence. Is there other things that you would see as evidence for this belief: "${getHotThoughtB}"`,
+        false,
+        "bot"
+      );
+      df_text_query(
+        `Is there anything new that has happened recently? `,
+        false,
+        "bot"
+      );
+
+      setShowChatBox(true);
+    }
+    if (maxInput === 3) {
+      df_text_query(
+        `Okay, I'm gonna leave that there for the moment we might need to go back and tweak that one a little bit as we go along.`,
+        false,
+        "bot"
+      );
+    }
+    setMaxInput(maxInput + 1);
+    focusThoughtDiaryLetter("d");
+  }
+  function _handleUTSQuickReply(item, i) {
+    df_text_query(item, false, "user");
+    let UTSformat = { title: getUTS, thought: item };
+    if (getUTSContainerState.length === 0) {
+      setGetUTSCointainerState([item]);
+      setGetUTSCointainer(UTSformat);
+    } else {
+      setGetUTSCointainerState((x) => {
+        return [...getUTSContainerState, item];
+      });
+      setGetUTSCointainer((prev) => {
+        return [...prev, UTSformat];
+      });
+      // console.log(getUTSContainerState, "utsCont");
+    }
+
+    df_text_query(
+      `Okay this one "${item}" we've noticed might be as "${getUTS}" `,
+      false,
+      "bot"
+    );
+    _handleUTSMean();
+
+    let res = [];
+    res = getOtherThoughtB.map((x, i) => {
+      console.log(x, "x");
+      // if (x != item) {
+      //   return x;
+      // }
+      if (getUTSContainerState.length === 0) {
+        if (x != item) {
+          return x;
+        }
+      } else {
+        if (!getUTSContainerState.includes(x)) {
+          return x;
+        }
+      }
+    });
+    setGetUTSThoughtBool(false);
+
+    if (maxInput != 3) {
+      df_text_query(
+        `Is there anything else in this list that matches one of those unhelpful thinking styles: 
+        '${_handleShowList(res)}'
+        (you can reuse the one you chose earlier)" `,
+        false,
+        "bot"
+      );
+      df_text_query(
+        `Click one of the Unhelpful Thinking Styles below! `,
+        false,
+        "bot"
+      );
+      setGetUTSState(true);
+      setMaxInput(maxInput + 1);
+    } else {
+      df_text_query(
+        `Um, so we've picked up on a couple of those unhelpful thinking styles and that might start us thinking: "maybe there is a bit of that distorted or biased thinking happening here"  `,
+        false,
+        "bot"
+      );
+      df_text_query(
+        `One final thing then is to think about which of these thoughts we've got here: ${_handleShowList(
+          getOtherThoughtB
+        )}`,
+        false,
+        "bot"
+      );
+
+      df_text_query(
+        `Is the one that really links up to these feelings C) column`,
+        false,
+        "bot"
+      );
+      df_text_query(
+        `So the idea here is, we try and find the hot thought. So the hot thought is the thought that's most connected up with the emotions that you have, um so we can focus on that one.`,
+        false,
+        "bot"
+      );
+
+      df_text_query(
+        `Do you know which one of those is kind of the most hot thought, one that's most kind of distressing for you?`,
+        false,
+        "bot"
+      );
+      setFocusThoughtDiaryLetter("b_c");
+      setGetUTSBool(false);
+      df_event_query("ABC_THOUGHT_DIARY_GET_HOT_THOUGHT");
+    }
+    console.log(getUTSContainer, "UTS CONTAINER");
+  }
+  function _handleUTSClick(title) {
+    if (getUTSBool) {
+      df_text_query(title, false, "user");
+
+      df_text_query(
+        `Which one of these do you think might be it because I think you're probably right.`,
+        false,
+        "bot"
+      );
+
+      // console.log(getOtherThoughtB);
+      df_text_query(
+        `Which one do you think might be a "${title}"`,
+        false,
+        "bot"
+      );
+      setGetUTS(title);
+    }
+    setGetUTSThoughtBool(true);
+    df_event_query("ABC_THOUGHT_DIARY_SELECT_UTS_THOUGHT");
   }
   // function _handleMoods(moodContainer) {
   //   let res = "";
@@ -1242,6 +1948,11 @@ function Chatbot(props) {
         {/* <DisplayBot talkInput={talkInput} messagesEnd={messagesEnd} /> */}
       </div>
       <div className="z-0 ">{showThoughtDiaryTool ? <ThoughtDiary /> : ""}</div>
+      {showUTS ? (
+        <UTS _handleUTSClick={_handleUTSClick} getUTSBool={getUTSBool} />
+      ) : (
+        ""
+      )}
     </div>
   );
 }
@@ -1339,6 +2050,19 @@ function ThoughtDiary() {
   const { getHotEmotionRate, setGetHotEmotionRate } = useContext(
     HotEmotionRateContext
   );
+  const { getOtherThoughtB, setGetOtherThoughtB } = useContext(
+    GetOtherThoughtBContext
+  );
+  const { getHotThoughtRate, setGetHotThoughtRate } = useContext(
+    HotThoughtRateContext
+  );
+
+  const { getHotThoughtB, setGetHotThoughtB } = useContext(
+    GetHotThoughtBContext
+  );
+  const { getUTSContainer, setGetUTSCointainer } = useContext(
+    GetUTSContainerContext
+  );
   let firstHit = -1;
   let firstHitOther = -1;
 
@@ -1349,6 +2073,17 @@ function ThoughtDiary() {
       return item.mood_text;
     }
   }
+  const [basket, setBasket] = useState([]);
+  const [{ isOver }, dropRef] = useDrop({
+    accept: "uts",
+    drop: (item) =>
+      setBasket((basket) =>
+        !basket.includes(item) ? [...basket, item] : basket
+      ),
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  });
   function _handleMoodResultGetOtherEmotionAll(item, i) {
     // console.log(item, i, getHotEmotionCAnswer.length - 1, "test");
 
@@ -1360,18 +2095,20 @@ function ThoughtDiary() {
   function _handleShowList(listContainer) {
     return listContainer.map((item, i) => {
       let res = "";
-      // if (i != 0) {
-      //   res += ",";
-      // }
+      if (listContainer.length === 1) return (res = item);
+
+      if (i != 0) {
+        res += ",";
+      }
       res += item;
       return res;
     });
   }
   return (
     <div className="left-0 top-0 w-[full] h-screen bg-[#3D829F] bg-opacity-[0.60] z-20">
-      <div className=" left-0 w-[1780px] pl-[24px] pt-[26px] h-full  ">
+      <div className=" left-0 w-[1350px] pl-[24px] pt-[26px] h-full  ">
         {/* header */}
-        <div className=" w-[215px] h-[54px] rounded-t-[15px] ml-2 text-[20px] lg:text-[24px] p-[18px] lg:pt-[11px] px-[23px] text-white self-center bg-[#5DCFFF] font-bold">
+        <div className=" w-[215px] h-[54px] rounded-t-[15px] ml-2 text-[20px] lg:text-[24px] p-[18px] lg:pt-[11px] px-[23px] text-white self-center bg-[#49c3f7] font-bold">
           <p>Thought Diary</p>
         </div>
 
@@ -1380,8 +2117,8 @@ function ThoughtDiary() {
         <div
           className={
             focusThoughtDiaryLetter != null
-              ? "bg-[#5DCFFF] w-3/4 rounded-[15px]  self-center grid grid-cols-4  h-[750px]  text-white font-semibold "
-              : "w-3/4 rounded-[15px]  self-center grid grid-cols-4  h-[750px] text-[#4CC2F4] text-[20px] font-semibold bg-white"
+              ? "bg-[#5DCFFF] w-full rounded-[15px]  self-center grid grid-cols-4  h-[750px]  text-white font-semibold "
+              : "w-full rounded-[15px]  self-center grid grid-cols-4  h-[750px] text-[#4CC2F4] text-[20px] font-semibold bg-white"
           }
         >
           {/* A and C */}
@@ -1389,15 +2126,16 @@ function ThoughtDiary() {
             {/* section 1 */}
             <div
               className={
-                focusThoughtDiaryLetter === "a"
+                focusThoughtDiaryLetter === "a" ||
+                focusThoughtDiaryLetter === "a_b"
                   ? "border-b-4 border-[#86A1AC] bg-white text-[#4CC2F4]"
                   : "border-b-4 border-[#86A1AC]"
               }
             >
               <div className=" p-4 break-words max-w-[300px]">
-                <label className="text-[20px] ">A)</label>
+                <label className="text-[20px] ">A) Activating Event</label>
                 <div className="flex flex-col leading-none  text-[32px] text-center pt-4">
-                  <label className="text-[14px] text-[#BF2C53]  font-bold">
+                  <label className="text-[14px] text-blue-900  font-bold">
                     something happens to you or in the environment around you.
                     <br />
                     <label className="font-normal">
@@ -1415,19 +2153,20 @@ function ThoughtDiary() {
             {/* section 2 */}
             <div
               className={
-                focusThoughtDiaryLetter === "c"
+                focusThoughtDiaryLetter === "c" ||
+                focusThoughtDiaryLetter === "b_c"
                   ? " bg-white p-4 text-[#4CC2F4]"
                   : " p-4"
               }
             >
-              <label className="text-[20px] ">C)</label>
+              <label className="text-[20px] ">C) Consequences</label>
               <div className=" text-center break-words max-w-[300px]">
                 {/* Hot emotion section */}
                 <label className="flex flex-col leading-none">
-                  <label className="text-[14px] text-[#BF2C53]  font-bold">
+                  <label className="text-[14px] text-blue-900  font-bold">
                     hot emotion: rated {getHotEmotionRate}/10
                   </label>
-                  <label className="text-[#4CC2F4]">
+                  <label className="">
                     {getHotEmotionCAnswer != null ||
                     (getHotEmotionCAnswer != undefined &&
                       getAdverseStep3 != null) ||
@@ -1468,7 +2207,7 @@ function ThoughtDiary() {
                   <label className="text-[14px] text-blue-900  font-bold">
                     other emotions you feel
                   </label>
-                  <label className="text-[#4CC2F4]">
+                  <label className="">
                     {getOtherEmotionAll != null ||
                     getOtherEmotionAll != undefined
                       ? getOtherEmotionAll.map((item, i) => {
@@ -1504,15 +2243,24 @@ function ThoughtDiary() {
           {/* B */}
           <div className="border-l-4 border-[#86A1AC] grid grid-rows-2 ">
             {/* section 1 */}
-            <div className="pb-4 p-4  ">
-              <label className="text-[20px] text-[#4CC2F4]">B)</label>
-              <div className="text-center break-words max-w-[330px]">
+            <div
+              className={
+                focusThoughtDiaryLetter === "b" ||
+                focusThoughtDiaryLetter === "b_c" ||
+                focusThoughtDiaryLetter === "a_b"
+                  ? "pb-4 bg-white p-4 text-[#4CC2F4]"
+                  : "pb-4 p-4"
+              }
+            >
+              <label className="text-[20px] ">B) Beliefs</label>
+              <div className="text-center break-words max-w-[290px]">
                 {/* hot thought */}
                 <label className="flex flex-col leading-none">
-                  <label className="text-[14px] text-[#BF2C53]  font-bold">
-                    the hot thought
+                  <label className="text-[14px] text-blue-900  font-bold">
+                    the hot thought: rated {getHotThoughtRate}/100
                   </label>
                   <label className="">
+                    {getHotThoughtB}
                     {/* I'm always going to feel depressed
                     <span className="text-[50px] leading-[0px]">.</span> */}
                   </label>
@@ -1524,9 +2272,32 @@ function ThoughtDiary() {
                     other thoughts
                   </label>
                   {/* other thoughts instances */}
-                  <div className="leading-normal flex flex-col">
-                    {/* {_handleShowList(getOtherThoughtB[0])} */}
-                    {/* <label className="">
+                  <div className="leading-normal flex flex-col w-full">
+                    <label className="">
+                      {/* {_handleShowList(getOtherThoughtB)} */}
+                      {getOtherThoughtB != null || getOtherThoughtB != undefined
+                        ? getOtherThoughtB.map((item, i) => {
+                            // console.log(firstHit === -1, firstHit);
+                            // if (item.select && firstHitOther === -1) {
+                            //   firstHitOther = i;
+                            // }
+                            return (
+                              <>
+                                {/* .select && i != firstHitOther */}
+                                {i != 0 ? (
+                                  <span className="text-[50px] leading-[0px]">
+                                    ,
+                                  </span>
+                                ) : (
+                                  ""
+                                )}
+                                {item}
+                              </>
+                            );
+                          })
+                        : ""}
+                      <span className="text-[50px] leading-[0px]">.</span>
+                      {/* <label className="">
                       This isn't going to work
                       <span className="text-[50px] leading-[0px]">,</span>
                     </label>
@@ -1546,20 +2317,63 @@ function ThoughtDiary() {
                       I don't belong here
                       <span className="text-[50px] leading-[0px]">.</span>
                     </label> */}
+                    </label>
                   </div>
                 </label>
               </div>
             </div>
             {/* section 2 */}
-            <div className="pt-11 p-4 text-center break-words max-w-[330px]">
+            <div
+              className={
+                focusThoughtDiaryLetter === "b_uts"
+                  ? "pt-11 text-center break-words max-w-[330px] pb-4 bg-white p-4 text-[#4CC2F4]"
+                  : "pt-11 text-center break-words max-w-[330px] pb-4 p-4"
+              }
+            >
               {/* The hot thought Unhelpful Thinking Styles */}
               <label className="flex flex-col leading-none">
-                <label className="text-[14px] text-[#BF2C53]  font-bold">
+                <label className="text-[14px] text-blue-900  font-bold">
                   the hot thought unhelpful thinking style
                 </label>
                 <label className="">
                   {/* Jumping to Conclusions
                     <span className="text-[50px] leading-[0px]">.</span> */}
+                  {/* {getUTSContainer != null ||
+                  getUTSContainer != undefined ||
+                  getUTSContainer.length != 0
+                    ? getUTSContainer.map((item, i) => {
+                        console.log(getUTSContainer);
+                        // console.log(firstHit === -1, firstHit);
+                        // if (item.select && firstHit === -1) {
+                        //   firstHit = i;
+                        // }
+                        return (
+                          <>
+                            {i != 0 ? (
+                              <span className="text-[50px] leading-[0px]">
+                                ,
+                              </span>
+                            ) : (
+                              ""
+                            )}
+                            {item.title}
+                            <span className=" leading-[0px] px-2">{">"}</span>
+                            {item.thought}
+                          </>
+                        );
+                      })
+                    : ""} */}
+
+                  {/* {getUTSContainer.length === 0 ? (
+                    <>
+                      {getUTSContainer[0].item.title}
+                      <span className=" leading-[0px] px-2">{">"}</span>
+                      {getUTSContainer[0].item.thought}
+                    </>
+                  ) : (
+                    ""
+                  )} */}
+                  <span className="text-[50px] leading-[0px]">.</span>
                 </label>
               </label>
 
@@ -1587,11 +2401,13 @@ function ThoughtDiary() {
           <div className="border-l-4 border-[#86A1AC] grid grid-rows-2">
             {/* section 1 */}
             <div className="pb-4 p-4">
-              <label className="text-[20px] text-[#4CC2F4]">D)</label>
+              <label className="text-[18px] text-[#4CC2F4]">
+                D) Detective Work & Disputation
+              </label>
               {/* for evidence */}
               <div className="text-center break-words max-w-[330px]">
                 <label className="flex flex-col leading-none">
-                  <label className="text-[14px] text-[#BF2C53]  font-bold">
+                  <label className="text-[14px] text-blue-900  font-bold">
                     for evidence
                   </label>
 
@@ -1617,7 +2433,7 @@ function ThoughtDiary() {
             <div className="pb-4 p-4 text-center break-words max-w-[330px]">
               {/* against evidence */}
               <label className="flex flex-col leading-none">
-                <label className="text-[14px] text-[#BF2C53]  font-bold">
+                <label className="text-[14px] text-blue-900  font-bold">
                   against evidence
                 </label>
 
@@ -1652,7 +2468,7 @@ function ThoughtDiary() {
             </div>
           </div>
           <div className="border-l-4 border-[#86A1AC] p-4">
-            <label className="text-[20px] text-[#4CC2F4]">E)</label>
+            <label className="text-[20px] text-[#4CC2F4]">E) End Result</label>
           </div>
         </div>
       </div>

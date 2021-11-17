@@ -19,6 +19,9 @@ const QuickReply = (props) => {
           // console.log(props.showDiary, "diary");
           if (props.showDiary) setShowChatBox(false);
           else setShowChatBox(true);
+          if (props.showUTS) {
+            setShowChatBox(false);
+          }
           // if (props.dontShowChatBox) setShowChatBox(false);
         }}
       >

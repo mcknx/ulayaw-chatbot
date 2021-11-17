@@ -21,6 +21,7 @@ function QuickReplies(props) {
         click={_handleClick}
         showDiary={props.showDiary}
         reply={reply}
+        showUTS={props.showUTS}
         // dontShowChatBox={props.dontShowChatBox}
       />
     );

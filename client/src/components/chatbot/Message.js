@@ -22,8 +22,8 @@ function MessageFormat({ speaks, text, float }) {
     <div
       className={
         float === "left"
-          ? "flex justify-start space-x-2  p-2 rounded-lg bottom-0 "
-          : "flex flex-row-reverse space-x-2 space-x-reverse  p-2 rounded-lg "
+          ? "flex justify-start space-x-2  p-2 rounded-lg bottom-0  max-w-[500px]"
+          : "flex flex-row-reverse space-x-2 space-x-reverse  p-2 rounded-lg max-w-[500px] break-words"
       }
     >
       <div
