@@ -1038,17 +1038,23 @@ function Chatbot(props) {
                     "rounded-[10px] self-center overflow-ellipsis  px-4 py-2 bg-[#F2EFEF] text-black font-medium text-left"
                   }
                 >
-                  {/* <label> */}
                   {console.log(message.msg.map)}
                   <iframe
-                    // className="w-full"
                     width="350"
                     height="350"
-                    // style="border:0"
                     loading="lazy"
                     allowfullscreen
-                    src={`https://www.google.com/maps/embed/v1/view?key=${message.msg.map.key}&center=-${message.msg.map.latitude},${message.msg.map.longitude}&zoom=18&maptype=satellite`}
+                    // view mode
+                    src={`https://www.google.com/maps/embed/v1/view?key=${message.msg.map.key}&center=${message.msg.map.latitude},${message.msg.map.longitude}&zoom=18&maptype=satellite`}
+
+                    // view mode
+                    // src={`https://www.google.com/maps/embed/v1/view?key=${message.msg.map.key}&center=7.152694784312385,125.60000875362125&zoom=18&maptype=satellite`}
+
+                    // place mode
                     // src="https://www.google.com/maps/embed/v1/place?key=AIzaSyA6hz3_zGUdW-B6RrjX1zi2nKVfM9sRyjg&q=Space+Needle,Seattle+WA"
+
+                    // streetview mode
+                    // src={`https://www.google.com/maps/embed/v1/streetview?key=${message.msg.map.key}&location=${message.msg.map.latitude},${message.msg.map.longitude}&heading=210&pitch=10&fov=35`}
                   ></iframe>
                   {/* <img
                     // className="w-[80px] h-[80]"
@@ -1056,11 +1062,10 @@ function Chatbot(props) {
                     alt=""
                   /> */}
                   {/* <img
-                    className="w-[80px] h-[80]"
-                    src={`https://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C40.702147,-74.015794&markers=color:green%7Clabel:G%7C40.711614,-74.012318&markers=color:red%7Clabel:C%7C40.718217,-73.998284&key=${message.msg.map.key}`}
+                    // className="w-[80px] h-[80]"
+                    src={`https://maps.googleapis.com/maps/api/staticmap?center=7.152694784312385,125.60000875362125&zoom=100&size=400x300&sensor=false&key=${message.msg.map.key}`}
                     alt=""
                   /> */}
-                  {/* </label> */}
                 </div>
               </div>
             </div>
