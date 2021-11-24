@@ -34,6 +34,7 @@ import { useDrop } from "react-dnd";
 import UTSCard from "./UTSCard";
 import UTS from "../UTS";
 import { Textfit } from "react-textfit";
+import { Map, GoogleApiWrapper, Marker } from "google-maps-react";
 
 const cookies = new Cookies();
 
@@ -136,18 +137,42 @@ function Chatbot(props) {
     cookies.set("userID", uuid(), { path: "/" });
   }
 
-  async function df_text_query(queryText, dfQuery, speaker) {
+  async function df_text_query(queryText, dfQuery, speaker, extra) {
     console.log(speaker);
     if (speaker === undefined) speaker = "user";
-    let says = {
-      // speaks: "user",
-      speaks: speaker,
-      msg: {
-        text: {
-          text: queryText,
+    let says = "";
+    if (extra === "map") {
+      says = {
+        // speaks: "user",
+        speaks: speaker,
+        msg: {
+          map: {
+            latitude: location.coordinates.lat,
+            longitude: location.coordinates.lng,
+            key: "AIzaSyA6hz3_zGUdW-B6RrjX1zi2nKVfM9sRyjg",
+          },
         },
-      },
-    };
+      };
+    } else {
+      says = {
+        // speaks: "user",
+        speaks: speaker,
+        msg: {
+          text: {
+            text: queryText,
+          },
+        },
+      };
+    }
+    // let says = {
+    //   // speaks: "user",
+    //   speaks: speaker,
+    //   msg: {
+    //     text: {
+    //       text: queryText,
+    //     },
+    //   },
+    // };
 
     setMessages((prevMessages) => {
       return [...prevMessages, says];
@@ -220,13 +245,15 @@ function Chatbot(props) {
             df_text_query(
               `Thank you for granting us access to your location!`,
               false,
-              "bot"
+              "bot",
+              "map"
             );
           } else {
             df_text_query(
               `Thank you for granting us access to your location! Please read the terms and conditions above!`,
               false,
-              "bot"
+              "bot",
+              "map"
             );
           }
 
@@ -988,6 +1015,57 @@ function Chatbot(props) {
     if (message.msg && message.msg.text && message.msg.text.text) {
       return (
         <Message key={i} speaks={message.speaks} text={message.msg.text.text} />
+      );
+    } else if (message.msg && message.msg.map) {
+      return (
+        <>
+          <div className=" rounded-lg  mb-2 text-sm ">
+            <div>
+              <div
+                className={
+                  "flex justify-start space-x-2  p-2 rounded-lg bottom-0 "
+                }
+              >
+                <div className={"flex justify-end flex-col"}>
+                  <div className=" rounded-full flex justify-center  text-white h-10 w-10  ">
+                    <img src="ulayaw.png" />
+                    {/* <a href="/">{speaks}</a> */}
+                  </div>
+                </div>
+
+                <div
+                  className={
+                    "rounded-[10px] self-center overflow-ellipsis  px-4 py-2 bg-[#F2EFEF] text-black font-medium text-left"
+                  }
+                >
+                  {/* <label> */}
+                  {console.log(message.msg.map)}
+                  <iframe
+                    // className="w-full"
+                    width="350"
+                    height="350"
+                    // style="border:0"
+                    loading="lazy"
+                    allowfullscreen
+                    src={`https://www.google.com/maps/embed/v1/view?key=${message.msg.map.key}&center=-${message.msg.map.latitude},${message.msg.map.longitude}&zoom=18&maptype=satellite`}
+                    // src="https://www.google.com/maps/embed/v1/place?key=AIzaSyA6hz3_zGUdW-B6RrjX1zi2nKVfM9sRyjg&q=Space+Needle,Seattle+WA"
+                  ></iframe>
+                  {/* <img
+                    // className="w-[80px] h-[80]"
+                    src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.msg.map.latitude},${message.msg.map.longitude}&zoom=100&size=400x300&sensor=false&key=${message.msg.map.key}`}
+                    alt=""
+                  /> */}
+                  {/* <img
+                    className="w-[80px] h-[80]"
+                    src={`https://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C40.702147,-74.015794&markers=color:green%7Clabel:G%7C40.711614,-74.012318&markers=color:red%7Clabel:C%7C40.718217,-73.998284&key=${message.msg.map.key}`}
+                    alt=""
+                  /> */}
+                  {/* </label> */}
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
       );
     } else if (message.msg && message.msg.payload.fields.cards) {
       //message.msg.payload.fields.cards.listValue.values
