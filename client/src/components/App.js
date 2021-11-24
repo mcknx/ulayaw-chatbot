@@ -19,7 +19,8 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { HotThoughtRateContext } from "../Context/HotThoughtRateContext";
 import { GetForEvidenceDContext } from "../Context/GetForEvidenceDContext";
-
+import { GetAgainstEvidenceDContext } from "../Context/GetAgainstEvidenceDContext";
+import { GetLocationContext } from "../Context/GetLocationContext";
 import "./App.css";
 import Header from "./Header";
 import Landing from "./pages/Landing";
@@ -32,7 +33,7 @@ import Basket from "./Basket";
 import UTS from "./UTS";
 
 function App() {
-  const [showThoughtDiaryTool, setShowThoughtDiaryTool] = useState(false);
+  const [showThoughtDiaryTool, setShowThoughtDiaryTool] = useState(true);
   const [getAdverseStep3, setGetAdverseStep3] = useState(null);
   const [getHotEmotionCAnswer, setGetHotEmotionCAnswer] = useState(null);
   const [getOtherEmotionCAnswer, setGetOtherEmotionCAnswer] = useState(null);
@@ -49,6 +50,8 @@ function App() {
   const [getUTSContainer, setGetUTSCointainer] = useState([]);
   const [getHotThoughtRate, setGetHotThoughtRate] = useState(0);
   const [getForEvidenceD, setGetForEvidenceD] = useState([]);
+  const [getAgainstEvidenceD, setGetAgainstEvidenceD] = useState([]);
+  const [getLocation, setGetLocation] = useState(false);
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -165,25 +168,28 @@ function App() {
                                                 setGetForEvidenceD,
                                               }}
                                             >
-                                              <Route
-                                                exact
-                                                path="/"
-                                                // showThoughtDiaryTool={showThoughtDiaryTool}
-                                                // setShowThoughtDiaryTool={setShowThoughtDiaryTool}
-                                                component={Landing}
-                                              />
+                                              <GetAgainstEvidenceDContext.Provider
+                                                value={{
+                                                  getAgainstEvidenceD,
+                                                  setGetAgainstEvidenceD,
+                                                }}
+                                              >
+                                                <GetLocationContext.Provider
+                                                  value={{
+                                                    getLocation,
+                                                    setGetLocation,
+                                                  }}
+                                                >
+                                                  {/* contexts above */}
+                                                  <Route
+                                                    exact
+                                                    path="/"
+                                                    component={Landing}
+                                                  />
 
-                                              {/* <Route exact path="/about" component={About} /> */}
-                                              {/* <Route exact path="/shop" component={Shop} /> */}
-                                              <Chatbot
-                                              // showThoughtDiaryTool={showThoughtDiaryTool}
-                                              // setShowThoughtDiaryTool={setShowThoughtDiaryTool}
-                                              />
-
-                                              {/* dnd */}
-                                              {/* <PetCard /> */}
-                                              {/* <Basket /> */}
-                                              {/* <Pet /> */}
+                                                  <Chatbot />
+                                                </GetLocationContext.Provider>
+                                              </GetAgainstEvidenceDContext.Provider>
                                             </GetForEvidenceDContext.Provider>
                                           </HotThoughtRateContext.Provider>
                                         </GetUTSContainerContext.Provider>

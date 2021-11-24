@@ -37,7 +37,9 @@
     "express-session": "^1.17.2",
     "mongoose": "^5.13.13",
     "morgan": "^1.10.0",
-    "react-hot-toast": "^2.1.1"
+    "react-hot-toast": "^2.1.1",
+    "react-textfit": "^1.1.1",
+    "use-fit-text": "^2.4.0"
   },
   "devDependencies": {
     "concurrently": "^6.2.0",

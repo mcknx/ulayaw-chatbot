@@ -23,7 +23,7 @@ function MessageFormat({ speaks, text, float }) {
       className={
         float === "left"
           ? "flex justify-start space-x-2  p-2 rounded-lg bottom-0  max-w-[500px]"
-          : "flex flex-row-reverse space-x-2 space-x-reverse  p-2 rounded-lg max-w-[500px] break-words"
+          : "flex flex-row-reverse space-x-2 space-x-reverse  p-2 rounded-lg max-w-[500px] break-words "
       }
     >
       <div
@@ -39,7 +39,7 @@ function MessageFormat({ speaks, text, float }) {
         className={
           float === "left"
             ? "rounded-[10px] self-center overflow-ellipsis  px-4 py-2 bg-[#F2EFEF] text-black font-medium text-left"
-            : "rounded-[10px] self-center overflow-ellipsis  px-4 py-2 bg-[#5DCFFF] text-white text-right"
+            : "rounded-[10px] self-center overflow-ellipsis  px-4 py-2 bg-[#5DCFFF] text-white text-left"
         }
       >
         <span>{text}</span>
