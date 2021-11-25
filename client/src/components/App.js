@@ -23,6 +23,7 @@ import { GetAgainstEvidenceDContext } from "../Context/GetAgainstEvidenceDContex
 import { GetLocationContext } from "../Context/GetLocationContext";
 import "./App.css";
 import Header from "./Header";
+import Footer from "./Footer";
 import Landing from "./pages/Landing";
 
 import About from "./pages/About";
@@ -206,6 +207,8 @@ function App() {
                   </GetHotEmotionCAnswerContext.Provider>
                 </GetAdverseAnswerContext.Provider>
               </ThoughtDiaryContext.Provider>
+
+              <Footer />
             </div>
           </BrowserRouter>
         </div>

@@ -100,12 +100,6 @@ export class MapContainer extends Component {
     }
   };
 
-  fetchPlaces(mapProps, map) {
-    const { google } = mapProps;
-    const service = new google.maps.places.PlacesService(map);
-    // ...
-  }
-
   renderType(type) {
     const coords = { lat: this.props.lat, lng: this.props.lng };
     if (!this.props.loaded) return <div>Loading...</div>;
@@ -176,7 +170,7 @@ export class MapContainer extends Component {
               />
             );
           })}
-        {console.log(this.state.places)}
+        {/* {console.log(this.state.places)} */}
 
         {this.state.count === 0 && (
           <Marker

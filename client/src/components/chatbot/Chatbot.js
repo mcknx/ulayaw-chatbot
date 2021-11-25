@@ -253,22 +253,22 @@ function Chatbot(props) {
             df_text_query(
               `Thank you for granting us access to your location!`,
               false,
-              "bot",
-              "map"
+              "bot"
+              // "map"
             );
           } else {
             df_text_query(
               `Thank you for granting us access to your location! Please read the terms and conditions above!`,
               false,
-              "bot",
-              "map"
+              "bot"
+              // "map"
             );
           }
-          df_text_query(
-            `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
-            false,
-            "bot"
-          );
+          // df_text_query(
+          //   `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
+          //   false,
+          //   "bot"
+          // );
           setMaxInput(maxInput + 1);
         }
 
@@ -2702,7 +2702,7 @@ function ThoughtDiary() {
   }
   return (
     <div className="h-screen bg-[#3D829F]">
-      <div className="left-0 top-0  w-[full] h-full  bg-opacity-[0.60] z-20">
+      <div className="left-0 top-0  w-[full] h-full  bg-opacity-[0.60] z-20 mb-6">
         <div className=" left-0   w-[1350px] pl-[24px] pt-[26px] h-full  ">
           {/* header */}
           <div className=" w-[215px] h-[54px] rounded-t-[15px] ml-2 text-[20px] lg:text-[24px] p-[18px] lg:pt-[11px] px-[23px] text-white self-center bg-[#49c3f7] font-bold">

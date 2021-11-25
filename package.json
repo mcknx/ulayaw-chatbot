@@ -35,6 +35,7 @@
     "dialogflow-fulfillment": "^0.6.1",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
+    "generate-sms-verification-code": "^1.0.5",
     "google-map-react": "^2.1.10",
     "google-maps-react": "^2.0.6",
     "mongoose": "^5.13.13",
