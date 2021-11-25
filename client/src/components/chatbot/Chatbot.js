@@ -29,6 +29,7 @@ import { GetForEvidenceDContext } from "../../Context/GetForEvidenceDContext";
 import { GetAgainstEvidenceDContext } from "../../Context/GetAgainstEvidenceDContext";
 import useGeoLocation from "../../hooks/useGeolocation";
 import { GetLocationContext } from "../../Context/GetLocationContext";
+import MapContainer from "./MapContainer";
 
 import { useDrop } from "react-dnd";
 import UTSCard from "./UTSCard";
@@ -147,12 +148,19 @@ function Chatbot(props) {
         speaks: speaker,
         msg: {
           map: {
+            text: queryText,
             latitude: location.coordinates.lat,
             longitude: location.coordinates.lng,
             key: "AIzaSyA6hz3_zGUdW-B6RrjX1zi2nKVfM9sRyjg",
           },
         },
       };
+
+      // My Key
+      // AIzaSyA6hz3_zGUdW-B6RrjX1zi2nKVfM9sRyjg
+
+      // Free Key
+      // AIzaSyAyesbQMyKVVbBgKVi2g6VX7mop2z96jBo
     } else {
       says = {
         // speaks: "user",
@@ -1035,11 +1043,19 @@ function Chatbot(props) {
 
                 <div
                   className={
-                    "rounded-[10px] self-center overflow-ellipsis  px-4 py-2 bg-[#F2EFEF] text-black font-medium text-left"
+                    "rounded-[10px] self-center overflow-ellipsis  px-4 py-2 space-y-4 space-x-2 bg-[#F2EFEF] text-black font-medium text-left h-[420px] flex flex-col justify-evenly"
                   }
                 >
-                  {console.log(message.msg.map)}
-                  <iframe
+                  <label className="text-center ">{message.msg.map.text}</label>
+
+                  <span className=" h-[350px] w-[350px] relative">
+                    <MapContainer
+                      lat={message.msg.map.latitude}
+                      lng={message.msg.map.longitude}
+                    />
+                  </span>
+
+                  {/* <iframe
                     width="350"
                     height="350"
                     loading="lazy"
@@ -1055,17 +1071,7 @@ function Chatbot(props) {
 
                     // streetview mode
                     // src={`https://www.google.com/maps/embed/v1/streetview?key=${message.msg.map.key}&location=${message.msg.map.latitude},${message.msg.map.longitude}&heading=210&pitch=10&fov=35`}
-                  ></iframe>
-                  {/* <img
-                    // className="w-[80px] h-[80]"
-                    src={`https://maps.googleapis.com/maps/api/staticmap?center=${message.msg.map.latitude},${message.msg.map.longitude}&zoom=100&size=400x300&sensor=false&key=${message.msg.map.key}`}
-                    alt=""
-                  /> */}
-                  {/* <img
-                    // className="w-[80px] h-[80]"
-                    src={`https://maps.googleapis.com/maps/api/staticmap?center=7.152694784312385,125.60000875362125&zoom=100&size=400x300&sensor=false&key=${message.msg.map.key}`}
-                    alt=""
-                  /> */}
+                  ></iframe> */}
                 </div>
               </div>
             </div>
@@ -1774,6 +1780,10 @@ function Chatbot(props) {
     //   message.msg.payload.fields.quick_replies
     // ) {
     // }
+  }
+
+  function _handleMap() {
+    return <MapContainer />;
   }
 
   function _handleMoods(moodContainer) {
@@ -2687,222 +2697,141 @@ function ThoughtDiary() {
     });
   }
   return (
-    <div className="left-0 top-0 w-[full] h-screen bg-[#3D829F] bg-opacity-[0.60] z-20">
-      <div className=" left-0  w-[1350px] pl-[24px] pt-[26px] h-full  ">
-        {/* header */}
-        <div className=" w-[215px] h-[54px] rounded-t-[15px] ml-2 text-[20px] lg:text-[24px] p-[18px] lg:pt-[11px] px-[23px] text-white self-center bg-[#49c3f7] font-bold">
-          <p>Thought Diary</p>
-        </div>
+    <div className="h-screen bg-[#3D829F]">
+      <div className="left-0 top-0  w-[full] h-full  bg-opacity-[0.60] z-20">
+        <div className=" left-0   w-[1350px] pl-[24px] pt-[26px] h-full  ">
+          {/* header */}
+          <div className=" w-[215px] h-[54px] rounded-t-[15px] ml-2 text-[20px] lg:text-[24px] p-[18px] lg:pt-[11px] px-[23px] text-white self-center bg-[#49c3f7] font-bold">
+            <p>Thought Diary</p>
+          </div>
 
-        {/* body */}
-        {/* bg-black bg-opacity-[0.75] text-opacity-0  */}
-        <div
-          className={
-            focusThoughtDiaryLetter != null
-              ? "bg-[#5DCFFF] w-full rounded-[15px]  self-center grid grid-cols-4  min-h-[750px]  text-white font-semibold  "
-              : "w-full rounded-[15px]  self-center grid grid-cols-4  min-h-[750px] text-[#4CC2F4] text-[20px] font-semibold bg-white "
-          }
-        >
-          {/* A and C */}
-          <div className="grid grid-rows-6 max-h-[750px]">
-            {/* section 1 */}
-            <div
-              className={
-                focusThoughtDiaryLetter === "a" ||
-                focusThoughtDiaryLetter === "a_b"
-                  ? "border-b-4 border-[#86A1AC] bg-white text-[#4CC2F4] row-span-2"
-                  : "border-b-4 border-[#86A1AC] row-span-2"
-              }
-            >
-              <div className=" p-4 break-words ">
-                <label className="text-[20px] ">A) Activating Event</label>
-                <div className="flex flex-col leading-none  text-[32px] text-center ">
-                  <label className="text-[14px] font-normal text-justify text-blue-900 w-full  py-2 px-2 space-y-2">
-                    (What happened? What did I do? What did others do? What idea
-                    occurred to me? What’s stressing me out?)
-                  </label>
-                  <label className="text-[14px] text-blue-900  font-bold w-full">
-                    This may be either: an actual event or situation, a thought,
-                    mental picture or recollection.
-                  </label>
+          {/* body */}
+          {/* bg-black bg-opacity-[0.75] text-opacity-0  */}
+          <div
+            className={
+              focusThoughtDiaryLetter != null
+                ? "bg-[#5DCFFF] w-full rounded-[15px]  self-center grid grid-cols-4  min-h-[750px]  text-white font-semibold  "
+                : "w-full rounded-[15px]  self-center grid grid-cols-4  min-h-[750px] text-[#4CC2F4] text-[20px] font-semibold bg-white "
+            }
+          >
+            {/* A and C */}
+            <div className="grid grid-rows-6 max-h-[750px]">
+              {/* section 1 */}
+              <div
+                className={
+                  focusThoughtDiaryLetter === "a" ||
+                  focusThoughtDiaryLetter === "a_b"
+                    ? "border-b-4 border-[#86A1AC] bg-white text-[#4CC2F4] row-span-2"
+                    : "border-b-4 border-[#86A1AC] row-span-2"
+                }
+              >
+                <div className=" p-4 break-words ">
+                  <label className="text-[20px] ">A) Activating Event</label>
+                  <div className="flex flex-col leading-none  text-[32px] text-center ">
+                    <label className="text-[14px] font-normal text-justify text-blue-900 w-full  py-2 px-2 space-y-2">
+                      (What happened? What did I do? What did others do? What
+                      idea occurred to me? What’s stressing me out?)
+                    </label>
+                    <label className="text-[14px] text-blue-900  font-bold w-full">
+                      This may be either: an actual event or situation, a
+                      thought, mental picture or recollection.
+                    </label>
 
-                  <label
-                    className="max-w-[300px] max-h-[250px]
+                    <label
+                      className="max-w-[300px] max-h-[250px]
                     text-[14px]"
-                  >
-                    {/* Crying out loud last week */}
-                    {getAdverseStep3}
-                  </label>
+                    >
+                      {/* Crying out loud last week */}
+                      {getAdverseStep3}
+                    </label>
+                  </div>
                 </div>
               </div>
-            </div>
-            {/* section 2 */}
-            <div
-              className={
-                focusThoughtDiaryLetter === "c" ||
-                focusThoughtDiaryLetter === "b_c"
-                  ? " bg-white p-4 text-[#4CC2F4] row-span-4"
-                  : " p-4 row-span-4"
-              }
-            >
-              <label className="text-[20px] ">C) Consequences</label>
-              <div className=" text-center break-words max-w-[300px]">
-                {/* Hot emotion section */}
-                <label className="flex flex-col leading-none">
-                  <label>
-                    <ol className="text-[14px] text-justify text-blue-900 font-normal  py-2 px-2 space-y-2">
-                      <li>1. Write down words describing how you feel.</li>
-                      <li>
-                        2. Underline the one that is most associated with the
-                        activating event.
-                      </li>
-                      <li>3. Rate the intensity of that feeling (0 to 100).</li>
-                    </ol>
-                    <label className="text-[14px] text-blue-900  font-bold">
-                      hot emotion: rated {getHotEmotionRate}/10
+              {/* section 2 */}
+              <div
+                className={
+                  focusThoughtDiaryLetter === "c" ||
+                  focusThoughtDiaryLetter === "b_c"
+                    ? " bg-white p-4 text-[#4CC2F4] row-span-4"
+                    : " p-4 row-span-4"
+                }
+              >
+                <label className="text-[20px] ">C) Consequences</label>
+                <div className=" text-center break-words max-w-[300px]">
+                  {/* Hot emotion section */}
+                  <label className="flex flex-col leading-none">
+                    <label>
+                      <ol className="text-[14px] text-justify text-blue-900 font-normal  py-2 px-2 space-y-2">
+                        <li>1. Write down words describing how you feel.</li>
+                        <li>
+                          2. Underline the one that is most associated with the
+                          activating event.
+                        </li>
+                        <li>
+                          3. Rate the intensity of that feeling (0 to 100).
+                        </li>
+                      </ol>
+                      <label className="text-[14px] text-blue-900  font-bold">
+                        hot emotion: rated {getHotEmotionRate}/10
+                      </label>
                     </label>
-                  </label>
-                  {/* <label className="text-[14px] text-blue-900  font-bold">
+                    {/* <label className="text-[14px] text-blue-900  font-bold">
                     hot emotion: rated {getHotEmotionRate}/10
                   </label> */}
-                  <label className="">
-                    {getHotEmotionCAnswer != null ||
-                    (getHotEmotionCAnswer != undefined &&
-                      getAdverseStep3 != null) ||
-                    getAdverseStep3 != undefined
-                      ? getHotEmotionCAnswer.map((item, i) => {
-                          // console.log(firstHit === -1, firstHit);
-                          if (item.select && firstHit === -1) {
-                            firstHit = i;
-                          }
-                          return (
-                            <>
-                              {item.select && i != firstHit ? (
-                                <span className="text-[50px] leading-[0px]">
-                                  ,
-                                </span>
-                              ) : (
-                                ""
-                              )}
-                              {_handleMoodResultGetHotEmotionCAnswer(item, i)}
-                            </>
-                          );
-                        })
-                      : ""}
-                    <span className="text-[50px] leading-[0px]">.</span>
-                    {/* {count === 1 ? (
+                    <label className="">
+                      {getHotEmotionCAnswer != null ||
+                      (getHotEmotionCAnswer != undefined &&
+                        getAdverseStep3 != null) ||
+                      getAdverseStep3 != undefined
+                        ? getHotEmotionCAnswer.map((item, i) => {
+                            // console.log(firstHit === -1, firstHit);
+                            if (item.select && firstHit === -1) {
+                              firstHit = i;
+                            }
+                            return (
+                              <>
+                                {item.select && i != firstHit ? (
+                                  <span className="text-[50px] leading-[0px]">
+                                    ,
+                                  </span>
+                                ) : (
+                                  ""
+                                )}
+                                {_handleMoodResultGetHotEmotionCAnswer(item, i)}
+                              </>
+                            );
+                          })
+                        : ""}
+                      <span className="text-[50px] leading-[0px]">.</span>
+                      {/* {count === 1 ? (
                       <span className="text-[50px] leading-[0px]">.</span>
                     ) : (
                       ""
                     )} */}
 
-                    {/* Sad<span className="text-[50px] leading-[0px]">,</span> Low
+                      {/* Sad<span className="text-[50px] leading-[0px]">,</span> Low
                     feeling<span className="text-[50px] leading-[0px]">.</span> */}
-                  </label>
-                </label>
-
-                {/* Other emotions section */}
-                <label className="pt-10 flex flex-col leading-none">
-                  <label>
-                    <ol className="text-[14px] text-justify text-blue-900 font-normal  py-2 px-2 space-y-2">
-                      <li>
-                        4. Jot down any physical sensations you experienced or
-                        actions carried out.
-                      </li>
-                    </ol>
-                    <label className="text-[14px] text-blue-900  font-bold">
-                      other emotions you feel
                     </label>
                   </label>
 
-                  <label className="">
-                    {getOtherEmotionAll != null ||
-                    getOtherEmotionAll != undefined
-                      ? getOtherEmotionAll.map((item, i) => {
-                          // console.log(firstHit === -1, firstHit);
-                          // if (item.select && firstHitOther === -1) {
-                          //   firstHitOther = i;
-                          // }
-                          return (
-                            <>
-                              {/* .select && i != firstHitOther */}
-                              {i != 0 ? (
-                                <span className="text-[50px] leading-[0px]">
-                                  ,
-                                </span>
-                              ) : (
-                                ""
-                              )}
-                              {_handleMoodResultGetOtherEmotionAll(item, i)}
-                            </>
-                          );
-                        })
-                      : ""}
-                    <span className="text-[50px] leading-[0px]">.</span>
-                    {/* Heavy<span className="text-[50px] leading-[0px]">,</span>{" "}
-                    Low Energy
-                    <span className="text-[50px] leading-[0px]">,</span> Tired
-                    <span className="text-[50px] leading-[0px]">.</span> */}
-                  </label>
-                </label>
-              </div>
-            </div>
-          </div>
-          {/* B */}
-          <div className="border-l-4 border-[#86A1AC] grid grid-rows-6 ">
-            {/* section 1 */}
-            <div
-              className={
-                focusThoughtDiaryLetter === "b" ||
-                focusThoughtDiaryLetter === "b_c" ||
-                focusThoughtDiaryLetter === "a_b"
-                  ? "pb-4 bg-white p-4 text-[#4CC2F4] row-span-4 border-b-4 border-[#86A1AC] max-h-[750px]"
-                  : "pb-4 p-4 row-span-4 border-b-4 border-[#86A1AC] max-h-[750px]"
-              }
-            >
-              <label className="text-[20px] ">B) Beliefs</label>
-              <div className="text-center break-words max-w-[290px]">
-                {/* hot thought */}
-                <label className="flex flex-col leading-none">
-                  <label>
-                    <ol className="text-[14px] text-justify text-blue-900 font-normal py-2 px-2 space-y-2">
-                      <li>
-                        1. List all statements that link A to C. Ask yourself
-                        "What was I thinking?" "What was I saying to myself?"
-                        "What was going through my head at the time?".
-                      </li>
-                      <li>
-                        2. Find the most distressing (hot) thought and underline
-                        it.
-                      </li>
-                      <li>
-                        3. Rate how much you believe this thought between (0 to
-                        100).
-                      </li>
-                    </ol>
-                    <label className="text-[14px] text-blue-900  font-bold">
-                      the hot thought: rated {getHotThoughtRate}/100
+                  {/* Other emotions section */}
+                  <label className="pt-10 flex flex-col leading-none">
+                    <label>
+                      <ol className="text-[14px] text-justify text-blue-900 font-normal  py-2 px-2 space-y-2">
+                        <li>
+                          4. Jot down any physical sensations you experienced or
+                          actions carried out.
+                        </li>
+                      </ol>
+                      <label className="text-[14px] text-blue-900  font-bold">
+                        other emotions you feel
+                      </label>
                     </label>
-                  </label>
 
-                  <label className="">
-                    {getHotThoughtB[0]}
-                    {/* I'm always going to feel depressed
-                    <span className="text-[50px] leading-[0px]">.</span> */}
-                  </label>
-                </label>
-
-                {/* other thoughts */}
-                <label className="flex flex-col leading-none pt-10">
-                  <label className="text-[14px] text-blue-900  font-bold">
-                    other thoughts
-                  </label>
-                  {/* other thoughts instances */}
-                  <div className="leading-normal flex flex-col w-full">
                     <label className="">
-                      {/* {_handleShowList(getOtherThoughtB)} */}
-                      {getOtherThoughtB != null || getOtherThoughtB != undefined
-                        ? getOtherThoughtB.map((item, i) => {
+                      {getOtherEmotionAll != null ||
+                      getOtherEmotionAll != undefined
+                        ? getOtherEmotionAll.map((item, i) => {
                             // console.log(firstHit === -1, firstHit);
                             // if (item.select && firstHitOther === -1) {
                             //   firstHitOther = i;
@@ -2917,7 +2846,206 @@ function ThoughtDiary() {
                                 ) : (
                                   ""
                                 )}
-                                {item}
+                                {_handleMoodResultGetOtherEmotionAll(item, i)}
+                              </>
+                            );
+                          })
+                        : ""}
+                      <span className="text-[50px] leading-[0px]">.</span>
+                      {/* Heavy<span className="text-[50px] leading-[0px]">,</span>{" "}
+                    Low Energy
+                    <span className="text-[50px] leading-[0px]">,</span> Tired
+                    <span className="text-[50px] leading-[0px]">.</span> */}
+                    </label>
+                  </label>
+                </div>
+              </div>
+            </div>
+            {/* B */}
+            <div className="border-l-4 border-[#86A1AC] grid grid-rows-6 ">
+              {/* section 1 */}
+              <div
+                className={
+                  focusThoughtDiaryLetter === "b" ||
+                  focusThoughtDiaryLetter === "b_c" ||
+                  focusThoughtDiaryLetter === "a_b"
+                    ? "pb-4 bg-white p-4 text-[#4CC2F4] row-span-4 border-b-4 border-[#86A1AC] max-h-[750px]"
+                    : "pb-4 p-4 row-span-4 border-b-4 border-[#86A1AC] max-h-[750px]"
+                }
+              >
+                <label className="text-[20px] ">B) Beliefs</label>
+                <div className="text-center break-words max-w-[290px]">
+                  {/* hot thought */}
+                  <label className="flex flex-col leading-none">
+                    <label>
+                      <ol className="text-[14px] text-justify text-blue-900 font-normal py-2 px-2 space-y-2">
+                        <li>
+                          1. List all statements that link A to C. Ask yourself
+                          "What was I thinking?" "What was I saying to myself?"
+                          "What was going through my head at the time?".
+                        </li>
+                        <li>
+                          2. Find the most distressing (hot) thought and
+                          underline it.
+                        </li>
+                        <li>
+                          3. Rate how much you believe this thought between (0
+                          to 100).
+                        </li>
+                      </ol>
+                      <label className="text-[14px] text-blue-900  font-bold">
+                        the hot thought: rated {getHotThoughtRate}/100
+                      </label>
+                    </label>
+
+                    <label className="">
+                      {getHotThoughtB[0]}
+                      {/* I'm always going to feel depressed
+                    <span className="text-[50px] leading-[0px]">.</span> */}
+                    </label>
+                  </label>
+
+                  {/* other thoughts */}
+                  <label className="flex flex-col leading-none pt-10">
+                    <label className="text-[14px] text-blue-900  font-bold">
+                      other thoughts
+                    </label>
+                    {/* other thoughts instances */}
+                    <div className="leading-normal flex flex-col w-full">
+                      <label className="">
+                        {/* {_handleShowList(getOtherThoughtB)} */}
+                        {getOtherThoughtB != null ||
+                        getOtherThoughtB != undefined
+                          ? getOtherThoughtB.map((item, i) => {
+                              // console.log(firstHit === -1, firstHit);
+                              // if (item.select && firstHitOther === -1) {
+                              //   firstHitOther = i;
+                              // }
+                              return (
+                                <>
+                                  {/* .select && i != firstHitOther */}
+                                  {i != 0 ? (
+                                    <span className="text-[50px] leading-[0px]">
+                                      ,
+                                    </span>
+                                  ) : (
+                                    ""
+                                  )}
+                                  {item}
+                                </>
+                              );
+                            })
+                          : ""}
+                        <span className="text-[50px] leading-[0px]">.</span>
+                      </label>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              {/* section 2 */}
+              <div
+                className={
+                  focusThoughtDiaryLetter === "b_uts"
+                    ? " text-center break-words max-w-[330px]  pt-2 pb-4 px-4 bg-white p-4 text-[#4CC2F4] row-span-2"
+                    : " text-center break-words max-w-[330px]  pt-2 pb-4 px-4 row-span-2"
+                }
+              >
+                {/* The hot thought Unhelpful Thinking Styles */}
+                <label className="flex flex-col leading-none">
+                  <label className="text-[14px] text-blue-900  font-bold">
+                    the hot thought unhelpful thinking style
+                  </label>
+                  <label className="max-h-[250px]">
+                    {/* Jumping to Conclusions
+                    <span className="text-[50px] leading-[0px]">.</span> */}
+                    {getUTSContainer.length != 0 ? (
+                      <>
+                        {getHotThoughtB.length != 0 ? (
+                          <>
+                            {getUTSContainer.map((item, i) => {
+                              if (getHotThoughtB[0] === item.thought) {
+                                return (
+                                  <>
+                                    <span
+                                      onMouseEnter={() => {
+                                        setThought(item.thought);
+                                        // console.log(item.thought, "sample");
+                                        onMouseEnter();
+                                        // <div>hello?</div>;
+                                      }}
+                                      onMouseLeave={() => {
+                                        setThought("");
+
+                                        onMouseLeave();
+                                      }}
+                                      className="cursor-pointer"
+                                    >
+                                      {item.title}
+                                    </span>
+
+                                    {/* <span className=" leading-[0px] px-2">
+                                    {">"}
+                                  </span>
+                                  {item.thought} */}
+                                  </>
+                                );
+                              }
+                            })}
+                            {/* {getHotThoughtB[0] === getUTSContainer[0].title ? (
+                            <>
+                              {getUTSContainer[0].title}
+                              <span className=" leading-[0px] px-2">{">"}</span>
+                              {getUTSContainer[0].thought}
+                            </>
+                          ) : (
+                            ""
+                          )} */}
+                          </>
+                        ) : (
+                          ""
+                        )}
+                      </>
+                    ) : (
+                      ""
+                    )}
+                    {isHovering && HoverText()}
+                    <span className="text-[50px] leading-[0px]">.</span>
+                  </label>
+                </label>
+
+                {/* Other Unhelpful Thinking Styles  */}
+                <label className="flex flex-col leading-none pt-10 max-w-[330px]">
+                  <label className="text-[14px] text-blue-900  font-bold">
+                    other mentioned unhelpful thinking styles
+                  </label>
+                  {/* other thoughts instances */}
+                  <div className="leading-none flex flex-col">
+                    <label className="max-h-[250px]">
+                      {getUTSContainer.length != 0
+                        ? getUTSContainer.map((item, i) => {
+                            // console.log(getUTSContainer)
+                            return (
+                              <>
+                                {getHotThoughtB[0] != item.thought ? (
+                                  <>
+                                    {item.title}
+                                    <span className=" leading-[0px] px-2">
+                                      {">"}
+                                    </span>
+                                    {item.thought}
+                                    {i != getUTSContainer.length - 1 ? (
+                                      <>
+                                        <span className="text-[50px] leading-[0px]">
+                                          ,
+                                        </span>
+                                      </>
+                                    ) : (
+                                      ""
+                                    )}
+                                  </>
+                                ) : (
+                                  ""
+                                )}
                               </>
                             );
                           })
@@ -2928,242 +3056,131 @@ function ThoughtDiary() {
                 </label>
               </div>
             </div>
-            {/* section 2 */}
+            {/* D */}
             <div
               className={
-                focusThoughtDiaryLetter === "b_uts"
-                  ? " text-center break-words max-w-[330px]  pt-2 pb-4 px-4 bg-white p-4 text-[#4CC2F4] row-span-2"
-                  : " text-center break-words max-w-[330px]  pt-2 pb-4 px-4 row-span-2"
+                focusThoughtDiaryLetter === "d"
+                  ? " bg-white border-l-4 text-[#4CC2F4] border-[#86A1AC] grid grid-rows-6 p-4"
+                  : "border-l-4 border-[#86A1AC] grid grid-rows-6 p-4"
               }
             >
-              {/* The hot thought Unhelpful Thinking Styles */}
-              <label className="flex flex-col leading-none">
-                <label className="text-[14px] text-blue-900  font-bold">
-                  the hot thought unhelpful thinking style
+              {/* section 1 */}
+              <div className="  break-words max-w-[330px] row-span-3 ">
+                {/* Check the evidence */}
+                <label className="text-[14px] text-blue-900  font-bold text-left">
+                  1. Check the evidence
                 </label>
-                <label className="max-h-[250px]">
-                  {/* Jumping to Conclusions
-                    <span className="text-[50px] leading-[0px]">.</span> */}
-                  {getUTSContainer.length != 0 ? (
-                    <>
-                      {getHotThoughtB.length != 0 ? (
-                        <>
-                          {getUTSContainer.map((item, i) => {
-                            if (getHotThoughtB[0] === item.thought) {
-                              return (
-                                <>
-                                  <span
-                                    onMouseEnter={() => {
-                                      setThought(item.thought);
-                                      // console.log(item.thought, "sample");
-                                      onMouseEnter();
-                                      // <div>hello?</div>;
-                                    }}
-                                    onMouseLeave={() => {
-                                      setThought("");
 
-                                      onMouseLeave();
-                                    }}
-                                    className="cursor-pointer"
-                                  >
-                                    {item.title}
-                                  </span>
+                <div className="text-center flex flex-col justify-between h-full ">
+                  {/* for evidence */}
+                  <div className="h-[100px]">
+                    <label className="flex flex-col leading-none ">
+                      <label className="underline text-[14px]  text-blue-900 font-normal">
+                        Factual evidence FOR my hot thought:
+                      </label>
 
-                                  {/* <span className=" leading-[0px] px-2">
-                                    {">"}
-                                  </span>
-                                  {item.thought} */}
-                                </>
-                              );
-                            }
-                          })}
-                          {/* {getHotThoughtB[0] === getUTSContainer[0].title ? (
-                            <>
-                              {getUTSContainer[0].title}
-                              <span className=" leading-[0px] px-2">{">"}</span>
-                              {getUTSContainer[0].thought}
-                            </>
-                          ) : (
-                            ""
-                          )} */}
-                        </>
-                      ) : (
-                        ""
-                      )}
-                    </>
-                  ) : (
-                    ""
-                  )}
-                  {isHovering && HoverText()}
-                  <span className="text-[50px] leading-[0px]">.</span>
-                </label>
-              </label>
-
-              {/* Other Unhelpful Thinking Styles  */}
-              <label className="flex flex-col leading-none pt-10 max-w-[330px]">
-                <label className="text-[14px] text-blue-900  font-bold">
-                  other mentioned unhelpful thinking styles
-                </label>
-                {/* other thoughts instances */}
-                <div className="leading-none flex flex-col">
-                  <label className="max-h-[250px]">
-                    {getUTSContainer.length != 0
-                      ? getUTSContainer.map((item, i) => {
-                          // console.log(getUTSContainer)
-                          return (
-                            <>
-                              {getHotThoughtB[0] != item.thought ? (
-                                <>
-                                  {item.title}
-                                  <span className=" leading-[0px] px-2">
-                                    {">"}
-                                  </span>
-                                  {item.thought}
-                                  {i != getUTSContainer.length - 1 ? (
-                                    <>
+                      <div className="leading-none flex flex-col">
+                        <label className="">
+                          {/* {_handleShowList(getOtherThoughtB)} */}
+                          {getForEvidenceD.length != 0
+                            ? getForEvidenceD.map((item, i) => {
+                                return (
+                                  <>
+                                    {/* .select && i != firstHitOther */}
+                                    {i != 0 ? (
                                       <span className="text-[50px] leading-[0px]">
                                         ,
                                       </span>
-                                    </>
-                                  ) : (
-                                    ""
-                                  )}
-                                </>
-                              ) : (
-                                ""
-                              )}
-                            </>
-                          );
-                        })
-                      : ""}
-                    <span className="text-[50px] leading-[0px]">.</span>
-                  </label>
-                </div>
-              </label>
-            </div>
-          </div>
-          {/* D */}
-          <div
-            className={
-              focusThoughtDiaryLetter === "d"
-                ? " bg-white border-l-4 text-[#4CC2F4] border-[#86A1AC] grid grid-rows-6 p-4"
-                : "border-l-4 border-[#86A1AC] grid grid-rows-6 p-4"
-            }
-          >
-            {/* section 1 */}
-            <div className="  break-words max-w-[330px] row-span-3 ">
-              {/* Check the evidence */}
-              <label className="text-[14px] text-blue-900  font-bold text-left">
-                1. Check the evidence
-              </label>
-
-              <div className="text-center flex flex-col justify-between h-full ">
-                {/* for evidence */}
-                <div className="h-[100px]">
-                  <label className="flex flex-col leading-none ">
-                    <label className="underline text-[14px]  text-blue-900 font-normal">
-                      Factual evidence FOR my hot thought:
+                                    ) : (
+                                      ""
+                                    )}
+                                    {item}
+                                  </>
+                                );
+                              })
+                            : ""}
+                          <span className="text-[50px] leading-[0px]">.</span>
+                        </label>
+                      </div>
                     </label>
-
-                    <div className="leading-none flex flex-col">
-                      <label className="">
-                        {/* {_handleShowList(getOtherThoughtB)} */}
-                        {getForEvidenceD.length != 0
-                          ? getForEvidenceD.map((item, i) => {
-                              return (
-                                <>
-                                  {/* .select && i != firstHitOther */}
-                                  {i != 0 ? (
-                                    <span className="text-[50px] leading-[0px]">
-                                      ,
-                                    </span>
-                                  ) : (
-                                    ""
-                                  )}
-                                  {item}
-                                </>
-                              );
-                            })
-                          : ""}
-                        <span className="text-[50px] leading-[0px]">.</span>
+                  </div>
+                  {/* against evidence */}
+                  <div className="h-[300px]">
+                    <label className="flex flex-col leading-none ">
+                      <label className="underline text-[14px]  text-blue-900 font-normal">
+                        Factual evidence AGAINST my hot thought:
                       </label>
-                    </div>
-                  </label>
-                </div>
-                {/* against evidence */}
-                <div className="h-[300px]">
-                  <label className="flex flex-col leading-none ">
-                    <label className="underline text-[14px]  text-blue-900 font-normal">
-                      Factual evidence AGAINST my hot thought:
+
+                      <div className="leading-none flex flex-col">
+                        <label className="">
+                          {/* {_handleShowList(getOtherThoughtB)} */}
+                          {getAgainstEvidenceD.length != 0
+                            ? getAgainstEvidenceD.map((item, i) => {
+                                return (
+                                  <>
+                                    {/* .select && i != firstHitOther */}
+                                    {i != 0 ? (
+                                      <span className="text-[50px] leading-[0px]">
+                                        ,
+                                      </span>
+                                    ) : (
+                                      ""
+                                    )}
+                                    {item}
+                                  </>
+                                );
+                              })
+                            : ""}
+                          <span className="text-[50px] leading-[0px]">.</span>
+                        </label>
+                      </div>
                     </label>
-
-                    <div className="leading-none flex flex-col">
-                      <label className="">
-                        {/* {_handleShowList(getOtherThoughtB)} */}
-                        {getAgainstEvidenceD.length != 0
-                          ? getAgainstEvidenceD.map((item, i) => {
-                              return (
-                                <>
-                                  {/* .select && i != firstHitOther */}
-                                  {i != 0 ? (
-                                    <span className="text-[50px] leading-[0px]">
-                                      ,
-                                    </span>
-                                  ) : (
-                                    ""
-                                  )}
-                                  {item}
-                                </>
-                              );
-                            })
-                          : ""}
-                        <span className="text-[50px] leading-[0px]">.</span>
-                      </label>
-                    </div>
-                  </label>
+                  </div>
+                  <div className="h-[0px]"></div>
                 </div>
-                <div className="h-[0px]"></div>
               </div>
-            </div>
 
-            {/* section 2 */}
-            <div className="text-left row-span-1">
-              {/* Challenge unhelpful thinking styles */}
-              <label className="text-[14px] text-blue-900  font-bold">
-                2. Challenge unhelpful thinking styles
-              </label>
-              <label className="flex flex-col leading-none">
-                <label className="text-[14px] text-justify text-blue-900 font-normal italic pl-4">
-                  Answer the disputation questions that apply to the unhelpful
-                  thinking styles you've picked
-                </label>
-
-                <div className="leading-none flex flex-col"></div>
-              </label>
-            </div>
-            {/* section 3 */}
-            <div className=" text-center break-words max-w-[330px] row-span-2">
-              {/* Change my perspective */}
-              <div className="text-left">
+              {/* section 2 */}
+              <div className="text-left row-span-1">
+                {/* Challenge unhelpful thinking styles */}
                 <label className="text-[14px] text-blue-900  font-bold">
-                  3. Change my perspective
+                  2. Challenge unhelpful thinking styles
                 </label>
-
                 <label className="flex flex-col leading-none">
                   <label className="text-[14px] text-justify text-blue-900 font-normal italic pl-4">
-                    What are other ways of viewing the situation? What would you
-                    say to someone you care about? To change how you act, how
-                    would you need to think differently?
+                    Answer the disputation questions that apply to the unhelpful
+                    thinking styles you've picked
                   </label>
 
                   <div className="leading-none flex flex-col"></div>
                 </label>
               </div>
-              <div></div>
+              {/* section 3 */}
+              <div className=" text-center break-words max-w-[330px] row-span-2">
+                {/* Change my perspective */}
+                <div className="text-left">
+                  <label className="text-[14px] text-blue-900  font-bold">
+                    3. Change my perspective
+                  </label>
+
+                  <label className="flex flex-col leading-none">
+                    <label className="text-[14px] text-justify text-blue-900 font-normal italic pl-4">
+                      What are other ways of viewing the situation? What would
+                      you say to someone you care about? To change how you act,
+                      how would you need to think differently?
+                    </label>
+
+                    <div className="leading-none flex flex-col"></div>
+                  </label>
+                </div>
+                <div></div>
+              </div>
             </div>
-          </div>
-          <div className="border-l-4 border-[#86A1AC] p-4">
-            <label className="text-[20px] text-[#4CC2F4]">E) End Result</label>
+            <div className="border-l-4 border-[#86A1AC] p-4">
+              <label className="text-[20px] text-[#4CC2F4]">
+                E) End Result
+              </label>
+            </div>
           </div>
         </div>
       </div>
