@@ -264,7 +264,11 @@ function Chatbot(props) {
               "map"
             );
           }
-
+          df_text_query(
+            `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
+            false,
+            "bot"
+          );
           setMaxInput(maxInput + 1);
         }
 
