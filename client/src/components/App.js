@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
 import { ThoughtDiaryContext } from "../Context/ThoughtDiaryContext";
 import { GetAdverseAnswerContext } from "../Context/GetAdverseAnswerContext";
 import { ShowMoodsContext } from "../Context/ShowMoodsContext";
@@ -34,11 +34,11 @@ import Basket from "./Basket";
 import UTS from "./UTS";
 
 function App() {
-  const [showThoughtDiaryTool, setShowThoughtDiaryTool] = useState(true);
+  const [showThoughtDiaryTool, setShowThoughtDiaryTool] = useState(false);
   const [getAdverseStep3, setGetAdverseStep3] = useState(null);
   const [getHotEmotionCAnswer, setGetHotEmotionCAnswer] = useState(null);
   const [getOtherEmotionCAnswer, setGetOtherEmotionCAnswer] = useState(null);
-  const [showChatBox, setShowChatBox] = useState(true);
+  const [showChatBox, setShowChatBox] = useState(false);
   const [showMoods, setShowMoods] = useState(false);
   const [focusThoughtDiaryLetter, setFocusThoughtDiaryLetter] = useState(null);
   const [maxInput, setMaxInput] = useState(0);
@@ -65,12 +65,12 @@ function App() {
         <div
           className={
             showMoods
-              ? "flex justify-center bg-[#3D829F] bg-opacity-[0.75] w-full h-full absolute"
-              : "flex justify-center"
+              ? "flex justify-center bg-[#3D829F] bg-opacity-[0.75]  w-full h-screen absolute"
+              : "flex justify-center w-full h-screen"
           }
         >
           <BrowserRouter>
-            <div className="w-full ">
+            <div className=" w-full h-full ">
               <Header />
 
               <ThoughtDiaryContext.Provider

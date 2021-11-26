@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { ShowChatBox } from "../../Context/ShowChatBox";
 
 const QuickReply = (props) => {
@@ -22,6 +22,7 @@ const QuickReply = (props) => {
           if (props.showUTS) {
             setShowChatBox(false);
           }
+
           // if (props.dontShowChatBox) setShowChatBox(false);
         }}
       >

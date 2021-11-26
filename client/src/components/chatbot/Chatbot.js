@@ -30,7 +30,7 @@ import { GetAgainstEvidenceDContext } from "../../Context/GetAgainstEvidenceDCon
 import useGeoLocation from "../../hooks/useGeolocation";
 import { GetLocationContext } from "../../Context/GetLocationContext";
 import MapContainer from "./MapContainer";
-
+import ModalLogin from "../ModalLogin";
 import { useDrop } from "react-dnd";
 import UTSCard from "./UTSCard";
 import UTS from "../UTS";
@@ -44,6 +44,7 @@ function Chatbot(props) {
   const [showBot, setShowBot] = useState(true);
   const [shopWelcomeSent, setShopWelcomeSent] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showModalLogin, setShowModalLogin] = useState(false);
   const [claimCode, setClaimCode] = useState(false);
   const [correctCode, setCorrectCode] = useState(false);
   const [assessmentScore, setAssessmentScore] = useState();
@@ -55,6 +56,7 @@ function Chatbot(props) {
   );
   const { getLocation, setGetLocation } = useContext(GetLocationContext);
   const location = useGeoLocation();
+  const [quickRepliesWelcome, setQuickRepliesWelcome] = useState(true);
 
   // Step 1: Start by getting the mood
   const [selectedMoods, setSelectedMoods] = useState([]);
@@ -911,6 +913,12 @@ function Chatbot(props) {
           "bot"
         );
         break;
+      // case "welcome-login":
+      //   break;
+      // case "welcome-continue":
+      //   df_event_query("WELCOME_CONTINUE");
+      //   break;
+
       // case "exit_ulayaw":
       // df_event_query("ABC_GETMOOD");
 
@@ -1131,6 +1139,86 @@ function Chatbot(props) {
             payload={message.msg.payload.fields.quick_replies.listValue.values}
           />
           {/* {console.log(message)} */}
+        </>
+      );
+    } else if (
+      message.msg &&
+      message.msg.payload &&
+      message.msg.payload.fields &&
+      message.msg.payload.fields.quick_replies_welcome &&
+      quickRepliesWelcome
+    ) {
+      return (
+        <>
+          {quickRepliesWelcome ? (
+            <div
+              className={
+                "flex justify-center space-x-2  p-2 rounded-lg bottom-0 "
+              }
+            >
+              <div
+                className={
+                  "rounded-[10px] self-center overflow-ellipsis  px-4 py-2  text-black font-medium text-left "
+                }
+              >
+                <span className="flex flex-wrap">
+                  <a
+                    style={{ margin: 3 }}
+                    onClick={() => {
+                      // df_text_query("Show Thought Diary", false);
+                      setQuickRepliesWelcome(false);
+                      setShowChatBox(false);
+                      setShowModalLogin(true);
+                    }}
+                    className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                  >
+                    Login
+                  </a>
+                  <a
+                    style={{ margin: 3 }}
+                    onClick={() => {
+                      // df_text_query("Show Thought Diary", false);
+                      setQuickRepliesWelcome(false);
+                      setShowChatBox(true);
+                      df_text_query("Magpatuloy", false);
+                      df_event_query("WELCOME_CONTINUE");
+                      // setShowChatBox(true);
+                    }}
+                    className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                  >
+                    Magpatuloy
+                  </a>
+                </span>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+
+          {showThoughtDiaryTool
+            ? renderOneMessageStatic(
+                "You might want to have a look at this tool to get a better sense of what it's all about. But I will walk you through it."
+              )
+            : ""}
+
+          {showThoughtDiaryTool ? (
+            <div>
+              <QuickReplies
+                text={
+                  message.msg.payload.fields.text
+                    ? message.msg.payload.fields.text
+                    : null
+                }
+                key={i}
+                replyClick={_handleQuickReplyPayload}
+                speaks={message.speaks}
+                payload={message.msg.payload.fields.show_diary.listValue.values}
+                // dontShowChatBox={true}
+              />
+            </div>
+          ) : (
+            ""
+          )}
         </>
       );
     } else if (
@@ -2509,6 +2597,17 @@ function Chatbot(props) {
         ) : (
           ""
         )}
+        {showModalLogin ? (
+          <ModalLogin
+            showModal={showModalLogin}
+            setShowModal={setShowModalLogin}
+            setQuickRepliesWelcome={setQuickRepliesWelcome}
+            location={location.coordinates}
+          />
+        ) : (
+          ""
+        )}
+
         {/* <DisplayBot talkInput={talkInput} messagesEnd={messagesEnd} /> */}
       </div>
       <div className="z-0 ">{showThoughtDiaryTool ? <ThoughtDiary /> : ""}</div>
