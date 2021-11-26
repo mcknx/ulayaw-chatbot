@@ -84,7 +84,7 @@ export default function ModalLogin(props) {
         console.log("success here");
         setFormData({ ...formData, textChange: "Submitting" });
         axios
-          .post(`/api/register`, {
+          .post(`${process.env.REACT_APP_API_URL}/register`, {
             first_name,
             last_name,
             age,
