@@ -98,7 +98,7 @@ if (process.env.NODE_ENV === "production") {
 
   app.use(
     cors({
-      origin: process.env.CLIENT_URL,
+      origin: config.clientURL,
     })
   );
   app.use(morgan("prod"));
