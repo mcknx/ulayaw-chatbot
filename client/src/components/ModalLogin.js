@@ -95,19 +95,19 @@ export default function ModalLogin(props) {
             password: password1,
           })
           .then((res) => {
-            setFormData({
-              ...formData,
-              first_name: "",
-              last_name: "",
-              age: "",
-              gender: "",
-              contact_no: "",
-              location: "",
-              email: "",
-              password1: "",
-              password2: "",
-              textChange: "Submitted",
-            });
+            // setFormData({
+            //   ...formData,
+            //   first_name: "",
+            //   last_name: "",
+            //   age: "",
+            //   gender: "",
+            //   contact_no: "",
+            //   location: "",
+            //   email: "",
+            //   password1: "",
+            //   password2: "",
+            //   textChange: "Submitted",
+            // });
 
             toast.success(res.data.message);
           })

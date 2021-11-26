@@ -8,7 +8,8 @@ const jwt = require("jsonwebtoken");
 const expressJWT = require("express-jwt");
 const { errorHandler } = require("../helpers/dbErrorHandling");
 const sgMail = require("@sendgrid/mail");
-sgMail.setApiKey(process.env.MAIL_KEY);
+const config = require("../config/keys");
+sgMail.setApiKey(config.mailKey);
 
 exports.registerController = (req, res) => {
   const {
@@ -61,22 +62,22 @@ exports.registerController = (req, res) => {
         email,
         password,
       },
-      process.env.JWT_ACCOUNT_ACTIVATION,
+      config.jwtAccountActivation,
       {
         expiresIn: "5m",
       }
     );
 
     const emailData = {
-      from: process.env.EMAIL_FROM,
+      from: config.emailFrom,
       to: email,
       subject: "Account activation link",
       html: `
                 <h1>Please use the following to activate your account</h1>
-                <p>${process.env.CLIENT_URL}/users/activate/${token}</p>
+                <p>${config.clientURL}/users/activate/${token}</p>
                 <hr />
                 <p>This email may contain sensitive information</p>
-                <p>${process.env.CLIENT_URL}</p>
+                <p>${config.clientURL}</p>
             `,
     };
 
@@ -100,7 +101,7 @@ exports.activationController = (req, res) => {
   const { token } = req.body;
 
   if (token) {
-    jwt.verify(token, process.env.JWT_ACCOUNT_ACTIVATION, (err, decoded) => {
+    jwt.verify(token, config.jwtAccountActivation, (err, decoded) => {
       if (err) {
         console.log("Activation error");
         return res.status(401).json({

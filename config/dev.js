@@ -7,4 +7,9 @@ module.exports = {
   googleClientEmail: "ulayawclient@lantaw-chatbot.iam.gserviceaccount.com",
   mongoURI:
     "mongodb+srv://mckeenasma:mckeenasma@cluster0.uijoy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+  clientURL: "http://localhost:3000",
+  mailKey:
+    "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",
+  jwtAccountActivation: "mckeenasma12345",
+  emailFrom: "masma_180000002118@uic.edu.ph",
 };

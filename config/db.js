@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
+const config = require("./keys");
 
 const connectDB = async () => {
-  const connection = await mongoose.connect(process.env.MONGO_URL, {
+  // process.env.MONGO_URL
+  const connection = await mongoose.connect(config.mongoURI, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,

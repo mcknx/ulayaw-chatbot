@@ -46,38 +46,38 @@ var sentiment = new Sentiment();
 // Sinubukan kong patayin ang aking sarili, at talagang umaasa akong mamatay
 
 // @paiva/translation-google
-translate("I'm really disgusted with papa because he's such a fool", {
-  from: "tl",
-  to: "en",
-})
-  .then((res) => {
-    console.log("@paiva/translation-google");
-    console.log(res.text);
-    //
-    console.log(res.from.text.autoCorrected);
+// translate("I'm really disgusted with papa because he's such a fool", {
+//   from: "tl",
+//   to: "en",
+// })
+//   .then((res) => {
+//     console.log("@paiva/translation-google");
+//     console.log(res.text);
+//     //
+//     console.log(res.from.text.autoCorrected);
 
-    //=> 这是Google翻译
-    console.log(res.from.language.iso);
+//     //=> 这是Google翻译
+//     console.log(res.from.language.iso);
 
-    //
-    console.log(res.from.text.value);
-    //=> en
-    console.log(res.from.text.didYouMean);
-  })
-  .catch((err) => {
-    console.error(err);
-  });
+//     //
+//     console.log(res.from.text.value);
+//     //=> en
+//     console.log(res.from.text.didYouMean);
+//   })
+//   .catch((err) => {
+//     console.error(err);
+//   });
 
 // console.dir(textRes);
-var result = sentiment.analyze(
-  "I'm annoyed with my father because he's such a fool."
-);
+// var result = sentiment.analyze(
+//   "I'm annoyed with my father because he's such a fool."
+// );
 
-console.dir(result); // Score: -2, Comparative: -0.666
-let neg = result.negative[0];
-console.log(neg);
+// console.dir(result); // Score: -2, Comparative: -0.666
+// let neg = result.negative[0];
+// console.log(neg);
 
-// const config = require("./config/keys");
+const config = require("./config/keys");
 
 app.use(bodyParser.json());
 
@@ -119,7 +119,7 @@ if (process.env.NODE_ENV === "development") {
 
   app.use(
     cors({
-      origin: process.env.CLIENT_URL,
+      origin: config.clientURL,
     })
   );
   app.use(morgan("prod"));
