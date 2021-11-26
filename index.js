@@ -96,12 +96,12 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
   });
 
-  // app.use(
-  //   cors({
-  //     origin: config.clientURL,
-  //   })
-  // );
-  // app.use(morgan("prod"));
+  app.use(
+    cors({
+      origin: process.env.CLIENT_URL,
+    })
+  );
+  app.use(morgan("prod"));
 }
 if (process.env.NODE_ENV === "development") {
   // require("dotenv").config({
@@ -117,12 +117,12 @@ if (process.env.NODE_ENV === "development") {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
   });
 
-  // app.use(
-  //   cors({
-  //     origin: config.clientURL,
-  //   })
-  // );
-  // app.use(morgan("prod"));
+  app.use(
+    cors({
+      origin: process.env.CLIENT_URL,
+    })
+  );
+  app.use(morgan("prod"));
 }
 
 // const mongoose = require("mongoose");
