@@ -77,12 +77,54 @@ console.dir(result); // Score: -2, Comparative: -0.666
 let neg = result.negative[0];
 console.log(neg);
 
-const config = require("./config/keys");
-require("dotenv").config({
-  path: "./config/config.env",
-});
+// const config = require("./config/keys");
 
 app.use(bodyParser.json());
+
+if (process.env.NODE_ENV === "production") {
+  // require("dotenv").config({
+  //   path: process.env,
+  // });
+  // app.use(bodyParser.json());
+
+  // js and css files
+  app.use(express.static("client/build"));
+
+  // index.html for all page routes
+  const path = require("path");
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+
+  app.use(
+    cors({
+      origin: process.env.CLIENT_URL,
+    })
+  );
+  app.use(morgan("prod"));
+}
+if (process.env.NODE_ENV === "development") {
+  // require("dotenv").config({
+  //   path: "./config/config.env",
+  // });
+  // app.use(bodyParser.json());
+  // js and css files
+  app.use(express.static("client/build"));
+
+  // index.html for all page routes
+  const path = require("path");
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+
+  app.use(
+    cors({
+      origin: process.env.CLIENT_URL,
+    })
+  );
+  app.use(morgan("prod"));
+}
+
 // const mongoose = require("mongoose");
 // mongoose.connect(config.mongoURI, {
 //   useNewUrlParser: true,
@@ -105,41 +147,6 @@ app.use(
 
 require("./routes/dialogFlowRoutes")(app);
 require("./routes/fulfillmentRoutes")(app);
-
-if (process.env.NODE_ENV === "production") {
-  // js and css files
-  app.use(express.static("client/build"));
-
-  // index.html for all page routes
-  const path = require("path");
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-  });
-
-  app.use(
-    cors({
-      origin: process.env.CLIENT_URL,
-    })
-  );
-  app.use(morgan("prod"));
-}
-if (process.env.NODE_ENV === "development") {
-  // js and css files
-  app.use(express.static("client/build"));
-
-  // index.html for all page routes
-  const path = require("path");
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-  });
-
-  app.use(
-    cors({
-      origin: process.env.CLIENT_URL,
-    })
-  );
-  app.use(morgan("prod"));
-}
 
 // Load routes
 const authRouter = require("./routes/auth.route");
