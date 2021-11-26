@@ -1,10 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-// var bodyParser = require("body-parser");
+const config = require("./config/keys");
 var cookieParser = require("cookie-parser");
 var session = require("express-session");
 var morgan = require("morgan");
-const app = express();
 const cors = require("cors");
 const connectDB = require("./config/db");
 var asdfjkl = require("asdfjkl");
@@ -21,6 +20,90 @@ console.log(suggestions);
 var textRes;
 
 var sentiment = new Sentiment();
+
+require("dotenv").config({
+  path: "./config/config.env",
+});
+
+const app = express();
+
+// Connect to database
+connectDB();
+
+app.use(bodyParser.json());
+
+// Load routes
+const authRouter = require("./routes/auth.route");
+// const userRouter = require('./routes/user.route')
+
+if (process.env.NODE_ENV === "production") {
+  // js and css files
+  app.use(express.static("client/build"));
+
+  // index.html for all page routes
+  const path = require("path");
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+
+  app.use(
+    cors({
+      origin: process.env.CLIENT_URL,
+    })
+  );
+  app.use(morgan("dev"));
+}
+
+if (process.env.NODE_ENV === "development") {
+  // js and css files
+  app.use(express.static("client/build"));
+
+  // index.html for all page routes
+  const path = require("path");
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+
+  app.use(
+    cors({
+      origin: process.env.CLIENT_URL,
+    })
+  );
+  app.use(morgan("prod"));
+}
+
+// Use Routes
+app.use("/api/", authRouter);
+// app.use('/api', userRouter)
+
+// const mongoose = require("mongoose");
+// mongoose.connect(config.mongoURI, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
+
+require("./models/Registration");
+require("./models/Demand");
+require("./models/Coupons");
+require("./routes/dialogFlowRoutes")(app);
+require("./routes/fulfillmentRoutes")(app);
+app.use(express.json());
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
+
+app.use((req, res, next) => {
+  res.status(404).json({
+    success: false,
+    message: "Page Not Found",
+  });
+});
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
+});
 
 // gigil na gigil ako sa galit dahil pinagalitan nanaman ako ni nanay
 
@@ -76,94 +159,6 @@ var sentiment = new Sentiment();
 // console.dir(result); // Score: -2, Comparative: -0.666
 // let neg = result.negative[0];
 // console.log(neg);
-
-const config = require("./config/keys");
-
-app.use(bodyParser.json());
-
-if (process.env.NODE_ENV === "production") {
-  // require("dotenv").config({
-  //   path: process.env,
-  // });
-  // app.use(bodyParser.json());
-
-  // js and css files
-  app.use(express.static("client/build"));
-
-  // index.html for all page routes
-  const path = require("path");
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-  });
-
-  app.use(
-    cors({
-      origin: process.env.CLIENT_URL,
-    })
-  );
-  app.use(morgan("prod"));
-}
-if (process.env.NODE_ENV === "development") {
-  // require("dotenv").config({
-  //   path: "./config/config.env",
-  // });
-  // app.use(bodyParser.json());
-  // js and css files
-  app.use(express.static("client/build"));
-
-  // index.html for all page routes
-  const path = require("path");
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-  });
-
-  app.use(
-    cors({
-      origin: process.env.CLIENT_URL,
-    })
-  );
-  app.use(morgan("prod"));
-}
-
-// const mongoose = require("mongoose");
-// mongoose.connect(config.mongoURI, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// });
-
-// Connect to database
-connectDB();
-
-require("./models/Registration");
-require("./models/Demand");
-require("./models/Coupons");
-
-app.use(express.json());
-app.use(
-  express.urlencoded({
-    extended: true,
-  })
-);
-
-require("./routes/dialogFlowRoutes")(app);
-require("./routes/fulfillmentRoutes")(app);
-
-// Load routes
-const authRouter = require("./routes/auth.route");
-// const userRouter = require('./routes/user.route')
-
-// Use Routes
-app.use("/api/", authRouter);
-// app.use('/api', userRouter)
-
-app.use((req, res, next) => {
-  res.status(404).json({
-    success: false,
-    message: "Page Not Found",
-  });
-});
-const PORT = process.env.PORT || 5000;
-app.listen(PORT);
 
 // const StanfordCoreNLPClient = require("corenlp-client");
 // // http://localhost:9000
