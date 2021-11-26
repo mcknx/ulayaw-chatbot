@@ -149,12 +149,14 @@ require("./routes/dialogFlowRoutes")(app);
 require("./routes/fulfillmentRoutes")(app);
 
 // Load routes
-const authRouter = require("./routes/auth.route");
+// const authRouter = require("./routes/auth.route");
 // const userRouter = require('./routes/user.route')
 
 // Use Routes
-app.use("/api/", authRouter);
+// app.use("/api/", authRouter);
 // app.use('/api', userRouter)
+
+require("./routes/auth.route")(app);
 
 app.use((req, res, next) => {
   res.status(404).json({
