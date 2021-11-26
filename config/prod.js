@@ -8,4 +8,5 @@ module.exports = {
   clientURL: process.env.CLIENT_URL,
   mailKey: process.env.MAIL_KEY,
   emailFrom: process.env.EMAIL_FROM,
+  jwtAccountActivation: process.env.JWT_ACCOUNT_ACTIVATION,
 };
