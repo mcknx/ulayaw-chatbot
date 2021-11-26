@@ -69,7 +69,7 @@ if (process.env.NODE_ENV === "development") {
       origin: process.env.CLIENT_URL,
     })
   );
-  app.use(morgan("prod"));
+  app.use(morgan("dev"));
 }
 
 // Use Routes
