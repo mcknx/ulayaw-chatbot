@@ -77,7 +77,7 @@ var sentiment = new Sentiment();
 // let neg = result.negative[0];
 // console.log(neg);
 
-// const config = require("./config/keys");
+const config = require("./config/keys");
 
 // app.use(bodyParser.json());
 
@@ -96,12 +96,12 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
   });
 
-  // app.use(
-  //   cors({
-  //     origin: process.env.CLIENT_URL,
-  //   })
-  // );
-  // app.use(morgan("prod"));
+  app.use(
+    cors({
+      origin: process.env.CLIENT_URL,
+    })
+  );
+  app.use(morgan("prod"));
 }
 if (process.env.NODE_ENV === "development") {
   // require("dotenv").config({
