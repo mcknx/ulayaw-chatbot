@@ -96,12 +96,12 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
   });
 
-  app.use(
-    cors({
-      origin: config.clientURL,
-    })
-  );
-  app.use(morgan("prod"));
+  // app.use(
+  //   cors({
+  //     origin: config.clientURL,
+  //   })
+  // );
+  // app.use(morgan("prod"));
 }
 if (process.env.NODE_ENV === "development") {
   // require("dotenv").config({
@@ -117,12 +117,12 @@ if (process.env.NODE_ENV === "development") {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
   });
 
-  app.use(
-    cors({
-      origin: config.clientURL,
-    })
-  );
-  app.use(morgan("prod"));
+  // app.use(
+  //   cors({
+  //     origin: config.clientURL,
+  //   })
+  // );
+  // app.use(morgan("prod"));
 }
 
 // const mongoose = require("mongoose");
@@ -149,14 +149,12 @@ require("./routes/dialogFlowRoutes")(app);
 require("./routes/fulfillmentRoutes")(app);
 
 // Load routes
-// const authRouter = require("./routes/auth.route");
+const authRouter = require("./routes/auth.route");
 // const userRouter = require('./routes/user.route')
 
 // Use Routes
-// app.use("/api/", authRouter);
+app.use("/api/", authRouter);
 // app.use('/api', userRouter)
-
-require("./routes/auth.route")(app);
 
 app.use((req, res, next) => {
   res.status(404).json({
