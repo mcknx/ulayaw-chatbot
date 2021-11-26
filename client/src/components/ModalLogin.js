@@ -66,7 +66,7 @@ export default function ModalLogin(props) {
     }
   };
 
-  const handleSubmit = (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (
       first_name &&
@@ -83,51 +83,68 @@ export default function ModalLogin(props) {
       if (password1 === password2) {
         console.log("success here");
         setFormData({ ...formData, textChange: "Submitting" });
-        axios
-          .post(`${process.env.REACT_APP_API_URL}/register`, {
-            first_name,
-            last_name,
-            age,
-            gender,
-            contact_no,
-            location,
-            email,
-            password: password1,
-          })
-          .then((res) => {
-            // setFormData({
-            //   ...formData,
-            //   first_name: "",
-            //   last_name: "",
-            //   age: "",
-            //   gender: "",
-            //   contact_no: "",
-            //   location: "",
-            //   email: "",
-            //   password1: "",
-            //   password2: "",
-            //   textChange: "Submitted",
-            // });
-
-            toast.success(res.data.message);
-          })
-          .catch((err) => {
-            setFormData({
-              ...formData,
-              first_name: "",
-              last_name: "",
-              contact_no: "",
-              location: "",
-              age: "",
-              gender: "",
-              email: "",
-              password1: "",
-              password2: "",
-              textChange: "Sign Up",
-            });
-            console.log(err.response);
-            toast.error(err.response.data.errors);
+        const res = await axios.post(`/api/register`, {
+          first_name,
+          last_name,
+          age,
+          gender,
+          contact_no,
+          location,
+          email,
+          password: password1,
+        });
+        if (res) toast.success(res.data.message);
+        else {
+          setFormData({
+            ...formData,
+            first_name: "",
+            last_name: "",
+            contact_no: "",
+            location: "",
+            age: "",
+            gender: "",
+            email: "",
+            password1: "",
+            password2: "",
+            textChange: "Sign Up",
           });
+          // console.log(err.response);
+          toast.error(res.data.errors);
+        }
+        // .then((res) => {
+        //   // setFormData({
+        //   //   ...formData,
+        //   //   first_name: "",
+        //   //   last_name: "",
+        //   //   age: "",
+        //   //   gender: "",
+        //   //   contact_no: "",
+        //   //   location: "",
+        //   //   email: "",
+        //   //   password1: "",
+        //   //   password2: "",
+        //   //   textChange: "Submitted",
+        //   // });
+
+        //   toast.success(res.data.message);
+        // })
+        // .catch((err) => {
+        //   setFormData({
+        //     ...formData,
+        //     first_name: "",
+        //     last_name: "",
+        //     contact_no: "",
+        //     location: "",
+        //     age: "",
+        //     gender: "",
+        //     email: "",
+        //     password1: "",
+        //     password2: "",
+        //     textChange: "Sign Up",
+        //   });
+        //   console.log(err.response);
+        //   toast.error(err.response.data.errors);
+        // });
         console.log(formData);
       } else {
         toast.error("Password do not match");
@@ -135,7 +152,7 @@ export default function ModalLogin(props) {
     } else {
       toast.error("Please fill all fields");
     }
-  };
+  }
 
   const responseSuccessGoogle = (response) => {
     console.log(response);
