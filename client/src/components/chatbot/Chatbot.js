@@ -36,6 +36,7 @@ import UTSCard from "./UTSCard";
 import UTS from "../UTS";
 import { Textfit } from "react-textfit";
 import { Map, GoogleApiWrapper, Marker } from "google-maps-react";
+import ulayawFace from "../../assets/ulayaw.png";
 
 const cookies = new Cookies();
 
@@ -1013,7 +1014,7 @@ function Chatbot(props) {
           >
             <div className={"flex justify-end flex-col"}>
               <div className=" rounded-full flex justify-center  text-white h-10 w-10  ">
-                <img src="ulayaw.png" />
+                <img src={ulayawFace} />
                 {/* <a href="/">{speaks}</a> */}
               </div>
             </div>
@@ -1048,7 +1049,7 @@ function Chatbot(props) {
               >
                 <div className={"flex justify-end flex-col"}>
                   <div className=" rounded-full flex justify-center  text-white h-10 w-10  ">
-                    <img src="ulayaw.png" />
+                    <img src={ulayawFace} />
                     {/* <a href="/">{speaks}</a> */}
                   </div>
                 </div>
@@ -2473,7 +2474,7 @@ function Chatbot(props) {
                     >
                       <div className={"flex justify-end flex-col"}>
                         <div className=" rounded-full flex justify-center  text-white h-10 w-10  ">
-                          <img src="ulayaw.png" />
+                          <img src={ulayawFace} />
                           {/* <a href="/">{speaks}</a> */}
                         </div>
                       </div>
@@ -2550,7 +2551,7 @@ function Chatbot(props) {
                     className=" rounded-full flex justify-center text-white h-16   shadow-lg bg-[#5DCFFF]  p-1 transform hover:scale-[1.02] "
                     onClick={show}
                   >
-                    <img src="ulayaw.png" />
+                    <img src={ulayawFace} />
                     <span className=" h-2 w-2 shadow-lg animate-pulse  rounded-full absolute right-0 top-1 bg-green-400 "></span>
 
                     <span className=" absolute w-[125px] px-2 border-2 py-2 shadow-lg   rounded-lg text-center right-[70px] top-2 bg-white text-black border-[#5DCFFF]">
@@ -2603,6 +2604,7 @@ function Chatbot(props) {
             setShowModal={setShowModalLogin}
             setQuickRepliesWelcome={setQuickRepliesWelcome}
             location={location.coordinates}
+            // history={props.history}
           />
         ) : (
           ""

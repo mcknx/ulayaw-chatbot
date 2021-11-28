@@ -25,6 +25,9 @@ import "./App.css";
 import Header from "./Header";
 import Footer from "./Footer";
 import Landing from "./pages/Landing";
+import Activate from "./Activate";
+import ForgetPassword from "./ForgetPassword";
+import Reset from "./Reset.jsx";
 
 import About from "./pages/About";
 import Shop from "./shop/Shop";
@@ -186,6 +189,30 @@ function App() {
                                                     exact
                                                     path="/"
                                                     component={Landing}
+                                                  />
+                                                  <Route
+                                                    path="/users/password/forget"
+                                                    exact
+                                                    render={(props) => (
+                                                      <ForgetPassword
+                                                        {...props}
+                                                      />
+                                                    )}
+                                                  />
+
+                                                  <Route
+                                                    path="/users/activate/:token"
+                                                    exact
+                                                    render={(props) => (
+                                                      <Activate {...props} />
+                                                    )}
+                                                  />
+                                                  <Route
+                                                    path="/users/password/reset/:token"
+                                                    exact
+                                                    render={(props) => (
+                                                      <Reset {...props} />
+                                                    )}
                                                   />
 
                                                   <Chatbot />

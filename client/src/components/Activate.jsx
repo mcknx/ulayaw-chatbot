@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import authSvg from '../assests/welcome.svg';
+import authSvg from "../assets/welcome.svg";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import jwt from "jsonwebtoken";
@@ -29,7 +29,7 @@ const Activate = ({ match }) => {
     e.preventDefault();
 
     axios
-      .post(`${process.env.REACT_APP_API_URL}/activation`, {
+      .post(`/api/activation`, {
         token,
       })
       .then((res) => {

@@ -1,5 +1,5 @@
 import React from "react";
-
+import ulayawFace from "../../assets/ulayaw.png";
 function Message({ speaks, text }) {
   // console.log(speaks);
   return (
@@ -30,7 +30,7 @@ function MessageFormat({ speaks, text, float }) {
         className={float === "left" ? "flex justify-end flex-col" : "hidden"}
       >
         <div className=" rounded-full flex justify-center  text-white h-10 w-10  ">
-          <img src="ulayaw.png" />
+          <img src={ulayawFace} />
           {/* <a href="/">{speaks}</a> */}
         </div>
       </div>

@@ -6,43 +6,36 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       trim: true,
-      required: true,
+
       unique: true,
       lowercase: true,
     },
     first_name: {
       type: String,
       trim: true,
-      required: true,
     },
     last_name: {
       type: String,
       trim: true,
-      required: true,
     },
     age: {
       type: Number,
       trim: true,
-      required: true,
     },
     gender: {
       type: String,
       trim: true,
-      required: true,
     },
     contact_no: {
       type: String,
       trim: true,
-      required: true,
     },
     location: {
       type: Object,
       trim: true,
-      required: true,
     },
     hashed_password: {
       type: String,
-      required: true,
     },
     salt: String,
     role: {

@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { ThoughtDiaryContext } from "../../Context/ThoughtDiaryContext";
 import { ShowMoodsContext } from "../../Context/ShowMoodsContext";
+import homeUlayaw from "../../assets/home_ulayaw.png";
 
 const Landing = (props) => {
   const { showThoughtDiaryTool, setShowThoughtDiaryTool } =
@@ -30,7 +31,7 @@ const Landing = (props) => {
           <label>
             <img
               className="h-full md:h-[400px] md:w-[400px]"
-              src="home_ulayaw.png"
+              src={homeUlayaw}
             />
           </label>
         </div>

@@ -31,11 +31,6 @@ export default function ModalLogin(props) {
     password2: "",
     textChange: "Sign Up",
   });
-  // if (showRegister) {
-  //   setFormData((prevFormData) => {
-  //     return { ...prevFormData, location: props.location };
-  //   });
-  // }
 
   const {
     first_name,
@@ -68,98 +63,172 @@ export default function ModalLogin(props) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (
-      first_name &&
-      last_name &&
-      age &&
-      gender &&
-      contact_no &&
-      location &&
-      email &&
-      password1
-    ) {
-      // console.log("success here", formData);
+    if (showRegister) {
+      // Register
+      if (
+        first_name &&
+        last_name &&
+        age &&
+        gender &&
+        contact_no &&
+        location &&
+        email &&
+        password1
+      ) {
+        // console.log("success here", formData);
 
-      if (password1 === password2) {
-        console.log("success here");
-        setFormData({ ...formData, textChange: "Submitting" });
-        const res = await axios.post(`/api/register`, {
-          first_name,
-          last_name,
-          age,
-          gender,
-          contact_no,
-          location,
-          email,
-          password: password1,
-        });
-        if (res) toast.success(res.data.message);
-        else {
-          setFormData({
-            ...formData,
-            first_name: "",
-            last_name: "",
-            contact_no: "",
-            location: "",
-            age: "",
-            gender: "",
-            email: "",
-            password1: "",
-            password2: "",
-            textChange: "Sign Up",
+        if (password1 === password2) {
+          console.log("success here");
+          setFormData({ ...formData, textChange: "Submitting" });
+          const res = await axios.post(`/api/register`, {
+            first_name,
+            last_name,
+            age,
+            gender,
+            contact_no,
+            location,
+            email,
+            password: password1,
           });
-          // console.log(err.response);
-          toast.error(res.data.errors);
-        }
-        // .then((res) => {
-        //   // setFormData({
-        //   //   ...formData,
-        //   //   first_name: "",
-        //   //   last_name: "",
-        //   //   age: "",
-        //   //   gender: "",
-        //   //   contact_no: "",
-        //   //   location: "",
-        //   //   email: "",
-        //   //   password1: "",
-        //   //   password2: "",
-        //   //   textChange: "Submitted",
-        //   // });
+          if (res) toast.success(res.data.message);
+          else {
+            setFormData({
+              ...formData,
+              first_name: "",
+              last_name: "",
+              contact_no: "",
+              location: "",
+              age: "",
+              gender: "",
+              email: "",
+              password1: "",
+              password2: "",
+              textChange: "Sign Up",
+            });
+            // console.log(err.response);
+            toast.error(res.data.errors);
+          }
+          // .then((res) => {
+          //   // setFormData({
+          //   //   ...formData,
+          //   //   first_name: "",
+          //   //   last_name: "",
+          //   //   age: "",
+          //   //   gender: "",
+          //   //   contact_no: "",
+          //   //   location: "",
+          //   //   email: "",
+          //   //   password1: "",
+          //   //   password2: "",
+          //   //   textChange: "Submitted",
+          //   // });
 
-        //   toast.success(res.data.message);
-        // })
-        // .catch((err) => {
-        //   setFormData({
-        //     ...formData,
-        //     first_name: "",
-        //     last_name: "",
-        //     contact_no: "",
-        //     location: "",
-        //     age: "",
-        //     gender: "",
-        //     email: "",
-        //     password1: "",
-        //     password2: "",
-        //     textChange: "Sign Up",
-        //   });
-        //   console.log(err.response);
-        //   toast.error(err.response.data.errors);
-        // });
-        console.log(formData);
+          //   toast.success(res.data.message);
+          // })
+          // .catch((err) => {
+          //   setFormData({
+          //     ...formData,
+          //     first_name: "",
+          //     last_name: "",
+          //     contact_no: "",
+          //     location: "",
+          //     age: "",
+          //     gender: "",
+          //     email: "",
+          //     password1: "",
+          //     password2: "",
+          //     textChange: "Sign Up",
+          //   });
+          //   console.log(err.response);
+          //   toast.error(err.response.data.errors);
+          // });
+          console.log(formData);
+        } else {
+          toast.error("Password do not match");
+        }
       } else {
-        toast.error("Password do not match");
+        toast.error("Please fill all fields");
       }
     } else {
-      toast.error("Please fill all fields");
+      // Login
+      if (email && password1) {
+        console.log("success here");
+        setFormData({ ...formData, textChange: "Submitting" });
+        axios
+          .post(`/api/login`, {
+            email,
+            password: password1,
+          })
+          .then((res) => {
+            authenticate(res, () => {
+              setFormData({
+                ...formData,
+                email: "",
+                password1: "",
+                textChange: "Submitted",
+              });
+              console.log(res, "sma", isAuth().role, "history");
+              // isAuth() && isAuth().role === "admin"
+              //   ? props.history.push("/admin")
+              //   : props.history.push("/client");
+              toast.success(`Hey ${res.data.user.first_name}, Welcome back!`);
+            });
+          })
+          .catch((err) => {
+            setFormData({
+              ...formData,
+              email: "",
+              password1: "",
+              textChange: "Sign In",
+            });
+            console.log(err.response);
+            toast.error(err.response.data.errors);
+          });
+
+        console.log(formData);
+      } else {
+        toast.error("Please fill all fields");
+      }
     }
   }
 
-  const responseSuccessGoogle = (response) => {
+  const responseGoogle = (response) => {
     console.log(response);
+    if (response.profileObj.email === "masma_180000002118@uic.edu.ph") {
+      sendGoogleToken(response.tokenId);
+    } else {
+      toast.error("Admin with that email does not exist");
+    }
   };
 
-  const responseErrorGoogle = (response) => {
-    console.log(response);
+  // const responseErrorGoogle = (response) => {
+  //   console.log(response);
+  // };
+
+  const sendGoogleToken = (tokenId) => {
+    axios
+      .post(`/api/googlelogin`, {
+        idToken: tokenId,
+      })
+      .then((res) => {
+        console.log(res.data);
+        informParent(res);
+      })
+      .catch((error) => {
+        console.log("GOOGLE SIGNIN ERROR", error.response);
+        toast.error(error.response.data.error);
+      });
+  };
+  const informParent = (response) => {
+    authenticate(response, () => {
+      if (isAuth() && isAuth().role === "admin") {
+        // props.setShowModal(false);
+        toast.success(isAuth().email);
+        console.log(isAuth().email);
+      } else {
+        console.log("client");
+      }
+    });
   };
   return (
     <>
@@ -357,9 +426,13 @@ export default function ModalLogin(props) {
             {showRegister ? (
               ""
             ) : (
-              <p className="pt-4 text-[14px]  cursor-pointer  hover:text-black  text-gray-500">
+              <Link
+                onClick={() => props.setShowModal(false)}
+                to={"/users/password/forget"}
+                className="pt-4 text-[14px]  cursor-pointer  hover:text-black  text-gray-500"
+              >
                 Forgot password?
-              </p>
+              </Link>
             )}
 
             {/* submit btn */}
@@ -367,52 +440,60 @@ export default function ModalLogin(props) {
             <button
               className="self-center rounded-[38px] bg-[#5DCFFF] space-x-[10px]  m-8 py-[20px] w-[405px] text-white text-[24px]"
               onClick={(e) => {
-                if (showRegister) {
-                  handleSubmit(e);
-                }
+                // if (showRegister) {
+                handleSubmit(e);
+                // }
               }}
             >
               {showRegister ? "REGISTER" : "LOGIN"}
             </button>
 
-            <button
-              className="self-center rounded-[38px] bg-[#5DCFFF] space-x-[10px]   py-[20px] w-[405px] text-white text-[24px]"
-              // onClick={() => {
-              //   setShowModal(!showModal);
-              // }}
-            >
-              <GoogleLogin
-                clientId={process.env.REACT_APP_GOOGLE_CLIENT}
-                buttonText="Login with Google"
-                render={(renderProps) => (
-                  <button
-                    onClick={renderProps.onClick}
-                    disabled={renderProps.disabled}
-                    className="flex justify-center w-full items-center space-x-5 h-full"
-                  >
-                    <span className="inline-block ">
-                      <FaGoogle />
-                    </span>
-                    {showRegister ? (
-                      <span>Register with Google</span>
-                    ) : (
-                      <span>Login with Google</span>
-                    )}
-                  </button>
-                )}
-                onSuccess={responseSuccessGoogle}
-                onFailure={responseErrorGoogle}
-                cookiePolicy={"single_host_origin"}
-              />
-            </button>
-            <p
-              className=" pt-4 text-[14px]  cursor-pointer  hover:text-black text-center text-gray-500"
-              onClick={() => setShowRegister(!showRegister)}
-            >
-              {showRegister
-                ? "Have an account? Click here to Login"
-                : "Don't have an account? Click here to Signup"}
-            </p>
+            {props.admin ? (
+              <button
+                className="self-center rounded-[38px] bg-[#5DCFFF] space-x-[10px]   py-[20px] w-[405px] text-white text-[24px]"
+                // onClick={() => {
+                //   setShowModal(!showModal);
+                // }}
+              >
+                <GoogleLogin
+                  clientId={process.env.REACT_APP_GOOGLE_CLIENT}
+                  buttonText="Login with Google"
+                  render={(renderProps) => (
+                    <button
+                      onClick={renderProps.onClick}
+                      disabled={renderProps.disabled}
+                      className="flex justify-center w-full items-center space-x-5 h-full"
+                    >
+                      <span className="inline-block ">
+                        <FaGoogle />
+                      </span>
+                      {showRegister ? (
+                        <span>Register with Google</span>
+                      ) : (
+                        <span>Login with Google</span>
+                      )}
+                    </button>
+                  )}
+                  onSuccess={responseGoogle}
+                  onFailure={responseGoogle}
+                  cookiePolicy={"single_host_origin"}
+                />
+              </button>
+            ) : (
+              ""
+            )}
+            {props.admin ? (
+              ""
+            ) : (
+              <p
+                className=" pt-4 text-[14px]  cursor-pointer  hover:text-black text-center text-gray-500"
+                onClick={() => setShowRegister(!showRegister)}
+              >
+                {showRegister
+                  ? "Have an account? Click here to Login"
+                  : "Don't have an account? Click here to Signup"}
+              </p>
+            )}
           </div>
         </div>
       </div>

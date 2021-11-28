@@ -1,10 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import ulayawFace from "../assets/ulayaw.png";
 
 const Header = () => (
   <nav className="bg-[#5dcfff] flex justify-center p-4 md:p-10 h-[122px] ">
     <span className=" self-center mr-[4%] rounded-full bg-white inline-block">
-      <img className=" w-20 " src="ulayaw.png" />
+      <img className=" w-20 " src={ulayawFace} />
     </span>
     <span className="text-white self-center text-xl md:text-[39px] 2xl:text-[50px] w-40 ">
       <Link to={"/"}>Ulayaw</Link>

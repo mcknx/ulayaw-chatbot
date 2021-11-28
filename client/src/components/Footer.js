@@ -13,7 +13,11 @@ function Footer() {
       </span>
       <ul className="flex self-center space-x-5 justify-end w-full"></ul>
       {showModal ? (
-        <ModalLogin showModal={showModal} setShowModal={setShowModal} />
+        <ModalLogin
+          showModal={showModal}
+          admin={true}
+          setShowModal={setShowModal}
+        />
       ) : (
         ""
       )}
