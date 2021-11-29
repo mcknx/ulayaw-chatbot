@@ -1040,13 +1040,13 @@ function Chatbot(props) {
           `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`,
           `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`
         );
-        df_text_query(
-          `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
-          false,
-          `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
-          "bot",
-          "map"
-        );
+        // df_text_query(
+        //   `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
+        //   false,
+        //   `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
+        //   "bot",
+        //   "map"
+        // );
         break;
       case "training_masterclass":
         df_event_query("MASTERCLASS");
