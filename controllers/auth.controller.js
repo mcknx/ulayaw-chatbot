@@ -9,6 +9,8 @@ const expressJWT = require("express-jwt");
 const { errorHandler } = require("../helpers/dbErrorHandling");
 const sgMail = require("@sendgrid/mail");
 const config = require("../config/keys");
+const { translate } = require("@paiva/translation-google");
+var Sentiment = require("sentiment");
 sgMail.setApiKey(config.mailKey);
 
 exports.registerController = (req, res) => {
@@ -465,4 +467,320 @@ exports.googleController = (req, res) => {
         });
       }
     });
+};
+
+exports.inputDatasetController = (req, res) => {
+  // const { token } = req.body;
+  const { inputData } = req.body;
+  console.log(inputData);
+  // var sentiment = new Sentiment();
+  // var result = sentiment.analyze(inputData);
+
+  // console.dir(result); // Score: -2, Comparative: -0.666
+  // const errors = validationResult(req);
+
+  // console.log(errors);
+
+  console.log(inputData);
+  // console.log(errors);
+
+  let translated;
+
+  // @paiva/translation-google
+  translate(inputData, {
+    from: "tl",
+    to: "en",
+  })
+    .then((res) => {
+      console.log("@paiva/translation-google");
+      console.log(res.text);
+      translated = res.from.text.value;
+      //
+      console.log(res.from.text.autoCorrected);
+
+      //=> 这是Google翻译
+      console.log(res.from.language.iso);
+
+      //
+      console.log(res.from.text.value);
+      //=> en
+      console.log(res.from.text.didYouMean);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+
+  result = sentiment.analyze(translated);
+
+  console.dir(result); // Score: -2, Comparative: -0.666
+  // return errors;
+  // const user = new User({
+  //   first_name,
+  //   last_name,
+  //   age,
+  //   gender,
+  //   contact_no,
+  //   location,
+  //   email,
+  //   password,
+  // });
+
+  // user.save((err, user) => {
+  //   if (err) {
+  //     console.log("Save error", errorHandler(err));
+  //     return res.status(401).json({
+  //       errors: errorHandler(err),
+  //     });
+  //   } else {
+  //     return res.json({
+  //       success: true,
+  //       message: user,
+  //       message: "Signup success",
+  //     });
+  //   }
+  // });
+};
+
+exports.inputTranslateController = async (req, res) => {
+  const { inputData } = req.body;
+  console.log(inputData);
+
+  // niaging week sukad pag announce sa deadline sa capstone
+
+  // Simple
+  // Ang buhay mismo ay ang pinaka kahanga-hangang fairy tale.
+  // Ang tunay na kaluwalhatian ay nagmumula sa tahimik na pananakop sa ating sarili.
+
+  // Compound
+  // Maaaring mahirap sa una, ngunit ang lahat ay mahirap sa una.
+  // Alam nating nagsi sinungaling sila, alam nilang nagsisinungaling sila, alam nilang nagsisinungaling sila, alam nating alam nating nagsisinungaling sila, pero nagsisinungaling pa rin sila.
+
+  // @paiva/translation-google
+  const translated = await translate(inputData, {
+    // from: "tl",
+    to: "en",
+  })
+    .then((res) => {
+      // console.log("@paiva/translation-google");
+      // console.log(res.text, "res.text");
+      return res.text;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+
+  const StanfordCoreNLPClient = require("corenlp-client");
+  const client = new StanfordCoreNLPClient(
+    "https://corenlp.run",
+    "tokenize,ssplit,parse,pos"
+  );
+
+  // JSON.stringify(result, null, 2)
+
+  // Other containers
+  let rootWordIndex;
+  let rootWordPrevCon = [];
+  let rootWordNextCon = [];
+
+  // BasicDEP containers
+  // https://stackoverflow.com/questions/50431155/whats-the-tags-meaning-of-stanford-dependency-parser3-9-1
+
+  // https://wiki.opencog.org/w/Dependency_relations
+
+  // https://downloads.cs.stanford.edu/nlp/software/dependencies_manual.pdf
+  // https://universaldependencies.org/u/dep/
+  let rootWord = [];
+  let nsubj = [];
+  let acl = [];
+  let acl_relcl = [];
+  let advcl = [];
+  let advmod = [];
+  let advmod_emph = [];
+  let advmod_lmod = [];
+  let amod = [];
+  let appos = [];
+  let aux = [];
+  let auxpass = [];
+  let case1 = [];
+  let cc = [];
+  let cc_preconj = [];
+  let ccomp = [];
+  let clf = [];
+
+  let compound = [];
+  let compound_lvc = [];
+  let compound_prt = [];
+  let compound_redup = [];
+  let compound_svc = [];
+  let conj = [];
+  let cop = [];
+  let csubj = [];
+  let csubjpass = [];
+  let dep = [];
+  let det_numgov = [];
+  let det_nummod = [];
+  let det_poss = [];
+  let discourse = [];
+  let dislocated = [];
+  // let dobj = [];
+  let expl = [];
+  let expl_impers = [];
+  let expl_pass = [];
+  let expl_pv = [];
+  // let foreign = [];
+  let fixed = [];
+  let flat = [];
+  let flat_foreign = [];
+  let flat_name = [];
+  let goeswith = [];
+  let iobj = [];
+  let list = [];
+  let mark = [];
+  // let mwe = [];
+  // let name = [];
+  // let neg = [];
+  let nmod = [];
+  // let nmod_npmod = [];
+  let nmod_poss = [];
+  let nmod_tmod = [];
+  let nsubjpass = [];
+  let nummod = [];
+  let nummod_gov = [];
+  let obj = [];
+  let obl = [];
+  let obl_agent = [];
+  let obl_arg = [];
+  let obl_lmod = [];
+  let obl_tmod = [];
+  let orphan = [];
+  let parataxis = [];
+  let punct = [];
+  // let remnant = [];
+  let reparandum = [];
+  let root = [];
+  let vocative = [];
+  let xcomp = [];
+
+  // POS containers
+  // https://stackoverflow.com/questions/1833252/java-stanford-nlp-part-of-speech-labels
+  let verb = [];
+  const annotatedText = await client
+    .annotate(translated)
+    // .annotate("I am a bad person")
+    .then((result) => {
+      // console.log(result.sentences[0].basicDependencies.length);
+      result.sentences[0].basicDependencies.map((x) => {
+        if (x.dep === "ROOT") {
+          rootWord = x;
+        }
+        _handlePushContainer(x.dep, "acl", acl, x);
+        _handlePushContainer(x.dep, "acl:relcl", acl_relcl, x);
+        _handlePushContainer(x.dep, "advcl", advcl, x);
+        _handlePushContainer(x.dep, "advmod", advmod, x);
+        _handlePushContainer(x.dep, "advmod:emph", advmod_emph, x);
+        _handlePushContainer(x.dep, "advmod:lmod", advmod_lmod, x);
+        _handlePushContainer(x.dep, "amod", amod, x);
+        _handlePushContainer(x.dep, "appos", appos, x);
+        _handlePushContainer(x.dep, "aux", aux, x);
+        _handlePushContainer(x.dep, "auxpass", auxpass, x);
+        _handlePushContainer(x.dep, "case1", case1, x);
+        _handlePushContainer(x.dep, "cc", cc, x);
+        _handlePushContainer(x.dep, "cc:preconj", cc_preconj, x);
+        _handlePushContainer(x.dep, "ccomp", ccomp, x);
+        _handlePushContainer(x.dep, "clf", clf, x);
+        _handlePushContainer(x.dep, "compound", compound, x);
+        _handlePushContainer(x.dep, "compound:lvc", compound_lvc, x);
+        _handlePushContainer(x.dep, "compound:prt", compound_prt, x);
+        _handlePushContainer(x.dep, "compound:redup", compound_redup, x);
+        _handlePushContainer(x.dep, "compound:svc", compound_svc, x);
+        _handlePushContainer(x.dep, "conj", conj, x);
+        _handlePushContainer(x.dep, "cop", cop, x);
+        _handlePushContainer(x.dep, "csubj", csubj, x);
+        _handlePushContainer(x.dep, "csubjpass", csubjpass, x);
+        _handlePushContainer(x.dep, "dep", dep, x);
+        _handlePushContainer(x.dep, "det:numgov", det_numgov, x);
+        _handlePushContainer(x.dep, "det:nummod", det_nummod, x);
+        _handlePushContainer(x.dep, "det:poss", det_poss, x);
+        _handlePushContainer(x.dep, "discourse", discourse, x);
+        _handlePushContainer(x.dep, "dislocated", dislocated, x);
+        _handlePushContainer(x.dep, "expl", expl, x);
+        _handlePushContainer(x.dep, "expl:impers", expl_impers, x);
+        _handlePushContainer(x.dep, "expl:pass", expl_pass, x);
+        _handlePushContainer(x.dep, "expl:pv", expl_pv, x);
+        _handlePushContainer(x.dep, "fixe:", fixed, x);
+        _handlePushContainer(x.dep, "flat", flat, x);
+        _handlePushContainer(x.dep, "flat:foreign", flat_foreign, x);
+        _handlePushContainer(x.dep, "flat:name", flat_name, x);
+        _handlePushContainer(x.dep, "goeswith", goeswith, x);
+        _handlePushContainer(x.dep, "iobj", iobj, x);
+        _handlePushContainer(x.dep, "list", list, x);
+        _handlePushContainer(x.dep, "mark", mark, x);
+        _handlePushContainer(x.dep, "nmod", nmod, x);
+        _handlePushContainer(x.dep, "nmod:poss", nmod_poss, x);
+        _handlePushContainer(x.dep, "nmod:tmod", nmod_tmod, x);
+        _handlePushContainer(x.dep, "nsubj", nsubj, x);
+        _handlePushContainer(x.dep, "nsubjpass", nsubjpass, x);
+        _handlePushContainer(x.dep, "nummod", nummod, x);
+        _handlePushContainer(x.dep, "nummod_gov", nummod_gov, x);
+        _handlePushContainer(x.dep, "obj", obj, x);
+        _handlePushContainer(x.dep, "obl", obl, x);
+        _handlePushContainer(x.dep, "obl:agent", obl_agent, x);
+        _handlePushContainer(x.dep, "obl:arg", obl_arg, x);
+        _handlePushContainer(x.dep, "obl:lmod", obl_lmod, x);
+        _handlePushContainer(x.dep, "obl:tmod", obl_tmod, x);
+        _handlePushContainer(x.dep, "orphan", orphan, x);
+        _handlePushContainer(x.dep, "parataxis", parataxis, x);
+        _handlePushContainer(x.dep, "punct", punct, x);
+        _handlePushContainer(x.dep, "reparandum", reparandum, x);
+        _handlePushContainer(x.dep, "root", root, x);
+        _handlePushContainer(x.dep, "vocative", vocative, x);
+        _handlePushContainer(x.dep, "xcomp", xcomp, x);
+      });
+      result.sentences[0].tokens.map((x) => {
+        // getting the verbs
+        if (
+          x.pos === "VBG" ||
+          x.pos === "VBD" ||
+          x.pos === "VBN" ||
+          x.pos === "VBG" ||
+          x.pos === "VBP" ||
+          x.pos === "VBZ"
+        ) {
+          if (!verb.includes(x)) {
+            verb.push(x);
+          }
+        }
+      });
+      return result;
+    });
+
+  console.log(rootWord, "rootWord");
+  console.log(root, "root");
+
+  // console.log("So nervous ka dahil sa", verb, " tama ba ako?");
+  // console.log(translated, "translates");
+
+  // console.log(nsubj, "nsubj");
+  // console.log(nsubj, "nsubj");
+  // console.log(amod, "amod");
+  // console.log(obl_tmod, "obl_tmod");
+  // console.log(rootWordIndex, "rootWordIndex");
+  return res.json({ translated, annotatedText });
+};
+
+function _handlePushContainer(val1, val2, arr, x) {
+  if (val1 === val2) {
+    return arr.push(x);
+  }
+  // return false;
+}
+exports.fetchAllController = async (req, res) => {
+  try {
+    let data = await User.find({ role: "subscriber" });
+    console.log(data);
+    res.json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server error");
+  }
 };

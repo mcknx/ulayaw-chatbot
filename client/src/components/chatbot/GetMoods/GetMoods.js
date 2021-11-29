@@ -58,14 +58,30 @@ function GetMoods(props) {
           }
         });
       } else {
-        props.selectedMoods.map((d) => {
-          if (!d.select) {
-            ys.push({
-              select: d.select,
-              mood_text: d.mood_text,
+        console.log(props.selectedMoods);
+        let rm = null;
+        props.payload.map((d) => {
+          if (rm === null) {
+            props.selectedMoods.map((xd) => {
+              if (xd.select) {
+                rm = xd.mood_text;
+              }
             });
           }
+
+          ys.push({
+            select: false,
+            mood_text: d.stringValue,
+          });
         });
+        console.log(rm);
+        ys.map((xd, i) => {
+          if (xd.mood_text === rm) {
+            ys.splice(i, 1);
+          }
+        });
+
+        console.log(ys);
         props.setSelectedMoods([]);
         props.setSelectedMoods(ys);
       }

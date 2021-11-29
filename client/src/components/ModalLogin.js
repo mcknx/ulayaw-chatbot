@@ -61,133 +61,159 @@ export default function ModalLogin(props) {
     }
   };
 
-  async function handleSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault();
-    if (showRegister) {
-      // Register
-      if (
-        first_name &&
-        last_name &&
-        age &&
-        gender &&
-        contact_no &&
-        location &&
-        email &&
-        password1
-      ) {
-        // console.log("success here", formData);
+    if (props.assessment_meron_companion) {
+      props.setassessment_meron_companion(false);
+      props.setShowModal(false);
+      toast.success("Successfully added Companion!");
+    } else {
+      if (showRegister) {
+        // Register
+        if (
+          first_name &&
+          last_name &&
+          age &&
+          gender &&
+          contact_no &&
+          location &&
+          email &&
+          password1
+        ) {
+          // console.log("success here", formData);
 
-        if (password1 === password2) {
-          console.log("success here");
-          setFormData({ ...formData, textChange: "Submitting" });
-          const res = await axios.post(`/api/register`, {
-            first_name,
-            last_name,
-            age,
-            gender,
-            contact_no,
-            location,
-            email,
-            password: password1,
-          });
-          if (res) toast.success(res.data.message);
-          else {
-            setFormData({
-              ...formData,
-              first_name: "",
-              last_name: "",
-              contact_no: "",
-              location: "",
-              age: "",
-              gender: "",
-              email: "",
-              password1: "",
-              password2: "",
-              textChange: "Sign Up",
-            });
-            // console.log(err.response);
-            toast.error(res.data.errors);
+          if (password1 === password2) {
+            console.log("success here");
+            setFormData({ ...formData, textChange: "Submitting" });
+            axios
+              .post(`/api/register`, {
+                first_name,
+                last_name,
+                age,
+                gender,
+                contact_no,
+                location,
+                email,
+                password: password1,
+              })
+              // if (res) toast.success(res.data.message);
+              // else {
+              //   setFormData({
+              //     ...formData,
+              //     first_name: "",
+              //     last_name: "",
+              //     contact_no: "",
+              //     location: "",
+              //     age: "",
+              //     gender: "",
+              //     email: "",
+              //     password1: "",
+              //     password2: "",
+              //     textChange: "Sign Up",
+              //   });
+              //   // console.log(err.response);
+              //   toast.error(res.data.errors);
+              // }
+              .then((res) => {
+                // setFormData({
+                //   ...formData,
+                //   first_name: "",
+                //   last_name: "",
+                //   age: "",
+                //   gender: "",
+                //   contact_no: "",
+                //   location: "",
+                //   email: "",
+                //   password1: "",
+                //   password2: "",
+                //   textChange: "Submitted",
+                // });
+
+                toast.success(res.data.message);
+              })
+              .catch((err) => {
+                // setFormData({
+                //   ...formData,
+                //   first_name: "",
+                //   last_name: "",
+                //   contact_no: "",
+                //   location: "",
+                //   age: "",
+                //   gender: "",
+                //   email: "",
+                //   password1: "",
+                //   password2: "",
+                //   textChange: "Sign Up",
+                // });
+                console.log(err.response);
+                toast.error(err.response.data.errors);
+              });
+            console.log(formData);
+          } else {
+            toast.error("Password do not match");
           }
-          // .then((res) => {
-          //   // setFormData({
-          //   //   ...formData,
-          //   //   first_name: "",
-          //   //   last_name: "",
-          //   //   age: "",
-          //   //   gender: "",
-          //   //   contact_no: "",
-          //   //   location: "",
-          //   //   email: "",
-          //   //   password1: "",
-          //   //   password2: "",
-          //   //   textChange: "Submitted",
-          //   // });
-
-          //   toast.success(res.data.message);
-          // })
-          // .catch((err) => {
-          //   setFormData({
-          //     ...formData,
-          //     first_name: "",
-          //     last_name: "",
-          //     contact_no: "",
-          //     location: "",
-          //     age: "",
-          //     gender: "",
-          //     email: "",
-          //     password1: "",
-          //     password2: "",
-          //     textChange: "Sign Up",
-          //   });
-          //   console.log(err.response);
-          //   toast.error(err.response.data.errors);
-          // });
-          console.log(formData);
         } else {
-          toast.error("Password do not match");
+          toast.error("Please fill all fields");
         }
       } else {
-        toast.error("Please fill all fields");
-      }
-    } else {
-      // Login
-      if (email && password1) {
-        console.log("success here");
-        setFormData({ ...formData, textChange: "Submitting" });
-        axios
-          .post(`/api/login`, {
-            email,
-            password: password1,
-          })
-          .then((res) => {
-            authenticate(res, () => {
+        // Login
+        if (email && password1) {
+          console.log("success here");
+          setFormData({ ...formData, textChange: "Submitting" });
+          axios
+            .post(`/api/login`, {
+              email,
+              password: password1,
+            })
+            .then((res) => {
+              authenticate(res, () => {
+                setFormData({
+                  ...formData,
+                  email: "",
+                  password1: "",
+                  textChange: "Submitted",
+                });
+                console.log(res, "sma", isAuth().role, "history");
+                // isAuth() && isAuth().role === "admin"
+                //   ? props.history.push("/admin")
+                //   : props.history.push("/client");
+                toast.success(`Hey ${res.data.user.first_name}, Welcome!`);
+                props.setUserLoggedIn(res.data.user);
+
+                props._handleTranslate(`Login`, `Login`, true);
+                props._handleTranslate(
+                  `We appreciate your signing in, ${res.data.user.first_name}. We've verified that you're ${res.data.user.age} years old and that you're a ${res.data.user.gender}.`,
+                  `Hello ${res.data.user.first_name}, nagpapasalamat kami sa iyong pag sign in. Napag alaman namin na ikaw ay ${res.data.user.age} taong gulang at isang ${res.data.user.gender}.`
+                );
+                props._handleTranslate(
+                  `The information will be included in your profile's documentation. You can be assured that your data will be kept confidential and secure while in our care.`,
+                  `Ang mga impormasyong ito ay magiging bahagi lamang Sa dokumentasyon para sa iyong propayl. Makasisigurado po kayo na ang mga ito ay mananatiling pribado at ligtas sa aming pangangalaga.`
+                );
+
+                props._handleTranslate(
+                  `Do you want to start our conversation? 😳 or you have an Assessment Code from the PMHA?`,
+                  `Gusto mo na bang mag simula? 😳 o mayroon kang Assessment Code mula sa PMHA?.`
+                );
+
+                props.df_event_query("LOGIN_CONTINUE");
+                props.setShowModal(false);
+              });
+            })
+            .catch((err) => {
               setFormData({
                 ...formData,
                 email: "",
                 password1: "",
-                textChange: "Submitted",
+                textChange: "Sign In",
               });
-              console.log(res, "sma", isAuth().role, "history");
-              // isAuth() && isAuth().role === "admin"
-              //   ? props.history.push("/admin")
-              //   : props.history.push("/client");
-              toast.success(`Hey ${res.data.user.first_name}, Welcome back!`);
+              console.log(err.response);
+              toast.error(err.response.data.errors);
             });
-          })
-          .catch((err) => {
-            setFormData({
-              ...formData,
-              email: "",
-              password1: "",
-              textChange: "Sign In",
-            });
-            console.log(err.response);
-            toast.error(err.response.data.errors);
-          });
 
-        console.log(formData);
-      } else {
-        toast.error("Please fill all fields");
+          console.log(formData);
+        } else {
+          toast.error("Please fill all fields");
+        }
       }
     }
   }
@@ -253,12 +279,23 @@ export default function ModalLogin(props) {
 
             {props.setQuickRepliesWelcome ? (
               <>
-                <p>Ulayaw Client {!showRegister ? "Login" : "Register"}</p>
-                <p className="text-[14px] text-gray-100">
-                  {showRegister
-                    ? "Mag register ka na ka ulayaw!"
-                    : "Mag login ka na ka ulayaw!"}
-                </p>
+                {props.assessment_meron_companion ? (
+                  <>
+                    <p>Ulayaw Companion Details</p>
+                    <p className="text-[14px] text-gray-100">
+                      Please put your companion details
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p>Ulayaw Client {!showRegister ? "Login" : "Register"}</p>
+                    <p className="text-[14px] text-gray-100">
+                      {showRegister
+                        ? "Mag register ka na ka ulayaw!"
+                        : "Mag login ka na ka ulayaw!"}
+                    </p>
+                  </>
+                )}
               </>
             ) : (
               <>
@@ -274,7 +311,7 @@ export default function ModalLogin(props) {
           <div className="w-[600px] rounded-b-[10px] text-[12px] lg:text-[16px] p-[18px] px-[71px] py-[55px] self-center bg-white justify-center flex flex-col ">
             {/* inputs */}
             <span>
-              {showRegister ? (
+              {showRegister || props.assessment_meron_companion ? (
                 <>
                   <span className="grid grid-cols-2">
                     {/* first name */}
@@ -298,67 +335,71 @@ export default function ModalLogin(props) {
                       />
                     </label>
                   </span>
-                  <span className="grid grid-cols-2">
-                    {/* age */}
-                    <label className="space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full ">
-                      <input
-                        className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7]"
-                        type="number"
-                        placeholder="Age"
-                        onChange={handleChange("age")}
-                        value={age}
-                      />
-                    </label>
-                    {/* gender */}
-                    <span className="grid grid-cols-2 space-x-2 px-4 text-center">
-                      {/* male */}
-                      <span className="flex items-center ">
-                        <label
-                          className={
-                            "space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full hover:border-2 cursor-pointer " +
-                            `${!selectedGender ? "border-2" : " "}`
-                          }
-                        >
-                          <input
-                            className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7] hidden"
-                            type="radio"
-                            name="gender"
-                            onChange={handleChange("gender", "male")}
-                            onClick={() => {
-                              setSelectedGender(false);
+                  {props.assessment_meron_companion ? (
+                    ""
+                  ) : (
+                    <span className="grid grid-cols-2">
+                      {/* age */}
+                      <label className="space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full ">
+                        <input
+                          className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7]"
+                          type="number"
+                          placeholder="Age"
+                          onChange={handleChange("age")}
+                          value={age}
+                        />
+                      </label>
+                      {/* gender */}
+                      <span className="grid grid-cols-2 space-x-2 px-4 text-center">
+                        {/* male */}
+                        <span className="flex items-center ">
+                          <label
+                            className={
+                              "space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full hover:border-2 cursor-pointer " +
+                              `${!selectedGender ? "border-2" : " "}`
+                            }
+                          >
+                            <input
+                              className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7] hidden"
+                              type="radio"
+                              name="gender"
+                              onChange={handleChange("gender", "male")}
+                              onClick={() => {
+                                setSelectedGender(false);
 
-                              // setGender("male");
-                            }}
-                            value={gender}
-                          />
-                          Male
-                        </label>
-                      </span>
-                      {/* female */}
-                      <span className="flex items-center">
-                        <label
-                          className={
-                            "space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full hover:border-2 cursor-pointer " +
-                            `${selectedGender ? "border-2" : " "}`
-                          }
-                        >
-                          <input
-                            className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7] hidden"
-                            type="radio"
-                            name="gender"
-                            onChange={handleChange("gender", "female")}
-                            onClick={() => {
-                              setSelectedGender(true);
+                                // setGender("male");
+                              }}
+                              value={gender}
+                            />
+                            Male
+                          </label>
+                        </span>
+                        {/* female */}
+                        <span className="flex items-center">
+                          <label
+                            className={
+                              "space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full hover:border-2 cursor-pointer " +
+                              `${selectedGender ? "border-2" : " "}`
+                            }
+                          >
+                            <input
+                              className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7] hidden"
+                              type="radio"
+                              name="gender"
+                              onChange={handleChange("gender", "female")}
+                              onClick={() => {
+                                setSelectedGender(true);
 
-                              // setGender("female");
-                            }}
-                            value={gender}
-                          />
-                          Female
-                        </label>
+                                // setGender("female");
+                              }}
+                              value={gender}
+                            />
+                            Female
+                          </label>
+                        </span>
                       </span>
                     </span>
-                  </span>
+                  )}
                   {/* contact */}
                   <label className="space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full ">
                     <PhoneInput
@@ -384,46 +425,53 @@ export default function ModalLogin(props) {
               ) : (
                 ""
               )}
-
-              {/* email */}
-              <label className="space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full ">
-                <input
-                  className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7]"
-                  type="email"
-                  placeholder="Email address"
-                  onChange={handleChange("email")}
-                  value={email}
-                />
-              </label>
-              <span className={showRegister ? "grid grid-cols-2" : ""}>
-                {/* password 1 */}
+              {props.assessment_meron_companion ? (
+                ""
+              ) : (
                 <label className="space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full ">
+                  {/* email */}
                   <input
                     className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7]"
-                    type="password"
-                    placeholder="Password"
-                    onChange={handleChange("password1")}
-                    value={password1}
+                    type="email"
+                    placeholder="Email address"
+                    onChange={handleChange("email")}
+                    value={email}
                   />
                 </label>
-                {/* password 2 */}
-                {!showRegister ? (
-                  ""
-                ) : (
+              )}
+              {props.assessment_meron_companion ? (
+                ""
+              ) : (
+                <span className={showRegister ? "grid grid-cols-2" : ""}>
+                  {/* password 1 */}
                   <label className="space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full ">
                     <input
                       className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7]"
                       type="password"
-                      placeholder="Confirm Password"
-                      onChange={handleChange("password2")}
-                      value={password2}
+                      placeholder="Password"
+                      onChange={handleChange("password1")}
+                      value={password1}
                     />
                   </label>
-                )}
-              </span>
+                  {/* password 2 */}
+                  {!showRegister ? (
+                    ""
+                  ) : (
+                    <label className="space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full ">
+                      <input
+                        className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7]"
+                        type="password"
+                        placeholder="Confirm Password"
+                        onChange={handleChange("password2")}
+                        value={password2}
+                      />
+                    </label>
+                  )}
+                </span>
+              )}
             </span>
 
-            {showRegister ? (
+            {showRegister || props.assessment_meron_companion ? (
               ""
             ) : (
               <Link
@@ -445,7 +493,11 @@ export default function ModalLogin(props) {
                 // }
               }}
             >
-              {showRegister ? "REGISTER" : "LOGIN"}
+              {props.assessment_meron_companion ? (
+                "SAVE"
+              ) : (
+                <>{showRegister ? "REGISTER" : "LOGIN"}</>
+              )}
             </button>
 
             {props.admin ? (
@@ -482,7 +534,7 @@ export default function ModalLogin(props) {
             ) : (
               ""
             )}
-            {props.admin ? (
+            {props.admin || props.assessment_meron_companion ? (
               ""
             ) : (
               <p

@@ -9,6 +9,9 @@ const {
   forgotPasswordController,
   resetPasswordController,
   googleController,
+  inputDatasetController,
+  inputTranslateController,
+  // fetchAllController,
   // facebookController
 } = require("../controllers/auth.controller.js");
 
@@ -17,6 +20,7 @@ const {
   validLogin,
   forgotPasswordValidator,
   resetPasswordValidator,
+  validInputDatasetValidator,
 } = require("../helpers/valid");
 
 router.post("/register", validRegister, registerController);
@@ -24,12 +28,16 @@ router.post("/register", validRegister, registerController);
 router.post("/login", validLogin, signinController);
 
 router.post("/activation", activationController);
+
 router.post(
   "/password/forget",
   forgotPasswordValidator,
   forgotPasswordController
 );
 router.post("/password/reset", resetPasswordValidator, resetPasswordController);
-router.post("/googlelogin", googleController);
 
+router.post("/googlelogin", googleController);
+router.post("/datasetDF", validInputDatasetValidator, inputDatasetController);
+router.post("/translate", inputTranslateController);
+// router.get("/fetchUsers", fetchAllController);
 module.exports = router;

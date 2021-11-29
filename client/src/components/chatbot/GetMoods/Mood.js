@@ -2,12 +2,16 @@ import React, { useState, useContext } from "react";
 import { MaxInputContext } from "../../../Context/MaxInputContext.js";
 import { GetOtherEmotionCAnswerContext } from "../../../Context/GetOtherEmotionCAnswerContext.js";
 import { GetOtherEmotionAllContext } from "../../../Context/GetOtherEmotionAllContext.js";
+import emotions from "../../../assets/emotions/emotions";
 
 const Mood = (props) => {
   const { maxInput, setMaxInput } = useContext(MaxInputContext);
   const { getOtherEmotionCAnswer, setGetOtherEmotionCAnswer } = useContext(
     GetOtherEmotionCAnswerContext
   );
+  // const images = importAll(
+  //   require.context("../../../assets/emotions/", false, "/.png/")
+  // );
   const { getOtherEmotionAll, setGetOtherEmotionAll } = useContext(
     GetOtherEmotionAllContext
   );
@@ -24,7 +28,7 @@ const Mood = (props) => {
     return res;
   }
 
-  function _handleMoodImg(mood) {
+  function _handleMoodImg1(mood) {
     if (mood === "low") {
       return "low.png";
     }
@@ -74,7 +78,65 @@ const Mood = (props) => {
       return "demotivated.png";
     }
   }
-
+  function _handleMoodImg(mood) {
+    if (mood === "low") {
+      return emotions.low;
+    }
+    if (mood === "sad") {
+      return emotions.sad;
+    }
+    if (mood === "annoyed") {
+      return emotions.annoyed;
+    }
+    if (mood === "disappointed") {
+      return emotions.disappointed;
+    }
+    if (mood === "empty") {
+      return emotions.empty;
+    }
+    if (mood === "overwhelmed") {
+      return emotions.overwhelmed;
+    }
+    if (mood === "worried") {
+      return emotions.worried;
+    }
+    if (mood === "frustrated") {
+      return emotions.frustrated;
+    }
+    if (mood === "guilty") {
+      return emotions.guilty;
+    }
+    if (mood === "hopeless") {
+      return emotions.hopeless;
+    }
+    if (mood === "lonely") {
+      return emotions.lonely;
+    }
+    if (mood === "nervous") {
+      return emotions.nervous;
+    }
+    if (mood === "stressed") {
+      return emotions.stressed;
+    }
+    if (mood === "heavy") {
+      return emotions.heavy;
+    }
+    if (mood === "tired") {
+      return emotions.tired;
+    }
+    if (mood === "demotivated") {
+      return emotions.demotivated;
+    }
+    if (mood === "embarrased") {
+      return emotions.overwhelmed;
+    }
+    if (mood === "angry") {
+      return emotions.frustrated;
+    }
+    if (mood === "anxious") {
+      return emotions.stressed;
+    }
+  }
   return (
     <div className="py-5 p-2 select-none transform  scale-90">
       <label
@@ -110,8 +172,8 @@ const Mood = (props) => {
                 props.selectedMoods.map((m) => {
                   if (m.mood_text === props.mood.mood_text) {
                     // if (count.length <= 5) {
-                    console.log(check, "sd");
-                    console.log(maxInput, "Please ");
+                    // console.log(check, "sd");
+                    // console.log(maxInput, "Please ");
                     if (check && maxInput < 5) {
                       setMaxInput(maxInput + 1);
                       setGetOtherEmotionAll((prevChats) => {
@@ -142,7 +204,7 @@ const Mood = (props) => {
 
                     // }
                   }
-                  console.log(getOtherEmotionAll);
+                  // console.log(getOtherEmotionAll);
                   ys.push({
                     select: m.select,
                     mood_text: m.mood_text,
@@ -154,10 +216,61 @@ const Mood = (props) => {
 
               // console.log(maxInput, "max");
             } else {
+              // let count = [];
+              // let ys = [];
+              // props.setSelectedMoods(
+              //   props.selectedMoods.map((m) => {
+              //     if (m.mood_text === props.mood.mood_text) {
+              //       // if (count.length <= 5) {
+              //       // console.log(check, "sd");
+              //       // console.log(maxInput, "Please ");
+              //       if (check && maxInput < 1) {
+              //         setMaxInput(maxInput + 1);
+              //         setGetOtherEmotionAll((prevChats) => {
+              //           return [...prevChats, props.mood.mood_text];
+              //         });
+              //         m.select = check;
+              //       }
+              //       if (!check && maxInput === 1) {
+              //         var index = getOtherEmotionAll.findIndex(
+              //           (x) => x === props.mood.mood_text
+              //         );
+              //         if (index != -1) {
+              //           let g = [...getOtherEmotionAll];
+              //           g.splice(index, 1);
+              //           setGetOtherEmotionAll(g);
+              //         }
+
+              //         setMaxInput(maxInput - 1);
+              //         m.select = check;
+              //       }
+              //       if (count.length >= 1 && maxInput === 1) {
+              //         console.log(count);
+              //         if (check === true) {
+              //           alert("You can only choose one of these emotions.");
+              //           m.select = false;
+              //         }
+              //       }
+
+              //       // }
+              //     }
+              //     // console.log(getOtherEmotionAll);
+              //     ys.push({
+              //       select: m.select,
+              //       mood_text: m.mood_text,
+              //     });
+              //     return m;
+              //   })
+              // );
               props.setSelectedMoods(
                 props.selectedMoods.map((m) => {
-                  if (m.mood_text === props.mood.mood_text) {
-                    m.select = check;
+                  if (m.select && check) {
+                    alert("You have selected an emotion already.");
+                    m.select = false;
+                  } else {
+                    if (m.mood_text === props.mood.mood_text) {
+                      m.select = check;
+                    }
                   }
                   return m;
                 })
@@ -169,7 +282,9 @@ const Mood = (props) => {
         <img
           className="w-[80px] h-[80] cursor-pointer"
           src={_handleMoodImg(props.mood.mood_text)}
+          // src={emotions[`low`]}
         />
+
         <p className="font-bold cursor-pointer inline-block">
           {props.mood.mood_text}
         </p>

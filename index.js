@@ -8,9 +8,6 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 var asdfjkl = require("asdfjkl");
 
-const { translate } = require("@paiva/translation-google");
-
-var Sentiment = require("sentiment");
 var writeGood = require("write-good");
 
 var suggestions = writeGood(
@@ -18,8 +15,6 @@ var suggestions = writeGood(
 );
 console.log(suggestions);
 var textRes;
-
-var sentiment = new Sentiment();
 
 require("dotenv").config({
   path: "./config/config.env",
@@ -74,6 +69,7 @@ if (process.env.NODE_ENV === "development") {
 
 // Use Routes
 app.use("/api/", authRouter);
+// app.use("/api/", adminRouter);
 // app.use('/api', userRouter)
 
 // const mongoose = require("mongoose");
@@ -128,29 +124,6 @@ app.listen(PORT, () => {
 // Sinubukan kong patayin ang sarili ko, pero ayaw kong mamatay
 // Sinubukan kong patayin ang aking sarili, at talagang umaasa akong mamatay
 
-// @paiva/translation-google
-// translate("I'm really disgusted with papa because he's such a fool", {
-//   from: "tl",
-//   to: "en",
-// })
-//   .then((res) => {
-//     console.log("@paiva/translation-google");
-//     console.log(res.text);
-//     //
-//     console.log(res.from.text.autoCorrected);
-
-//     //=> 这是Google翻译
-//     console.log(res.from.language.iso);
-
-//     //
-//     console.log(res.from.text.value);
-//     //=> en
-//     console.log(res.from.text.didYouMean);
-//   })
-//   .catch((err) => {
-//     console.error(err);
-//   });
-
 // console.dir(textRes);
 // var result = sentiment.analyze(
 //   "If everyone thinks you're worthless, then maybe you need to find new people to hang out with.Seriously, the social context in which a person lives is a big influence in self-esteem.Otherwise, you can go round and round trying to understand why you're not worthless, then go back to the same crowd and be knocked down again.There are many inspirational messages you can find in social media.  Maybe read some of the ones which state that no person is worthless, and that everyone has a good purpose to their life.Also, since our culture is so saturated with the belief that if someone doesn't feel good about themselves that this is somehow terrible.Bad feelings are part of living.  They are the motivation to remove ourselves from situations and relationships which do us more harm than good.Bad feelings do feel terrible.   Your feeling of worthlessness may be good in the sense of motivating you to find out that you are much better than your feelings today."
@@ -164,11 +137,6 @@ app.listen(PORT, () => {
 //   "I'm going through some things with my feelings and myself. I barely sleep and I do nothing but think about how I'm worthless and how I shouldn't be here. I've never tried or contemplated suicide. I've always wanted to fix my issues, but I never get around to it. How can I change my feeling of being worthless to everyone?"
 // );
 
-var result = sentiment.analyze(
-  "At school, it feels like I've lost all my friends."
-);
-
-console.dir(result); // Score: -2, Comparative: -0.666
 // let neg = result.negative[0];
 // console.log(neg);
 

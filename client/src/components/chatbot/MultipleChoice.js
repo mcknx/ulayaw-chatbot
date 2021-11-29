@@ -13,6 +13,7 @@ function MultipleChoice(props) {
         total += parseInt(selectedChoices[i].choice_score);
       }
       props._handleAssessmentResult(total);
+      props.toast.success("Assessment done!");
       // console.log(total);
       // console.log("You are done asdasd!");
       // console.log(selectedChoices);

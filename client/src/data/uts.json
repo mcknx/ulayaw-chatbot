@@ -1,13 +1,20 @@
 {
   "UTS_Description": "When a person experiences an unhelpful emotion, such as depression or anxiety, it is usually preceded by a number of unhelpful self-statements and thoughts. Often there is a pattern to such thoughts and we call these unhelpful thinking styles. One of the things we notice is that people use unhelpful thinking styles as an automatic habit – it is something we are often unaware of. When a person consistently and constantly uses some of these styles of thinking, they can often cause themselves a great deal of emotional distress. This information describes a number of unhelpful thinking styles. As you read through them, you might notice some thinking patterns and styles that you consistently use. Some of these unhelpful thinking styles might sound similar to one another. They are not meant to be distinct categories but may help you to see if there is a pattern to your thoughts.",
+  "UTS_Description_Tagalog": "Kapag ang isang tao ay nakakaranas ng isang hindi nakakatulong na emotion, tulad ng depresyon o anxiety, kadalasan ay nauuna ito ng ilang (unhelpful self-statements) o hindi nakakatulong na mga pahayag at (thoughts) pag-iisip sa sarili. Kadalasan mayroong isang pattern sa gayong mga kaisipan at tinatawag namin itong mga hindi nakakatulong na istilo ng pag-iisip. Ang isa sa mga bagay na napapansin namin ay ang mga tao ay gumagamit ng hindi nakakatulong na mga istilo ng pag-iisip bilang isang awtomatikong ugali - ito ay isang bagay na madalas na hindi namin nalalaman. Kapag ang isang tao ay tuloy-tuloy at patuloy na gumagamit ng ilan sa mga istilo ng pag-iisip na ito, kadalasan ay nagdudulot sila ng matinding emosyonal na pagkabalisa. Ang impormasyong ito ay naglalarawan ng ilang hindi nakakatulong na istilo ng pag-iisip. Habang binabasa mo ang mga ito, maaari mong mapansin ang ilang mga pattern at istilo ng pag-iisip na palagi mong ginagamit. Ang ilan sa mga hindi nakakatulong na istilo ng pag-iisip na ito ay maaaring magkatulad sa isa't isa. Ang mga ito ay hindi nilalayong maging mga natatanging kategorya ngunit maaaring makatulong sa iyo na makita kung may pattern sa iyong mga iniisip",
   "Types": [
     {
       "title": "Mental Filter",
       "Description": "This thinking style involves a filtering in and filtering out process – a sort of tunnel vision, focusing on only 1 part of a situation and ignoring the rest. Usually this means looking at the negative parts of a situation and forgetting the positive parts, and the whole picture is coloured by what may be a single negative detail. ",
+      "Description_Tagalog": "Ang istilo ng pag-iisip na ito ay nagsasangkot ng proseso ng filtering in at filtering out – isang uri ng tunnel vision, na tumutuon sa isang(1) bahagi lamang ng isang sitwasyon at binabalewala ang iba. Karaniwang nangangahulugan ito ng pagtingin sa mga negatibong bahagi ng isang sitwasyon at pagkalimot sa mga positibong bahagi, at ang buong larawan ay nakukulayan isang negatibong detalye.",
       "DisputationQ": [
         "Consider the whole picture",
         "Am I taking all the information into account?",
         "What else is going on that I’m ignoring?"
+      ],
+      "DisputationQ_Tagalog": [
+        "Isaalang-alang ang buong larawan",
+        "Isinasaalang-alang ko ba ang lahat ng impormasyon?",
+        "Kung ano ano pang nangyayari na hindi ko pinapansin?"
       ]
     },
     {

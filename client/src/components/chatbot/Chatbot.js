@@ -3,6 +3,7 @@ import axios from "axios/index";
 import Message from "./Message";
 import Card from "./Card";
 import Cookies from "universal-cookie";
+import { ToastContainer, toast } from "react-toastify";
 import { v4 as uuid } from "uuid";
 import QuickReplies from "./QuickReplies";
 import MultipleChoice from "./MultipleChoice";
@@ -42,13 +43,18 @@ const cookies = new Cookies();
 
 function Chatbot(props) {
   const [messages, setMessages] = useState([]);
+  const [messagesFilipino, setMessagesFilipino] = useState([]);
   const [showBot, setShowBot] = useState(true);
   const [shopWelcomeSent, setShopWelcomeSent] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showModalLogin, setShowModalLogin] = useState(false);
+  const [assessment_meron_companion, setassessment_meron_companion] =
+    useState(false);
   const [claimCode, setClaimCode] = useState(false);
   const [correctCode, setCorrectCode] = useState(false);
   const [assessmentScore, setAssessmentScore] = useState();
+  const [userLoggedIn, setUserLoggedIn] = useState();
+  const [switchLanguage, setSwitchLanguage] = useState(true);
   // const { showMoods, setShowMoods } = useContext(ShowMoodsContext);
   const { showChatBox, setShowChatBox } = useContext(ShowChatBox);
   const { maxInput, setMaxInput } = useContext(MaxInputContext);
@@ -141,9 +147,16 @@ function Chatbot(props) {
     cookies.set("userID", uuid(), { path: "/" });
   }
 
-  async function df_text_query(queryText, dfQuery, speaker, extra) {
+  async function df_text_query(
+    queryText,
+    dfQuery,
+    speaker,
+    queryTextFil,
+    extra
+  ) {
     console.log(speaker);
     if (speaker === undefined) speaker = "user";
+    if (speaker === "user") speaker = "user";
     let says = "";
     if (extra === "map") {
       says = {
@@ -171,6 +184,7 @@ function Chatbot(props) {
         msg: {
           text: {
             text: queryText,
+            textFil: queryTextFil,
           },
         },
       };
@@ -185,9 +199,15 @@ function Chatbot(props) {
     //   },
     // };
 
+    // if (switchLanguage) {
+    // setMessagesFilipino((prevMessages) => {
+    //   return [...prevMessages, says];
+    // });
+    // } else {
     setMessages((prevMessages) => {
       return [...prevMessages, says];
     });
+    // }
 
     if (dfQuery) {
       const res = await axios.post("/api/df_text_query", {
@@ -207,7 +227,7 @@ function Chatbot(props) {
       }
     }
 
-    console.log(messages);
+    // console.log(messages);
   }
 
   async function df_event_query(eventName) {
@@ -224,9 +244,15 @@ function Chatbot(props) {
       };
 
       // Version 1
+      // if (switchLanguage) {
+      // setMessagesFilipino((prevMessages) => {
+      //   return [...prevMessages, says];
+      // });
+      // } else {
       setMessages((prevMessages) => {
         return [...prevMessages, says];
       });
+      // }
 
       // Version 2
       // setMessages([...messages, says]);
@@ -253,25 +279,17 @@ function Chatbot(props) {
       if (location.coordinates) {
         if (maxInput === 0) {
           if (cookies.get("termsAndConditions")) {
-            df_text_query(
+            _handleTranslate(
               `Thank you for granting us access to your location!`,
-              false,
-              "bot"
-              // "map"
+              `Maraming salamat sa pag bigay ng access sa iyong location!`
             );
           } else {
-            df_text_query(
+            _handleTranslate(
               `Thank you for granting us access to your location! Please read the terms and conditions above!`,
-              false,
-              "bot"
-              // "map"
+              `Maraming salamat sa pag bigay ng access sa iyong location! Basahin muna ang terms and conditions sa itasa!`
             );
           }
-          // df_text_query(
-          //   `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
-          //   false,
-          //   "bot"
-          // );
+
           setMaxInput(maxInput + 1);
         }
 
@@ -279,7 +297,10 @@ function Chatbot(props) {
         if (getLocation && cookies.get("termsAndConditions")) {
           setMaxInput(0);
           df_event_query("Welcome");
-          console.log(maxInput);
+          _handleTranslate(
+            `How are you! I am Ulayaw. I am here to help and respond about your mental health. Do you want to login first?`,
+            `Kumusta! Ako si Ulayaw, nandito ako upang tulungan at tugunan ang iyong kaisipang pangkalusugan. Gusto mo bang mag login muna?`
+          );
         }
         // console.log(location);
       }
@@ -349,12 +370,34 @@ function Chatbot(props) {
       } else if (activateGetAdverseStep3 === 1) {
         // _handleGetAdverseStep3(e);
         setGetAdverseStep3UseState(e.target.value);
-        setActivateGetAdverseStep3(2);
-        setShowChatBox(false);
+        let inputData = e.target.value;
+        axios
+          .post(`/api/translate`, {
+            inputData,
+          })
+          .then((res) => {
+            toast.success(res.data.message);
+            console.log(res);
+            setActivateGetAdverseStep3(2);
+            setShowChatBox(false);
+
+            setGetAdverseStep3(getAdverseStep3UseState);
+          })
+          .catch((err) => {
+            console.log(err.response);
+            toast.error(err.response.data.errors);
+          });
+
+        // _handleTranslate(
+        //   `Okay I got your answer here.'${e.target.value}'`,
+        //   `Okay, nakuha ko yung sinagot mo. '${e.target.value}'`
+        // );
+
         // console.log(getAdverseStep3);
       } else if (getMoodOther) {
         if (e.target.value !== "") {
-          df_text_query(e.target.value, false);
+          // df_text_query(e.target.value, false);
+          _handleTranslate(`${e.target.value}`, `${e.target.value}`, true);
           let chat = e.target.value;
           setGetOtherEmotionAll((prevChats) => {
             return [...prevChats, chat];
@@ -369,13 +412,20 @@ function Chatbot(props) {
             setGetMoodOther(false);
             setMaxInput(0);
             df_event_query("ABC_THOUGHT_DIARY_C_AFTER_MOODS");
+            _handleTranslate(
+              `So what did you do after you experienced this feeling(s) specifically during those time?`,
+              `Anong ginawa mo pagkatapos mong maranasan ang mga mood na ito noong mga panahong iyon? `
+            );
           }
           // console.log(getOtherEmotionAll, "just the two of us");
 
           // console.log(getMoodAfterFeelngs);
           // setGetMoodFeelings(true);
         } else {
-          df_text_query("Please put anything in the chatbox", false, "bot");
+          _handleTranslate(
+            `Please put anything in the chatbox`,
+            `Mangyaring Lagyan mo ng ang ating chatbox`
+          );
         }
       } else if (getRateEmotion) {
         let chat = e.target.value;
@@ -383,57 +433,96 @@ function Chatbot(props) {
           if (parseInt(chat) != NaN) {
             chat = parseInt(chat);
             if (chat <= 0 || chat > 10) {
-              df_text_query("Please put a number between (1-10)", false, "bot");
+              _handleTranslate(
+                `Please put a number between (1-10)`,
+                `Mangyaring maglagay ng numero sa pagitan ng (1-10)`
+              );
+              // df_text_query("Please put a number between (1-10)", false, "bot");
             } else {
               if (chat > 0 && chat < 6) {
-                df_text_query(chat, false);
-                df_text_query(
-                  `Okay, that wasn't so strong. However, you mentioned experiencing these things that affected you.
-                  '${_handleMoods(getHotEmotionCAnswer)}' and
-                '${_handleShowList(getOtherEmotionAll)}'`,
-                  false,
-                  "bot"
-                );
-              }
-              if (chat > 5 && chat <= 10) {
-                df_text_query(chat, false);
-                df_text_query(
-                  `Okay, that's pretty strong. It's not surprising that you've noticed that these things affected you. 
-                  
-                  '${_handleMoods(
+                // df_text_query(chat, false);
+                _handleTranslate(`${chat}`, `${chat}`, true);
+                _handleTranslate(
+                  `Okay, that wasn't so strong. However, you mentioned experiencing these things that affected you. '${_handleMoods(
                     getHotEmotionCAnswer
                   )}' and '${_handleShowList(getOtherEmotionAll)}'`,
-                  false,
-                  "bot"
+                  `Okay, hindi ganoon sama. Gayunpaman, binanggit mo ang karanasan sa mga bagay na ito na nakaapekto sa iyo. '${_handleMoods(
+                    getHotEmotionCAnswer
+                  )}' and '${_handleShowList(getOtherEmotionAll)}'`
                 );
+                // df_text_query(
+                //   `Okay, that wasn't so strong. However, you mentioned experiencing these things that affected you.
+                //   '${_handleMoods(getHotEmotionCAnswer)}' and
+                // '${_handleShowList(getOtherEmotionAll)}'`,
+                //   false,
+                //   "bot"
+                // );
               }
-              df_text_query(
-                `Okay, so now we kind of have an idea that this is what happened. '${getAdverseStep3}'. This is the time and place you noticed the change in your mood. `,
-                false,
-                "bot"
+              if (chat > 5 && chat <= 10) {
+                _handleTranslate(`${chat}`, `${chat}`, true);
+                _handleTranslate(
+                  `Okay, that's pretty strong. It's not surprising that you've noticed that these things affected you.  '${_handleMoods(
+                    getHotEmotionCAnswer
+                  )}' and '${_handleShowList(getOtherEmotionAll)}'`,
+                  `Okay, medyo masama nga iyon. Hindi nakakagulat na napansin mo ang mga bagay na ito ay nakaapekto sa iyo.'${_handleMoods(
+                    getHotEmotionCAnswer
+                  )}' and '${_handleShowList(getOtherEmotionAll)}'`
+                );
+                // df_text_query(chat, false);
+                // df_text_query(
+                //   `Okay, that's pretty strong. It's not surprising that you've noticed that these things affected you.
+
+                //   '${_handleMoods(
+                //     getHotEmotionCAnswer
+                //   )}' and '${_handleShowList(getOtherEmotionAll)}'`,
+                //   false,
+                //   "bot"
+                // );
+              }
+
+              _handleTranslate(
+                `Okay, so now we kind of have an idea that this is what happened. '${getAdverseStep3}'. Ito ang oras at lugar na napansin mo ang pagbabago sa iyong mood.`,
+                `Okay, so ngayon medyo may ideya na tayo, na ganito ang nangyari. '${getAdverseStep3}'. Ito ang oras at lugar na napansin mo ang pagbabago sa iyong mood`
               );
-              df_text_query(
+              // df_text_query(
+              //   `Okay, so now we kind of have an idea that this is what happened. '${getAdverseStep3}'. This is the time and place you noticed the change in your mood. `,
+              //   false,
+              //   "bot"
+              // );
+              _handleTranslate(
                 `And these are the emotions you noticed. '${_handleMoods(
                   getHotEmotionCAnswer
-                )}' and
-                '${_handleShowList(
-                  getOtherEmotionAll
-                )}'. And you mentioned that you're still feeling some of them now `,
-                false,
-                "bot"
+                )}' and '${_handleShowList(getOtherEmotionAll)}'.`,
+                `At ito ang mga emosyon na napansin mo. '${_handleMoods(
+                  getHotEmotionCAnswer
+                )}' and '${_handleShowList(getOtherEmotionAll)}'.`
               );
-
-              df_text_query(
-                `Okay, so what was on your mind if we could go back '${getMoodWhenStartedStep1}' to the time and place when you said: '${getAdverseStep3}'.`,
-                false,
-                "bot"
+              // df_text_query(
+              //   `And these are the emotions you noticed. '${_handleMoods(
+              //     getHotEmotionCAnswer
+              //   )}' and
+              //   '${_handleShowList(getOtherEmotionAll)}'.`,
+              //   false,
+              //   "bot"
+              // );
+              _handleTranslate(
+                `Okay, so what was on your mind if we could go back ${getMoodWhenStartedStep1} to the time and place when you said: '${getAdverseStep3}'.`,
+                `Okay, ano ang nasa isip mo kung babalik tayo ${getMoodWhenStartedStep1} nung sinabi mong: '${getAdverseStep3}'.`
               );
-
-              df_text_query(
+              // df_text_query(
+              //   `Okay, so what was on your mind if we could go back ${getMoodWhenStartedStep1} to the time and place when you said: '${getAdverseStep3}'.`,
+              //   false,
+              //   "bot"
+              // );
+              _handleTranslate(
                 `Answer the question "What was going through my head at the time?`,
-                false,
-                "bot"
+                `Sagutin ang tanong: "Ano ang tumatakbo sa isip ko noong panahong iyon?`
               );
+              // df_text_query(
+              //   `Answer the question "What was going through my head at the time?`,
+              //   false,
+              //   "bot"
+              // );
 
               setGetRateEmotion(false);
               setGetAfterFeelings(false);
@@ -450,12 +539,47 @@ function Chatbot(props) {
       } else if (getAfterFeelings) {
         let chat = e.target.value;
         if (e.target.value !== "") {
+          _handleTranslate(`${chat}`, `${chat}`, true);
           setGetAfterFeelingsChat(chat);
           setGetRateEmotion(true);
           df_event_query("ABC_THOUGHT_DIARY_C_RATE_EMOTION");
-          df_text_query(chat, false);
+          _handleTranslate(
+            `Okay, so I understand that you've had to deal with a lot of the consequences. However, these are only a few of the ones I noted. '${_handleMoods(
+              getHotEmotionCAnswer
+            )}' and '${_handleShowList(getOtherEmotionAll)}'`,
+
+            `Okay, naiintindihan ko na kinailangan mong harapin ang maraming masasamang bagay na ito. Gayunpaman, ilan lamang ito sa mga nabanggit mo. '${_handleMoods(
+              getHotEmotionCAnswer
+            )}' and '${_handleShowList(getOtherEmotionAll)}'`
+          );
+          if (getAfterFeelings) {
+            _handleTranslate(
+              `And you did this after experiencing those.'${chat}'`,
+
+              `At ginawa mo ito pagkatapos mong maranasan ang mga ito.'${chat}'`
+            );
+          }
+
+          _handleTranslate(
+            `Okay, so that '${_handleMoods(
+              getHotEmotionCAnswer
+            )}' feeling, um. When you say you felt it ${getMoodWhenStartedStep1} give me an idea of how strong it was.`,
+            `Okay, itong '${_handleMoods(
+              getHotEmotionCAnswer
+            )}' na feeling, um. Kapag sinabi mong naramdaman mo ito ${getMoodWhenStartedStep1} bigyan mo ako ng ideya kung gaano ito sama.'`
+          );
+          _handleTranslate(
+            `If you had to give it a rating out of ten (1-10), how would you rate it?`,
+            `Kung kailangan mong bigyan ito ng rating sa sampu (1-10), paano mo ito ire-rate?`
+          );
+
+          // df_text_query(chat, false);
         } else {
-          df_text_query("Please put anything in the chatbox", false, "bot");
+          _handleTranslate(
+            `Please put anything in the chatbox`,
+            `Mangyaring Lagyan mo ng ang ating chatbox`
+          );
+          // df_text_query("Please put anything in the chatbox", false, "bot");
         }
 
         // console.log(getAfterFeelingsChat);
@@ -467,89 +591,137 @@ function Chatbot(props) {
         if (e.target.value !== "") {
           if (maxInput === 0) {
             setShowChatBox(true);
-            df_text_query(chat, false);
-            df_text_query(
+            // df_text_query(chat, false);
+            _handleTranslate(`${chat}`, `${chat}`, true);
+            // df_text_query(
+            //   `Are you starting to get a feeling now for why that '${_handleMoods(
+            //     getHotEmotionCAnswer
+            //   )}' kind of feeling might have been so ${
+            //     getHotEmotionRate > 5 ? "Strong" : "Slightly Strong"
+            //   }. It's quite a good match if we look at B) and C)`,
+            //   false,
+            //   "bot"
+            // );
+
+            _handleTranslate(
               `Are you starting to get a feeling now for why that '${_handleMoods(
                 getHotEmotionCAnswer
               )}' kind of feeling might have been so ${
                 getHotEmotionRate > 5 ? "Strong" : "Slightly Strong"
               }. It's quite a good match if we look at B) and C)`,
-              false,
-              "bot"
+              `Nagsisimula ka na bang magkaroon ng ideya ngayon kung bakit itong '${_handleMoods(
+                getHotEmotionCAnswer
+              )}' na feeling mo ay naging ${
+                getHotEmotionRate > 5 ? "napakasama" : "hindi gaanong masama"
+              } para sayo? Ito ay tugma sa kung anong isinulat mo sa C) titingnan natin ang B) at C) part`
             );
 
             setFocusThoughtDiaryLetter("b_c");
-            df_text_query(
-              `Is there any other thoughts that you have? if we could go back "recently" to the time and place when you said: ${getAdverseStep3}`,
-              false,
-              "bot"
+            _handleTranslate(
+              `Is there any other thoughts that you have? if we could go back ${getMoodWhenStartedStep1} to the time and place when you said: ${getAdverseStep3}`,
+              `May iba ka pa bang iniisip? kung babalik tayo ${getMoodWhenStartedStep1} sa oras at lugar nung sinabi mong ${getAdverseStep3}`
             );
+            // df_text_query(
+            //   `Is there any other thoughts that you have? if we could go back "recently" to the time and place when you said: ${getAdverseStep3}`,
+            //   false,
+            //   "bot"
+            // );
 
             setMaxInput(2);
           }
 
           if (maxInput === 2) {
-            df_text_query(chat, false);
-            df_text_query(
-              `Okay, given that you think that way, when we look at the C) column, it's kind of a match for you that you couldn't figure out why you were feeling that way.`,
-              false,
-              "bot"
+            _handleTranslate(`${chat}`, `${chat}`, true);
+            // df_text_query(chat, false);
+            _handleTranslate(
+              `Okay, given that you think that way, when we look at the C) column. It's kind of a match for you that you couldn't figure out why you were feeling that way.`,
+              `Okay, given na ganyan yung iniisip mo, siguro nagtataka ka kung bakit ganito yung nararamdaman mo. Pero kung titignan nating tong C) part. Ito ay tugma kung bakit hindi mo para bang maintindihan, kung bakit ka nakakaramdam ng ganoon.`
             );
-            df_text_query(
+            // df_text_query(
+            //   `Okay, given that you think that way, when we look at the C) column, it's kind of a match for you that you couldn't figure out why you were feeling that way.`,
+            //   false,
+            //   "bot"
+            // );
+
+            _handleTranslate(
               `Give me 2 more of your thoughts during that time.`,
-              false,
-              "bot"
+              `Bigyan mo ako ng dalawa(2) mo pang iniisip mo sa mga panahong iyon.`
             );
+            // df_text_query(
+            //   `Give me 2 more of your thoughts during that time.`,
+            //   false,
+            //   "bot"
+            // );
 
             setFocusThoughtDiaryLetter("b_c");
             setMaxInput(3);
           }
           if (maxInput === 3) {
-            df_text_query(chat, false);
-            df_text_query(
-              `Was there any other thoughts that you noticed at the time?
-              `,
-              false,
-              "bot"
+            // df_text_query(chat, false);
+            _handleTranslate(`${chat}`, `${chat}`, true);
+            // df_text_query(chat, false);
+            _handleTranslate(
+              `Give me 1 more of your thoughts during that time. Just in terms of the thoughts that you were thinking that time.`,
+              `Okay, Bigyan mo ako ng isa pang iniisip mo sa mga panahong iyon. Yung mga naiisip mo that time.`
             );
+            // df_text_query(
+            //   `Was there any other thoughts that you noticed at the time?
+            //   `,
+            //   false,
+            //   "bot"
+            // );
 
             setFocusThoughtDiaryLetter("b");
             setMaxInput(4);
           }
 
           if (maxInput === 4) {
-            df_text_query(chat, false);
-            df_text_query(
-              `Okay wow, that's a lot of things. And looking at that I'm thinking there's quite a few things that it might be really helpful for us to have a bit of a look at.
-              `,
-              false,
-              "bot"
+            // df_text_query(chat, false);
+            _handleTranslate(`${chat}`, `${chat}`, true);
+            // df_text_query(chat, false);
+            _handleTranslate(
+              `Okay wow, that's a lot of things! I'm happy that you have the bravery to share your thoughts with me. Okay, looking at that I'm thinking there's quite a few things that it might be really helpful for us to have a bit of a look at.`,
+              `Okay wow, ang dami mong na ibahagi! Masaya ako na mayroon kang katapangan na ibahagi ang iyong mga saloobin sa akin. Okay, tinitingnan ko itong mga sagot mo, iniisip ko na may iilang bagay lang tayong tatalakayin na maaring makatulong dito.`
             );
-            df_text_query(
-              `Um, because if these things were true: '${_handleShowList(
-                getOtherThoughtB
-              )}'
-              `,
-              false,
-              "bot"
+            // df_text_query(
+            //   `Okay wow, that's a lot of things. And looking at that I'm thinking there's quite a few things that it might be really helpful for us to have a bit of a look at.
+            //   `,
+            //   false,
+            //   "bot"
+            // );
+            // df_text_query(
+            //   `Um, because if these things were true: '${_handleShowList(
+            //     getOtherThoughtB
+            //   )}'
+            //   `,
+            //   false,
+            //   "bot"
+            // );
+            // df_text_query(
+            //   `then we'd really have a problem, like it would require a professional to kind of focus on fixing that problem.
+            //   `,
+            //   false,
+            //   "bot"
+            // );
+            _handleTranslate(
+              `Okay, I'm wondering whether some of these thoughts could be a reflection of your true problem; they could be the one component that, although not exactly accurate, are a component of your true problem.`,
+              `Okay, Iniisip ko kung mayroong isa sa mga naibahigi mong kaisipan na maaaring maging salamin ng iyong tunay na problema; maaaring isa sa mga naibahigi mong kaisipan, na bagama't hindi eksaktong tumpak, ay isang sektor ng iyong tunay na problema.`
             );
-            df_text_query(
-              `then we'd really have a problem, like it would require a professional to kind of focus on fixing that problem.
-              `,
-              false,
-              "bot"
-            );
-            df_text_query(
-              `But I'm wondering whether some of these thoughts could be a reflection of your true problem; they could be the one component that, although not exactly accurate, are a component of your true problem.
-              `,
-              false,
-              "bot"
-            );
-            df_text_query(
-              `And if that's true we might be able to adjust them or think a little differently about the situation and hopefully feel a bit differently as a result.
-              `,
-              false,
-              "bot"
+            // df_text_query(
+            //   `But I'm wondering whether some of these thoughts could be a reflection of your true problem; they could be the one component that, although not exactly accurate, are a component of your true problem.
+            //   `,
+            //   false,
+            //   "bot"
+            // );
+            // df_text_query(
+            //   `And if that's true we might be able to adjust them or think a little differently about the situation and hopefully feel a bit differently as a result.
+            //   `,
+            //   false,
+            //   "bot"
+            // );
+            _handleTranslate(
+              `And if that's true we might be able to adjust them or think a little differently about the situation and hopefully feel a bit differently as a result.`,
+              `At kung ito ay totoo, maaari nating talakayin ang paksa ng kaisipang ito at mag-isip nang paraan tungkol sa sitwasyon, at umasa sa pag-asa na medyo maiba natin ang pakiramdam mo bilang resulta.`
             );
 
             setGetOtherThoughtBool(false);
@@ -563,7 +735,11 @@ function Chatbot(props) {
             return [...prevChats, chat];
           });
         } else {
-          df_text_query("Please put anything in the chatbox", false, "bot");
+          // df_text_query("Please put anything in the chatbox", false, "bot");
+          _handleTranslate(
+            `Please put anything in the chatbox`,
+            `Mangyaring Lagyan mo ng ang ating chatbox`
+          );
         }
       } else if (getRateThought) {
         let chat = e.target.value;
@@ -622,7 +798,11 @@ function Chatbot(props) {
             console.log(chat);
           }
         } else {
-          df_text_query("Please put anything in the chatbox", false, "bot");
+          // df_text_query("Please put anything in the chatbox", false, "bot");
+          _handleTranslate(
+            `Please put anything in the chatbox`,
+            `Mangyaring Lagyan mo ng ang ating chatbox`
+          );
         }
       } else if (getExplainDBool) {
         let chat = e.target.value;
@@ -761,7 +941,11 @@ function Chatbot(props) {
             df_event_query("ABC_THOUGHT_EXPLAIN_D_GET_D_Q");
           }
         } else {
-          df_text_query("Please put anything in the chatbox", false, "bot");
+          // df_text_query("Please put anything in the chatbox", false, "bot");
+          _handleTranslate(
+            `Please put anything in the chatbox`,
+            `Mangyaring Lagyan mo ng ang ating chatbox`
+          );
         }
       } else {
         if (e.target.value !== "") df_text_query(e.target.value, true);
@@ -776,9 +960,23 @@ function Chatbot(props) {
     return renderOneMessageStatic("THOUGHT DIARY");
   }
 
+  function _handleTranslate(engText, filText, speaker) {
+    // if (switchLanguage) {
+    if (speaker) {
+      df_text_query(engText, false, "user", filText);
+    } else {
+      df_text_query(engText, false, "bot", filText);
+    }
+
+    // } else {
+    // df_text_query(engText, false, "bot", "");
+    // }
+  }
+
   function _handleQuickReplyPayload(event, payload, text) {
     if (text != "I have a code") {
-      df_text_query(text, false);
+      // df_text_query(text, false);
+      _handleTranslate(text, text, true);
     }
 
     event.preventDefault();
@@ -796,28 +994,128 @@ function Chatbot(props) {
       case "recommended_yes":
         df_event_query("SHOW_RECOMMENDATIONS");
         break;
+      case "assessment_meron_companion":
+        setShowModalLogin(true);
+        setassessment_meron_companion(true);
+        _handleTranslate(
+          `Nais kong panatilihing mo makiugnay kay $companion. Maaari mo siyang kausapin o bigyan ng indikasyon na-aayon sa iyong nararamdaman o naiisip.`,
+          `Nais kong panatilihing mo makiugnay kay $companion. Maaari mo siyang kausapin o bigyan ng indikasyon na-aayon sa iyong nararamdaman o naiisip.`
+        );
+
+        _handleTranslate(
+          `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`,
+          `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`
+        );
+
+        _handleTranslate(
+          `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`,
+          `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`
+        );
+
+        _handleTranslate(
+          `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`,
+          `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`
+        );
+        // df_text_query(
+        //   `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
+        //   false,
+        //   `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
+        //   "bot",
+        //   "map"
+        // );
+        break;
+      case "assessment_wala_companion":
+        df_event_query("ASSESSMENT_DONE");
+        _handleTranslate(
+          `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`,
+          `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`
+        );
+
+        _handleTranslate(
+          `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`,
+          `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`
+        );
+
+        _handleTranslate(
+          `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`,
+          `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`
+        );
+        df_text_query(
+          `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
+          false,
+          `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
+          "bot",
+          "map"
+        );
+        break;
       case "training_masterclass":
         df_event_query("MASTERCLASS");
         break;
       case "training_demographics-continue":
         // setShowMoods(true);
+
+        _handleTranslate(
+          `Hi ${userLoggedIn.first_name}, I'm glad you are here today. Maybe we could start by getting your moods. I want you to pick the most likely feelings you are experiencing right now first.`,
+          `Hi ${userLoggedIn.first_name}, natutuwa ako na narito ka ngayon. Siguro maaari nating simulan sa pagkuha ng iyong mood. Pumili ka ng isa dito sa ating 'emotion box'`
+        );
+
         df_event_query("ABC_GETMOOD");
         break;
+
       case "abc_continue_step_1":
         df_event_query("ABC_GETMOOD");
         break;
-      case "proceed_to_a":
-        setFocusThoughtDiaryLetter("a");
-        df_event_query("ABC_THOUGHT_DIARY_EXPLAINING_A");
+      // case "proceed_to_a":
+
+      //   break;
+      case "proceed_to_a_assess":
         break;
       case "show_thought_diary":
-        setGetMoodWhenStartedStep1(text);
+        setGetMoodWhenStartedStep1(text.toLowerCase());
+        _handleTranslate(
+          `Okay, while I was viewing your responses, it occurred to me that this would be a good subject for us to go through in my thought diary tool.
+          I'm using this tool to try to figure out why your mood has changed. Because I want you to understand how important your thoughts may be in affecting your mood.`,
+          `Okay, habang tinitingnan ko ang iyong mga tugon, naisip ko na ito ay isang magandang paksa para pag-usapan natin sa aking tool sa talaarawan sa pag-iisip. Ginagamit ko ang tool na ito para subukang malaman kung bakit nagbago ang iyong mood. Dahil gusto kong subukan mong maunawaan kung gaano kahalaga ang iyong mga iniisip sa nakakaapekto sa iyong mood.`
+        );
+        _handleTranslate(
+          `Okay, so I'd like you to follow along with the thought diary tool, and we've also got it shown here in the background so that we can put down things there as well.`,
+          `Baka gusto mong tingnan ang tool na ito para mas maunawaan kung ano ang tungkol dito. Dahil bago ka rito, maaaring gusto mong tingnan ang sunud-sunod na gabay na ito kung paano gamitin ang tool na ito ngunit huwag mag-alala, ituturo ko sa iyo ito.`
+        );
+
         return df_event_query("ABC_THOUGHT_DIARY_NOT_INTRO");
       case "yes_mood_different":
         // setShowMoods(true);
         break;
       case "abc_explaining_c_nothing":
         df_event_query("ABC_THOUGHT_DIARY_C_RATE_EMOTION");
+        _handleTranslate(
+          `Okay, so I understand that you've had to deal with a lot of the consequences. However, these are only a few of the ones I noted. '${_handleMoods(
+            getHotEmotionCAnswer
+          )}' and '${_handleShowList(getOtherEmotionAll)}'`,
+          `Okay, naiintindihan ko na kinailangan mong harapin ang maraming masasamang bagay na ito. Gayunpaman, ilan lamang ito sa mga nabanggit mo. '${_handleMoods(
+            getHotEmotionCAnswer
+          )}' and '${_handleShowList(getOtherEmotionAll)}'`
+        );
+        if (getAfterFeelings) {
+          _handleTranslate(
+            `And you did this after experiencing those.'${getAfterFeelingsChat}'`,
+
+            `At ginawa mo ito pagkatapos mong maranasan ang mga ito.'${getAfterFeelingsChat}'`
+          );
+        }
+        _handleTranslate(
+          `Okay, so that '${_handleMoods(
+            getHotEmotionCAnswer
+          )}' feeling, um. When you say you felt it ${getMoodWhenStartedStep1} give me an idea of how strong it was.`,
+          `Okay, itong '${_handleMoods(
+            getHotEmotionCAnswer
+          )}' na feeling, um. Kapag sinabi mong naramdaman mo ito ${getMoodWhenStartedStep1} bigyan mo ako ng ideya kung gaano ito sama.'`
+        );
+        _handleTranslate(
+          `If you had to give it a rating out of ten (1-10), how would you rate it?`,
+          `Kung kailangan mong bigyan ito ng rating sa sampu (1-10), paano mo ito ire-rate?`
+        );
+
         setGetRateEmotion(true);
         setShowChatBox(false);
         // console.log("event");
@@ -832,31 +1130,47 @@ function Chatbot(props) {
       case "explaining_b_get_thought_other_done":
         setMaxInput(0);
         setShowChatBox(false);
-        df_text_query(
-          `Okay, um, before  we kind of leap into that, the idea of kind of challenging or getting curious about some of those thoughts.
-          `,
-          false,
-          "bot"
+        // df_text_query(
+        //   `Okay, um, before  we kind of leap into that, the idea of kind of challenging or getting curious about some of those thoughts.
+        //   `,
+        //   false,
+        //   "bot"
+        // );
+        _handleTranslate(
+          `Okay, um, before  we kind of leap into that, the idea of kind of challenging or getting curious about some of those thoughts.`,
+          `Okay, ahhm, bago tayo pumunta doon, ang hamonin o pag-usisain patungkol sa isa sa mga kaisipang na ibahagi mo.`
         );
-        df_text_query(
-          `There's one more thing thing I wanted to do and that was to have a look and see if we could notice any of those unhelpful thinking styles.
-            `,
-          false,
-          "bot"
+        _handleTranslate(
+          `There's one more thing thing I wanted to do and that was to have a look and see if we could notice any of those 'unhelpful thinking styles'.`,
+          `May bagay lang akong gustong gawin, at iyon ay tingnan kung mapapansin natin ang alin sa mga 'unhelpful thinking styles' na ito.`
         );
-        df_text_query(
-          `Now, I'm just going to show you this graphic interface about unhelpful thinking styles.
-            `,
-          false,
-          "bot"
+        // df_text_query(
+        //   `There's one more thing thing I wanted to do and that was to have a look and see if we could notice any of those unhelpful thinking styles.
+        //     `,
+        //   false,
+        //   "bot"
+        // );
+        _handleTranslate(
+          `Now, I'm just going to show you this graphic interface about 'unhelpful thinking styles'.`,
+          `Ngayon, ipapakita ko lang sa iyo ang graphic interface na ito patungkol sa 'unhelpful thinking styles'`
         );
+        // df_text_query(
+        //   `Now, I'm just going to show you this graphic interface about unhelpful thinking styles.
+        //     `,
+        //   false,
+        //   "bot"
+        // );
 
-        df_text_query(
-          `I want you to remember that these were the things that are really common when people are having problem and they start to think in these characteristic ways and some of them you'll notice happening for you a lot of the time and some not so much.
-            `,
-          false,
-          "bot"
+        _handleTranslate(
+          `I want you to remember that these were the things that are really common when people are having problem and they start to think in these characteristic ways and some of them you'll notice happening for you a lot of the time and some not so much.`,
+          `Nais kong tandaan mo na ito ang mga bagay na talagang karaniwan na iniisip, kapag ang mga tao ay nagkakaroon ng problema sila ay nagsisimulang mag-isip sa isa sa mga katangiang ito. At ang ilan sa mga ito ay mapapansin mong nangyayari sa iyo ng maraming beses at ang ilan ay hindi gaanong beses.`
         );
+        // df_text_query(
+        //   `I want you to remember that these were the things that are really common when people are having problem and they start to think in these characteristic ways and some of them you'll notice happening for you a lot of the time and some not so much.
+        //     `,
+        //   false,
+        //   "bot"
+        // );
         df_event_query("ABC_THOUGHT_DIARY_SHOW_UTS");
         setFocusThoughtDiaryLetter("b");
         // console.log(getOtherThoughtBool, "getOtherThoughtBool");
@@ -871,31 +1185,48 @@ function Chatbot(props) {
 
         // setGiveUTS(true);
         // setGetUTSAnswer()
-
-        df_text_query(
+        _handleTranslate(
           `I'm just wondering that when you look at these thoughts here: 
           '${_handleShowList(getOtherThoughtB)}'`,
-          false,
-          "bot"
+          `Kapag tiningnan mo ang mga kaisipang ito dito: 
+          '${_handleShowList(getOtherThoughtB)}'`
         );
-        df_text_query(
-          `
-          Is there any of those unhelpful thinking styles that pop out at you that will let you think. "Yeah I reckon that could be a bit of what's happening".
-          
-            `,
-          false,
-          "bot"
+        // df_text_query(
+        //   `Kapag tiningnan mo ang mga kaisipang ito dito:
+        //   '${_handleShowList(getOtherThoughtB)}'`,
+        //   false,
+        //   "bot"
+        // );
+        // df_text_query(
+        //   `
+        //   Is there any of those unhelpful thinking styles that pop out at you that will let you think. "Yeah I reckon that could be a bit of what's happening".
+
+        //     `,
+        //   false,
+        //   "bot"
+        // );
+        _handleTranslate(
+          `Is there any of those unhelpful thinking styles that pop out at you that will let you think. "Yeah I reckon that could be a bit of what's happening"`,
+          `Mayroon bang isa sa mga 'unhelpful thinking styles' na nakita mo, na mapapaisip ka na: "Oo, sa palagay ko ito ang nangyayari sa akin."`
         );
-        df_text_query(
+        _handleTranslate(
           `Read the Description only for now, disregard the Disputation Questions.`,
-          false,
-          "bot"
+          `Basahin muna ang deskripsyon sa ngayon, at huwag muna pansinin ang mga 'Disputation Questions'`
         );
-        df_text_query(
+        // df_text_query(
+        //   `Read the Description only for now, disregard the Disputation Questions.`,
+        //   false,
+        //   "bot"
+        // );
+        _handleTranslate(
           `Are you ready to start identifying your unhelpful thinking styles?`,
-          false,
-          "bot"
+          `Handa ka na bang simulan ang pagtukoy sa iyong mga 'unhelpful thinking styles'?`
         );
+        // df_text_query(
+        //   `Are you ready to start identifying your unhelpful thinking styles?`,
+        //   false,
+        //   "bot"
+        // );
 
         df_event_query("ABC_THOUGHT_DIARY_SHOW_CONFIRM_UTS");
         setFocusThoughtDiaryLetter("b_uts");
@@ -908,11 +1239,15 @@ function Chatbot(props) {
         setGetUTSBool(true);
         setShowChatBox(false);
         // setGetUTS(true);
-        df_text_query(
-          `Click one of the Unhelpful Thinking Styles below! `,
-          false,
-          "bot"
+        _handleTranslate(
+          `Click one of the Unhelpful Thinking Styles below!`,
+          `Click one of the Unhelpful Thinking Styles below!`
         );
+        // df_text_query(
+        //   `Click one of the Unhelpful Thinking Styles below! `,
+        //   false,
+        //   "bot"
+        // );
         break;
       // case "welcome-login":
       //   break;
@@ -932,7 +1267,7 @@ function Chatbot(props) {
       // break;
       // break;
       default:
-        df_text_query(text, true);
+        df_text_query(text, true, "user", text);
         break;
     }
   }
@@ -944,13 +1279,30 @@ function Chatbot(props) {
 
     console.log("Assessment Result:", res, "Assessment Total:", total);
 
-    df_event_query("ASSESSMENT_DONE");
+    // df_event_query("ASSESSMENT_DONE");
+    df_event_query("ASSESSMENT_COMPANION");
+
+    _handleTranslate(
+      `Meron ka bang kasama ngayon? Ano ang kanyang pangalan?`,
+      `Meron ka bang kasama ngayon? Ano ang kanyang pangalan?`,
+      true
+    );
     setClaimCode(false);
   }
 
   function _handleMoodResult() {
-    df_text_query(_handleMoods(selectedMoods), false);
+    // df_text_query(_handleMoods(selectedMoods), false);
+    _handleTranslate(
+      _handleMoods(selectedMoods),
+      _handleMoods(selectedMoods),
+      true
+    );
     df_event_query("ABC_STEP1_MOOD_ASSESS");
+    _handleTranslate(
+      `Do you have any ideas when these mood(s) first appeared?`,
+      `Okay, mayroon ka bang idea kung kailan nagsimula mong maramdaman ang mga mood na ito?`
+    );
+
     setGetMoodStep1(true);
     // setShowMoods(false);
     // df_event_query("ASSESSMENT_DONE");
@@ -959,8 +1311,17 @@ function Chatbot(props) {
 
   function _handleHotMoodResult() {
     setGetMoodHot(true);
-    df_text_query(_handleMoods(selectedMoods), false);
+    // df_text_query(_handleMoods(selectedMoods), false);
+    _handleTranslate(
+      `${_handleMoods(selectedMoods)}`,
+      `${_handleMoods(selectedMoods)}`,
+      true
+    );
     df_event_query("ABC_THOUGHT_DIARY_C_OTHER_MOOD");
+    _handleTranslate(
+      `Is there anything else you've noticed? just in terms of how you felt in your body or any other feelings you experienced. Put 5 inputs. You can also type it in the chat box.`,
+      `May napapansin ka pa ba? Sa kung ano ang naramdaman mo sa iyong katawan o kahit anumang damdamin na naranasan mo nung panahon na yun. Mag lagay ka ng 5 inputs. Pwede mo din e type ito sa chat box`
+    );
 
     // setShowMoods(false);
     // df_event_query("ASSESSMENT_DONE");
@@ -970,12 +1331,21 @@ function Chatbot(props) {
   function _handleOtherMoodResult() {
     setGetMoodOther(true);
     setShowMoodsOther(false);
-    df_text_query(_handleMoods(getOtherEmotionCAnswer), false);
+    // df_text_query(_handleMoods(getOtherEmotionCAnswer), false);
+    _handleTranslate(
+      `${_handleMoods(getOtherEmotionCAnswer)}`,
+      `${_handleMoods(getOtherEmotionCAnswer)}`,
+      true
+    );
     if (maxInput === 5) {
       setGetMoodOther(false);
       // df_text_query(_handleMoods(getOtherEmotionCAnswer), false);
       setMaxInput(0);
       df_event_query("ABC_THOUGHT_DIARY_C_AFTER_MOODS");
+      _handleTranslate(
+        `So what did you do after you experienced this feeling(s)?`,
+        `Anong ginawa mo pagkatapos mong maranasan ang mga pakiramdam na ito?`
+      );
       setShowChatBox(true);
     }
     // setShowMoods(false);
@@ -989,6 +1359,10 @@ function Chatbot(props) {
         setGetMoodOther(false);
         setMaxInput(0);
         df_event_query("ABC_THOUGHT_DIARY_C_AFTER_MOODS");
+        _handleTranslate(
+          `So what did you do after you experienced this feeling(s)?`,
+          `Anong ginawa mo pagkatapos mong maranasan ang mga pakiramdam na ito?`
+        );
       } else {
         setGetMoodOther(true);
       }
@@ -1034,9 +1408,23 @@ function Chatbot(props) {
 
   function renderOneMessage(message, i) {
     if (message.msg && message.msg.text && message.msg.text.text) {
-      return (
-        <Message key={i} speaks={message.speaks} text={message.msg.text.text} />
-      );
+      if (switchLanguage) {
+        return (
+          <Message
+            key={i}
+            speaks={message.speaks}
+            text={message.msg.text.textFil}
+          />
+        );
+      } else {
+        return (
+          <Message
+            key={i}
+            speaks={message.speaks}
+            text={message.msg.text.text}
+          />
+        );
+      }
     } else if (message.msg && message.msg.map) {
       return (
         <>
@@ -1175,7 +1563,7 @@ function Chatbot(props) {
                   >
                     Login
                   </a>
-                  <a
+                  {/* <a
                     style={{ margin: 3 }}
                     onClick={() => {
                       // df_text_query("Show Thought Diary", false);
@@ -1188,7 +1576,7 @@ function Chatbot(props) {
                     className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
                   >
                     Magpatuloy
-                  </a>
+                  </a> */}
                 </span>
               </div>
             </div>
@@ -1241,6 +1629,7 @@ function Chatbot(props) {
             }
             setAssessmentScore={setAssessmentScore}
             assessmentScore={assessmentScore}
+            toast={toast}
           />
         </>
       );
@@ -1293,15 +1682,11 @@ function Chatbot(props) {
               )
             : ""} */}
 
-          {renderOneMessageStatic(
+          {/* {renderOneMessageStatic(
             message.msg.payload.fields.mood_assess_text.stringValue
-          )}
+          )} */}
           <QuickReplies
-            text={
-              message.msg.payload.fields.mood_assess_text.stringValue
-                ? message.msg.payload.fields.mood_assess_text.stringValue
-                : null
-            }
+            text={""}
             key={i}
             replyClick={_handleQuickReplyPayload}
             onChange={() => {
@@ -1342,8 +1727,29 @@ function Chatbot(props) {
                     style={{ margin: 3 }}
                     onClick={() => {
                       // df_text_query("Show Thought Diary", false);
+                      _handleTranslate(
+                        `Show Thought Diary`,
+                        `Show Thought Diary`,
+                        true
+                      );
                       setShowThoughtDiaryTool(true);
-                      // setShowChatBox(true);
+                      df_event_query("ABC_THOUGHT_DIARY_EXPLAINING_A");
+                      _handleTranslate(
+                        `So keep in mind that the A) part is where we just write down what happened.`,
+                        `Tandaan na ang A) na bahagi ay kung saan isusulat lang natin ang nangyari.`
+                      );
+                      _handleTranslate(
+                        `So, when you mention "${getMoodWhenStartedStep1}", what time and place do you think you first noticed the change in your mood? What are you ${_handleMoods(
+                          getHotEmotionCAnswer
+                        )}? What makes you feel ${_handleMoods(
+                          getHotEmotionCAnswer
+                        )}? When did it happen? Do you remember where it happened?`,
+                        `Kapag sinabi mong  "${getMoodWhenStartedStep1}", sa anong oras at lugar sa tingin mo nung una mong napansin ang pagbabago sa iyong mood? Bakit at sa anong dahilan ka ${_handleMoods(
+                          getHotEmotionCAnswer
+                        )}? Kailan at saan to nagsimula? Naaalala mo ba kung saang lugar ito nagsimula?`
+                      );
+                      setFocusThoughtDiaryLetter("a");
+                      setShowChatBox(true);
                     }}
                     className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
                   >
@@ -1356,13 +1762,13 @@ function Chatbot(props) {
             ""
           )}
 
-          {showThoughtDiaryTool
+          {/* {showThoughtDiaryTool
             ? renderOneMessageStatic(
                 "You might want to have a look at this tool to get a better sense of what it's all about. But I will walk you through it."
               )
-            : ""}
+            : ""} */}
 
-          {showThoughtDiaryTool ? (
+          {/* {showThoughtDiaryTool ? (
             <div>
               <QuickReplies
                 text={
@@ -1379,7 +1785,7 @@ function Chatbot(props) {
             </div>
           ) : (
             ""
-          )}
+          )} */}
         </>
       );
     } else if (
@@ -1390,25 +1796,31 @@ function Chatbot(props) {
     ) {
       return (
         <>
-          {renderOneMessageStatic(
-            `So, when you mention '${getMoodWhenStartedStep1}' what time and place do you think you first noticed the change in your mood? `
-          )}
+          {/* {renderOneMessageStatic(
+            `So, when you mention ${getMoodWhenStartedStep1}, what time and place do you think you first noticed the change in your mood? What makes you feel ${_handleMoods(
+              getHotEmotionCAnswer
+            )}? When did it happen? Can you recall where it occur?`
+          )} */}
 
-          {renderOneMessageStatic(
+          {/* {renderOneMessageStatic(
             `Answer this question: 
-            ${" "} Was it yesterday? last week? last month? last year? last decade? When did it occur? at school? at work? at home? while playing? while working? Try to put it in a lesser sentence so that we can fit it here in the thought diary. `
-          )}
+            ${" "} Was it yesterday? last week? last month? last year? last decade? When did it occur? at school? at work? at home? while playing? while working?  `
+          )} */}
 
           {activateGetAdverseStep3 === 0 ? setActivateGetAdverseStep3(1) : ""}
 
-          {activateGetAdverseStep3 === 2
+          {activateGetAdverseStep3 === 2 && !switchLanguage
             ? renderOneMessageStatic(
-                `
-            Okay I got your answer here.'${getAdverseStep3UseState}' `
+                `Okay I got your answer here.'${getAdverseStep3UseState}'`
+              )
+            : ""}
+          {activateGetAdverseStep3 === 2 && switchLanguage
+            ? renderOneMessageStatic(
+                `Okay, nakuha ko yung sinagot mo. '${getAdverseStep3UseState}'`
               )
             : ""}
 
-          {activateGetAdverseStep3 === 2 && getAdverseStep3 === null ? (
+          {activateGetAdverseStep3 === 2 ? (
             <div
               className={
                 "flex justify-center space-x-2  p-2 rounded-lg bottom-0 "
@@ -1423,9 +1835,37 @@ function Chatbot(props) {
                   <a
                     style={{ margin: 3 }}
                     onClick={() => {
-                      df_text_query(getAdverseStep3UseState, false);
+                      _handleTranslate(
+                        getAdverseStep3UseState,
+                        getAdverseStep3UseState,
+                        true
+                      );
+                      // df_text_query(getAdverseStep3UseState, false);
                       df_event_query("ABC_THOUGHT_DIARY_EXPLAINING_C");
+                      _handleTranslate(
+                        `Okay, so what was that change in your mood that you noticed?  So now I'm in the C) part, which is about the consequences or how you felt afterwards.`,
+                        `Okay, ano ang pagbabago sa iyong mood na napansin mo? Ngayon ako ay nasa C) na bahagi, na tungkol sa mga kahihinatnan o kung ano ang naramdaman mo pagkatapos.                       `
+                      );
+
+                      _handleTranslate(
+                        `I want to determine your "Hot Emotion" or what you felt after what you said in the A) part. The exact mood that you thought during those time.`,
+                        `Gusto kong malaman yung "Hot Emotion" o kung ano yung mood mo pagkatapos ng sinabi mo sa A) na bahagi. Yuung eksaktong naramdaman mo noong panahon na yun.`
+                      );
+                      _handleTranslate(
+                        `So you mentioned earlier about your present mood: '${_handleMoods(
+                          getHotEmotionCAnswer
+                        )}'`,
+                        `Na mention mo kanina sa akin yung present mood mo: '${_handleMoods(
+                          getHotEmotionCAnswer
+                        )}'`
+                      );
+                      _handleTranslate(
+                        `Is it still the ones you feel when we go back to the time after you said this: '${getAdverseStep3UseState}' or is your mood different back then? If yes can you identify your mood back then again for me?`,
+                        `Ito pa rin ba ang nararamdaman mo kapag bumalik tayo sa panahon pagkatapos mong sabihin ito? '${getAdverseStep3UseState}' `
+                      );
+                      setActivateGetAdverseStep3(3);
                       setGetAdverseStep3(getAdverseStep3UseState);
+
                       setFocusThoughtDiaryLetter("c");
                       setShowChatBox(false);
                     }}
@@ -1449,15 +1889,15 @@ function Chatbot(props) {
     ) {
       return (
         <>
-          {renderOneMessageStatic(
+          {/* {renderOneMessageStatic(
             `So you mentioned earlier about your present mood(s): '${_handleMoods(
               getHotEmotionCAnswer
             )}' `
-          )}
+          )} */}
 
-          {renderOneMessageStatic(
+          {/* {renderOneMessageStatic(
             `Is it still the ones you feel when we go back to the time after you said this: '${getAdverseStep3}' or is your mood different back then? If yes can you identify your mood back then again for me? `
-          )}
+          )} */}
 
           {!getMoodHot ? (
             <div
@@ -1600,22 +2040,22 @@ function Chatbot(props) {
         <>
           {/* {console.log(getRateEmotion, "waw sadsad")} */}
 
-          {renderOneMessageStatic(`Okay, so I understand that you've had to
+          {/* {renderOneMessageStatic(`Okay, so I understand that you've had to
               deal with a lot of the consequences. However, these are only a few
               of the ones I noted. '${_handleMoods(getHotEmotionCAnswer)}' and
               '${_handleShowList(getOtherEmotionAll)}'`)}
           {getAfterFeelings
             ? renderOneMessageStatic(`And you did this after experiencing the
               consequences.'${getAfterFeelingsChat}'`)
-            : ""}
-          {renderOneMessageStatic(
+            : ""} */}
+          {/* {renderOneMessageStatic(
             `Okay, so that '${_handleMoods(
               getHotEmotionCAnswer
-            )}' feeling, um... When you say you felt it '${getMoodWhenStartedStep1}' give me an idea of how strong it was.`
-          )}
-          {renderOneMessageStatic(
+            )}' feeling, um... When you say you felt it ${getMoodWhenStartedStep1} give me an idea of how strong it was.`
+          )} */}
+          {/* {renderOneMessageStatic(
             `If you had to give it a rating out of ten (1-10), how would you rate it?`
-          )}
+          )} */}
         </>
       );
     } else if (
@@ -2350,19 +2790,28 @@ function Chatbot(props) {
   }
   function _handleUTSClick(title) {
     if (getUTSBool) {
-      df_text_query(title, false, "user");
+      // df_text_query(title, false, "user");
+      _handleTranslate(`${title}`, `${title}`, true);
 
-      df_text_query(
+      _handleTranslate(
         `Which one of these do you think might be it because I think you're probably right.`,
-        false,
-        "bot"
+        `Alin sa mga ito ang napili mo? dahil sa tingin ko marahil ay tama ka.`
       );
+      // df_text_query(
+      //   `Which one of these do you think might be it because I think you're probably right.`,
+      //   false,
+      //   "bot"
+      // );
 
       // console.log(getOtherThoughtB);
-      df_text_query(
+      // df_text_query(
+      //   `Which one do you think might be a "${title}"`,
+      //   false,
+      //   "bot"
+      // );
+      _handleTranslate(
         `Which one do you think might be a "${title}"`,
-        false,
-        "bot"
+        `Alin sa tingin mo dito ang "${title}"?`
       );
       setGetUTS(title);
     }
@@ -2433,9 +2882,10 @@ function Chatbot(props) {
   // jsx
   return (
     <div>
+      <ToastContainer />
       <div className="z-40">
         {showBot ? (
-          <div className="flex flex-col  md:w-96 xl:w-[500px] shadow-lg w-full border-2  bottom-0 bg-white right-0 md:bottom-5   md:right-5  rounded-[20px] fixed  h-full md:h-3/4 ">
+          <div className="flex flex-col  md:w-96 xl:w-[500px] shadow-lg w-full border-2    bg-white right-0 bottom-[120px]  md:right-5  rounded-[20px] fixed  h-full md:h-3/4 ">
             {/* nav */}
             <nav className="border-b-[3px] border-[#E4E4E4]">
               <div className="p-4 flex flex-row justify-between ">
@@ -2443,6 +2893,22 @@ function Chatbot(props) {
                   <span className="mr-2 self-center h-2 w-2 shadow-lg   rounded-full  bg-green-400 "></span>
                   <p>Ulayaw</p>
                 </div>
+                <ul className="right-0 cursor-pointer text-white font-semibold rounded-md bg-[#5DCFFF] h-[28px] w-[200px] flex justify-center transform hover:scale-[1.050] hover:opacity-80">
+                  <li className=" ">
+                    <p
+                      // href="/"
+                      // onClick={() => {
+                      //   setShowBot(!showBot);
+                      // }}
+                      className=" text-[17px] select-none"
+                      onClick={() => setSwitchLanguage(!switchLanguage)}
+                    >
+                      {switchLanguage
+                        ? "Translate to English"
+                        : "Translate to Filipino"}
+                    </p>
+                  </li>
+                </ul>
                 <ul className="right-0 cursor-pointer text-white font-semibold rounded-full bg-[#5DCFFF] h-[28px] w-[28px] flex justify-center transform hover:scale-[1.050]">
                   <li className=" ">
                     <a
@@ -2604,6 +3070,12 @@ function Chatbot(props) {
             setShowModal={setShowModalLogin}
             setQuickRepliesWelcome={setQuickRepliesWelcome}
             location={location.coordinates}
+            setUserLoggedIn={setUserLoggedIn}
+            df_event_query={df_event_query}
+            df_text_query={df_text_query}
+            _handleTranslate={_handleTranslate}
+            assessment_meron_companion={assessment_meron_companion}
+            setassessment_meron_companion={setassessment_meron_companion}
             // history={props.history}
           />
         ) : (
@@ -2614,7 +3086,11 @@ function Chatbot(props) {
       </div>
       <div className="z-0 ">{showThoughtDiaryTool ? <ThoughtDiary /> : ""}</div>
       {showUTS ? (
-        <UTS _handleUTSClick={_handleUTSClick} getUTSBool={getUTSBool} />
+        <UTS
+          _handleUTSClick={_handleUTSClick}
+          getUTSBool={getUTSBool}
+          switchLanguage={switchLanguage}
+        />
       ) : (
         ""
       )}

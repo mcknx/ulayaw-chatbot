@@ -29,6 +29,7 @@ import Activate from "./Activate";
 import ForgetPassword from "./ForgetPassword";
 import Reset from "./Reset.jsx";
 
+import Admin from "./Admin";
 import About from "./pages/About";
 import Shop from "./shop/Shop";
 import Chatbot from "./chatbot/Chatbot";
@@ -212,6 +213,13 @@ function App() {
                                                     exact
                                                     render={(props) => (
                                                       <Reset {...props} />
+                                                    )}
+                                                  />
+                                                  <Route
+                                                    path="/admin"
+                                                    exact
+                                                    render={(props) => (
+                                                      <Admin {...props} />
                                                     )}
                                                   />
 
