@@ -48,10 +48,11 @@ exports.createCodeController = async (req, res) => {
   console.log(codes[0]);
 
   let companion = {};
+  let user_id = "1";
   let uniqueCode = codes[0];
   const newCode = new Code({
     admin_id,
-    // user_id,
+    user_id,
     admin_first_name,
     admin_last_name,
     admin_contact_no,

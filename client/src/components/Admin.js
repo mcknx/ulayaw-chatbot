@@ -411,17 +411,20 @@ function CreateCode(props) {
             </span>
 
             {/* submit btn */}
-
-            <button
-              className="self-center rounded-[38px] bg-[#5DCFFF] space-x-[10px]  m-8 py-[20px] w-[405px] text-white text-[24px]"
-              onClick={(e) => {
-                // if (showRegister) {
-                handleSubmit(e);
-                // }
-              }}
-            >
-              Generate Code
-            </button>
+            {!createdCode ? (
+              <button
+                className="self-center rounded-[38px] bg-[#5DCFFF] space-x-[10px]  m-8 py-[20px] w-[405px] text-white text-[24px]"
+                onClick={(e) => {
+                  // if (showRegister) {
+                  handleSubmit(e);
+                  // }
+                }}
+              >
+                Generate Code
+              </button>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </div>
