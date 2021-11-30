@@ -38,6 +38,6 @@ router.post("/password/reset", resetPasswordValidator, resetPasswordController);
 
 router.post("/googlelogin", googleController);
 router.post("/datasetDF", validInputDatasetValidator, inputDatasetController);
-router.post("/translate", inputTranslateController);
+// router.post("/translate", inputTranslateController);
 // router.get("/fetchUsers", fetchAllController);
 module.exports = router;

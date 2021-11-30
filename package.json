@@ -55,10 +55,13 @@
     "lodash": "^4.17.21",
     "mongoose": "^5.13.13",
     "morgan": "^1.10.0",
+    "node-code-generator": "^1.0.3",
     "react-facebook-login": "^4.1.1",
     "react-hot-toast": "^2.1.1",
     "react-textfit": "^1.1.1",
     "sentiment": "^5.0.2",
+    "tensify": "^0.0.4",
+    "universal-cookie-express": "^4.0.3",
     "use-fit-text": "^2.4.0",
     "wordpos": "^2.1.0",
     "write-good": "^1.0.8"

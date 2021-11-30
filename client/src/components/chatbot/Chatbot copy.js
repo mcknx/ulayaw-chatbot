@@ -41,7 +41,7 @@ import ulayawFace from "../../assets/ulayaw.png";
 
 const cookies = new Cookies();
 
-function Chatbot(props) {
+function ChatbotCopy(props) {
   const [messages, setMessages] = useState([]);
   const [messagesFilipino, setMessagesFilipino] = useState([]);
   const [showBot, setShowBot] = useState(true);
@@ -2835,6 +2835,18 @@ function Chatbot(props) {
         `Which one of these do you think might be it because I think you're probably right.`,
         `Alin sa mga ito ang napili mo? dahil sa tingin ko marahil ay tama ka.`
       );
+      // df_text_query(
+      //   `Which one of these do you think might be it because I think you're probably right.`,
+      //   false,
+      //   "bot"
+      // );
+
+      // console.log(getOtherThoughtB);
+      // df_text_query(
+      //   `Which one do you think might be a "${title}"`,
+      //   false,
+      //   "bot"
+      // );
       _handleTranslate(
         `Which one do you think might be a "${title}"`,
         `Alin sa tingin mo dito ang "${title}"?`
@@ -2844,6 +2856,21 @@ function Chatbot(props) {
     setGetUTSThoughtBool(true);
     df_event_query("ABC_THOUGHT_DIARY_SELECT_UTS_THOUGHT");
   }
+  // function _handleMoods(moodContainer) {
+  //   let res = "";
+  //   for (let i = 0; i < moodContainer.length; i++) {
+  //     if (i === moodContainer.length - 1) {
+  //       if (moodContainer[i].select === true) {
+  //         res += moodContainer[i].mood_text + ".";
+  //       }
+  //     } else {
+  //       if (moodContainer[i].select === true) {
+  //         res += moodContainer[i].mood_text + ",";
+  //       }
+  //     }
+  //   }
+  //   return res;
+  // }
 
   function renderMessages(returnedMessages) {
     // if (cookies.get("termsAndConditions")) {
@@ -3109,7 +3136,7 @@ function Chatbot(props) {
   );
 }
 
-function ModalTermsAndConditions({ showModal, setShowModal }) {
+function ModalTermsAndConditionsCopy({ showModal, setShowModal }) {
   return (
     <div className="fixed top-0 w-full h-full bg-black bg-opacity-[0.75] ">
       <div className="h-full flex flex-col  justify-center align-center">
@@ -3182,7 +3209,7 @@ function ModalTermsAndConditions({ showModal, setShowModal }) {
   );
 }
 
-function ThoughtDiary() {
+function ThoughtDiaryCopy() {
   const { getAdverseStep3, setGetAdverseStep3 } = useContext(
     GetAdverseAnswerContext
   );
@@ -3779,4 +3806,4 @@ function ThoughtDiary() {
     </div>
   );
 }
-export default withRouter(Chatbot);
+export default withRouter(ChatbotCopy);

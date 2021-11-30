@@ -7,6 +7,9 @@ var morgan = require("morgan");
 const cors = require("cors");
 const connectDB = require("./config/db");
 var asdfjkl = require("asdfjkl");
+const {
+  inputTranslateController,
+} = require("./controllers/auth.controller.js");
 
 var writeGood = require("write-good");
 
@@ -29,7 +32,15 @@ app.use(bodyParser.json());
 
 // Load routes
 const authRouter = require("./routes/auth.route");
-// const userRouter = require('./routes/user.route')
+const adminRouter = require("./routes/admin.route");
+const userApiRouter = require("./routes/useApi.route");
+// Use Routes
+
+app.use("/api/", authRouter);
+app.use("/api/", adminRouter);
+app.use("/api/", userApiRouter);
+// app.use("/api/", adminRouter);
+// app.use('/api', userRouter)
 
 if (process.env.NODE_ENV === "production") {
   // js and css files
@@ -66,11 +77,6 @@ if (process.env.NODE_ENV === "development") {
   );
   app.use(morgan("dev"));
 }
-
-// Use Routes
-app.use("/api/", authRouter);
-// app.use("/api/", adminRouter);
-// app.use('/api', userRouter)
 
 // const mongoose = require("mongoose");
 // mongoose.connect(config.mongoURI, {

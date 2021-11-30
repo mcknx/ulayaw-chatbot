@@ -63,6 +63,14 @@ exports.forgotPasswordValidator = [
     .withMessage("Must be a valid email address"),
 ];
 
+exports.createCodeValidator = [
+  check("email")
+    .not()
+    .isEmpty()
+    .isEmail()
+    .withMessage("Must be a valid email address"),
+];
+
 exports.resetPasswordValidator = [
   check("newPassword")
     .not()
