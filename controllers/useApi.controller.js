@@ -1,7 +1,7 @@
 // const User = require('../models/auth.model');
 // const expressJwt = require('express-jwt');
-const { translate } = require("@paiva/translation-google");
-// const translate = require("google-translate-api");
+// const { translate } = require("@paiva/translation-google");
+const translate = require("google-translate-api");
 // const translate = require("@vitalets/google-translate-api");
 // const translate = require("@asmagin/google-translate-api");
 
