@@ -10,8 +10,8 @@ const {
 
 // router.get("/user/:id", requireSignin, readController);
 router.get("/useApi/translate/:words", googleTranslate);
-router.get("/useApi/understand/:words", understandUserInputController);
-// router.post("/useApi/understand", understandUserInputController);
+// router.get("/useApi/understand/:words", understandUserInputController);
+router.post("/useApi/understand", understandUserInputController);
 
 // router.put('/user/update', requireSignin, updateController);
 // router.put('/admin/update', requireSignin, adminMiddleware, updateController);
