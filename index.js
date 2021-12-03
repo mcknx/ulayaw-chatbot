@@ -39,6 +39,7 @@ const userApiRouter = require("./routes/useApi.route");
 app.use("/api/", authRouter);
 app.use("/api/", adminRouter);
 app.use("/api/", userApiRouter);
+// app.use("/showPDF", );
 // app.use("/api/", adminRouter);
 // app.use('/api', userRouter)
 

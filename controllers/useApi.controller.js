@@ -19,6 +19,10 @@ const router = express.Router();
 var tensify = require("tensify");
 // const chatbot = require("../chatbot/chatbot");
 
+// exports.showPDFController = (req, res) => {
+//   return
+// }
+
 exports.googleTranslate = async (req, res) => {
   const inputData = req.params.words;
   console.log(inputData);
