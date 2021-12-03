@@ -17,6 +17,7 @@ function QuickReplies(props) {
   function renderQuickReply(reply, i) {
     return (
       <QuickReply
+        // mood_assess={props.mood_assess}
         key={i}
         click={_handleClick}
         showDiary={props.showDiary}

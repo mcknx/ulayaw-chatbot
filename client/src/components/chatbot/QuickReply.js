@@ -16,6 +16,18 @@ const QuickReply = (props) => {
             props.reply.structValue.fields.payload.stringValue,
             props.reply.structValue.fields.text.stringValue
           );
+          if (
+            props.reply.structValue.fields.payload.stringValue ===
+            "wala_na_mood_assess"
+          ) {
+            setShowChatBox(false);
+          }
+          if (
+            props.reply.structValue.fields.payload.stringValue ===
+            "meron_pa_mood_assess"
+          ) {
+            setShowChatBox(true);
+          }
           // console.log(props.showDiary, "diary");
           if (props.showDiary) setShowChatBox(false);
           else setShowChatBox(true);

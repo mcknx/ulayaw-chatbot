@@ -7,6 +7,7 @@ import { GetHotEmotionCAnswerContext } from "../../../Context/GetHotEmotionCAnsw
 import { GetOtherEmotionCAnswerContext } from "../../../Context/GetOtherEmotionCAnswerContext.js";
 import { ShowChatBox } from "../../../Context/ShowChatBox.js";
 import { MaxInputContext } from "../../../Context/MaxInputContext.js";
+import { ThoughtDiaryContext } from "../../../Context/ThoughtDiaryContext.js";
 
 // import Instance from "./Instance";
 
@@ -26,8 +27,14 @@ function GetMoods(props) {
   const { showChatBox, setShowChatBox } = useContext(ShowChatBox);
   const [showMoods, setShowMoods] = useState(false);
   const { maxInput, setMaxInput } = useContext(MaxInputContext);
+  const { showThoughtDiaryTool, setShowThoughtDiaryTool } =
+    useContext(ThoughtDiaryContext);
 
   useEffect(() => {
+    // if (props.showDiary) {
+
+    // }
+
     setShowChatBox(false);
     if (props.showAtEntrance) {
       setShowMoods(true);

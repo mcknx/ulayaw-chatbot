@@ -68,6 +68,7 @@ function Chatbot(props) {
   // Step 1: Start by getting the mood
   const [selectedMoods, setSelectedMoods] = useState([]);
   const [getMoodStep1, setGetMoodStep1] = useState(false);
+  const [activatingEvents, setActivatingEvents] = useState([]);
   const [getMoodWhenStartedStep1, setGetMoodWhenStartedStep1] = useState("");
 
   // Step 2: Intro or Not Intro Thought Diary
@@ -370,6 +371,9 @@ function Chatbot(props) {
       } else if (getMoodStep1) {
         // user response
         _handleTranslate(e.target.value, e.target.value, true);
+        setActivatingEvents((prevAct) => {
+          return [...prevAct, e.target.value];
+        });
 
         // bot reponse
         let msgUnderstood = await _handleTranslateEng(e.target.value, true);
@@ -379,11 +383,10 @@ function Chatbot(props) {
         _handleTranslate(`${engMsgUnderstood}`, `${filMsgUnderstood}`);
 
         // bot response
-        let assessStep1 = `Mayroon ka pa bang gusto sabihin? Pakilagay sa ibaba.`;
-        _handleTranslate(
-          `${await _handleTranslateEng(assessStep1)}?`,
-          assessStep1
-        );
+        let assessStep1 = `Mayroon ka pa bang gusto sabihin?`;
+        _handleTranslate(`Do you have anything else to say?`, assessStep1);
+        df_event_query("ABC_STEP1_MOOD_ASSESS");
+        setShowChatBox(false);
       } else if (activateGetAdverseStep3 === 1) {
         // _handleGetAdverseStep3(e);
         setGetAdverseStep3UseState(e.target.value);
@@ -1020,7 +1023,7 @@ function Chatbot(props) {
     }
   }
 
-  function _handleQuickReplyPayload(event, payload, text) {
+  async function _handleQuickReplyPayload(event, payload, text) {
     if (text != "I have a code") {
       // df_text_query(text, false);
       _handleTranslate(text, text, true);
@@ -1040,6 +1043,30 @@ function Chatbot(props) {
     switch (payload) {
       case "recommended_yes":
         df_event_query("SHOW_RECOMMENDATIONS");
+        break;
+      // case "meron_pa_mood_assess":
+      //   setShowChatBox(true);
+      //   // _handleTranslate(`Oo, Meron pa`, `Oo, Meron pa`);
+      //   break;
+      case "wala_na_mood_assess":
+        // setShowChatBox(false);
+        let moodAssessRes = `Ang lahat ng iyong ibinahagi ay parte ng dahilan ng mga kaganapan o "Activating events".`;
+        _handleTranslate(
+          `Everything you share is part of the cause of the events or "Activating events".`,
+          moodAssessRes
+        );
+        let selectActivatingEvent = `Pwede mo bang piliin ang isa sa mga 'activating events' na nailahad mo?`;
+        _handleTranslate(
+          `Can you select one of the 'activating events' you have described?`,
+          selectActivatingEvent
+        );
+
+        setShowThoughtDiaryTool(true);
+        setFocusThoughtDiaryLetter("a_1");
+        df_event_query("ABC_THOUGHT_DIARY_SELECT_A");
+        // console.log(activatingEvents);
+
+        // _handleTranslate(`Wala na`, `Wala na`);
         break;
       case "assessment_meron_companion":
         setShowModalLogin(true);
@@ -1117,19 +1144,19 @@ function Chatbot(props) {
       //   break;
       case "proceed_to_a_assess":
         break;
-      case "show_thought_diary":
-        setGetMoodWhenStartedStep1(text.toLowerCase());
-        _handleTranslate(
-          `Okay, while I was viewing your responses, it occurred to me that this would be a good subject for us to go through in my thought diary tool.
-          I'm using this tool to try to figure out why your mood has changed. Because I want you to understand how important your thoughts may be in affecting your mood.`,
-          `Okay, habang tinitingnan ko ang iyong mga tugon, naisip ko na ito ay isang magandang paksa para pag-usapan natin sa aking tool sa talaarawan sa pag-iisip. Ginagamit ko ang tool na ito para subukang malaman kung bakit nagbago ang iyong mood. Dahil gusto kong subukan mong maunawaan kung gaano kahalaga ang iyong mga iniisip sa nakakaapekto sa iyong mood.`
-        );
-        _handleTranslate(
-          `Okay, so I'd like you to follow along with the thought diary tool, and we've also got it shown here in the background so that we can put down things there as well.`,
-          `Baka gusto mong tingnan ang tool na ito para mas maunawaan kung ano ang tungkol dito. Dahil bago ka rito, maaaring gusto mong tingnan ang sunud-sunod na gabay na ito kung paano gamitin ang tool na ito ngunit huwag mag-alala, ituturo ko sa iyo ito.`
-        );
+      // case "show_thought_diary":
+      //   setGetMoodWhenStartedStep1(text.toLowerCase());
+      //   _handleTranslate(
+      //     `Okay, while I was viewing your responses, it occurred to me that this would be a good subject for us to go through in my thought diary tool.
+      //     I'm using this tool to try to figure out why your mood has changed. Because I want you to understand how important your thoughts may be in affecting your mood.`,
+      //     `Okay, habang tinitingnan ko ang iyong mga tugon, naisip ko na ito ay isang magandang paksa para pag-usapan natin sa aking tool sa talaarawan sa pag-iisip. Ginagamit ko ang tool na ito para subukang malaman kung bakit nagbago ang iyong mood. Dahil gusto kong subukan mong maunawaan kung gaano kahalaga ang iyong mga iniisip sa nakakaapekto sa iyong mood.`
+      //   );
+      //   _handleTranslate(
+      //     `Okay, so I'd like you to follow along with the thought diary tool, and we've also got it shown here in the background so that we can put down things there as well.`,
+      //     `Baka gusto mong tingnan ang tool na ito para mas maunawaan kung ano ang tungkol dito. Dahil bago ka rito, maaaring gusto mong tingnan ang sunud-sunod na gabay na ito kung paano gamitin ang tool na ito ngunit huwag mag-alala, ituturo ko sa iyo ito.`
+      //   );
 
-        return df_event_query("ABC_THOUGHT_DIARY_NOT_INTRO");
+      //   return df_event_query("ABC_THOUGHT_DIARY_NOT_INTRO");
       case "yes_mood_different":
         // setShowMoods(true);
         break;
@@ -1353,9 +1380,12 @@ function Chatbot(props) {
       true
     );
 
-    let ms = await _handleTranslateEng(inputData, false);
-    _handleTranslate(`${ms}?`, inputData);
-    // df_event_query("ABC_STEP1_MOOD_ASSESS");
+    // let ms = await _handleTranslateEng(inputData, false);
+    _handleTranslate(
+      `Based on your chosen mood. Do you have any idea when, where and how it started?`,
+      inputData
+    );
+
     // _handleTranslate(
     //   `Do you have any ideas when these mood(s) first appeared?`,
     //   `Okay, mayroon ka bang idea kung kailan nagsimula mong maramdaman ang mga mood na ito?`
@@ -1721,107 +1751,77 @@ function Chatbot(props) {
             selectedMoods={selectedMoods}
             setSelectedMoods={setSelectedMoods}
             showAtEntrance={true}
+            // showDiary={true}
             // setAssessmentScore={setAssessmentScore}
             // assessmentScore={assessmentScore}
           />
         </>
       );
-    }
-    // else if (
-    //   message.msg &&
-    //   message.msg.payload &&
-    //   message.msg.payload.fields &&
-    //   message.msg.payload.fields.mood_assess &&
-    //   getMoodStep1
-    // ) {
-    //   return (
-    //     <>
-    //       {/* {getMoodStep1
-    //         ? renderOneMessageStatic(
-    //             "Do you have any ideas when these mood(s) first appeared?"
-    //           )
-    //         : ""} */}
-
-    //       {/* {renderOneMessageStatic(
-    //         message.msg.payload.fields.mood_assess_text.stringValue
-    //       )} */}
-    //       <QuickReplies
-    //         text={""}
-    //         key={i}
-    //         replyClick={_handleQuickReplyPayload}
-    //         onChange={() => {
-    //           setShowThoughtDiaryTool(true);
-    //         }}
-    //         speaks={message.speaks}
-    //         payload={message.msg.payload.fields.mood_assess.listValue.values}
-    //         showDiary={true}
-    //       />
-    //       {/* {console.log(message)} */}
-    //     </>
-    //   );
-    // }
-    else if (
+    } else if (
       message.msg &&
       message.msg.payload &&
       message.msg.payload.fields &&
-      message.msg.payload.fields.show_diary
+      message.msg.payload.fields.mood_assess &&
+      getMoodStep1
     ) {
       return (
         <>
-          {/* {renderOneMessageStatic(
-            "Do you have any ideas when these mood(s) first appeared?"
-          )} */}
-
-          {!showThoughtDiaryTool ? (
+          <QuickReplies
+            text={""}
+            key={i}
+            replyClick={_handleQuickReplyPayload}
+            // onChange={() => {
+            //   setShowThoughtDiaryTool(true);
+            // }}
+            // mood_assess={true}
+            speaks={message.speaks}
+            payload={message.msg.payload.fields.mood_assess.listValue.values}
+            // showDiary={true}
+          />
+          {/* {console.log(message)} */}
+        </>
+      );
+    } else if (
+      message.msg &&
+      message.msg.payload &&
+      message.msg.payload.fields &&
+      message.msg.payload.fields.select_act &&
+      getMoodStep1
+    ) {
+      return (
+        <>
+          <div
+            className={
+              "flex justify-center space-x-2  p-2 rounded-lg bottom-0 "
+            }
+          >
             <div
               className={
-                "flex justify-center space-x-2  p-2 rounded-lg bottom-0 "
+                "rounded-[10px] self-center overflow-ellipsis  px-4 py-2  text-black font-medium text-left "
               }
             >
-              <div
-                className={
-                  "rounded-[10px] self-center overflow-ellipsis  px-4 py-2  text-black font-medium text-left "
-                }
-              >
-                <span className="flex flex-wrap">
-                  <a
-                    style={{ margin: 3 }}
-                    onClick={() => {
-                      // df_text_query("Show Thought Diary", false);
-                      _handleTranslate(
-                        `Show Thought Diary`,
-                        `Show Thought Diary`,
-                        true
-                      );
-                      setShowThoughtDiaryTool(true);
-                      df_event_query("ABC_THOUGHT_DIARY_EXPLAINING_A");
-                      _handleTranslate(
-                        `So keep in mind that the A) part is where we just write down what happened.`,
-                        `Tandaan na ang A) na bahagi ay kung saan isusulat lang natin ang nangyari.`
-                      );
-                      _handleTranslate(
-                        `So, when you mention "${getMoodWhenStartedStep1}", what time and place do you think you first noticed the change in your mood? What are you ${_handleMoods(
-                          getHotEmotionCAnswer
-                        )}? What makes you feel ${_handleMoods(
-                          getHotEmotionCAnswer
-                        )}? When did it happen? Do you remember where it happened?`,
-                        `Kapag sinabi mong  "${getMoodWhenStartedStep1}", sa anong oras at lugar sa tingin mo nung una mong napansin ang pagbabago sa iyong mood? Bakit at sa anong dahilan ka ${_handleMoods(
-                          getHotEmotionCAnswer
-                        )}? Kailan at saan to nagsimula? Naaalala mo ba kung saang lugar ito nagsimula?`
-                      );
-                      setFocusThoughtDiaryLetter("a");
-                      setShowChatBox(true);
-                    }}
-                    className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
-                  >
-                    Show Thought Diary
-                  </a>
-                </span>
-              </div>
+              <span className="flex flex-wrap">
+                {activatingEvents.map((item, i) => {
+                  return (
+                    <a
+                      style={{ margin: 3 }}
+                      onClick={() => {
+                        // df_text_query("Show Thought Diary", false);
+                        _handleTranslate(item, item, true);
+                        setGetMoodStep1(false);
+                        // setShowThoughtDiaryTool(true);
+                        // df_event_query("ABC_THOUGHT_DIARY_EXPLAINING_A");
+                        setGetAdverseStep3(item);
+                      }}
+                      className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                    >
+                      {item}
+                    </a>
+                  );
+                })}
+              </span>
             </div>
-          ) : (
-            ""
-          )}
+          </div>
 
           {/* {showThoughtDiaryTool
             ? renderOneMessageStatic(
@@ -3335,7 +3335,8 @@ function ThoughtDiary() {
               <div
                 className={
                   focusThoughtDiaryLetter === "a" ||
-                  focusThoughtDiaryLetter === "a_b"
+                  focusThoughtDiaryLetter === "a_b" ||
+                  focusThoughtDiaryLetter === "a_1"
                     ? "border-b-4 border-[#86A1AC] bg-white text-[#4CC2F4] row-span-2"
                     : "border-b-4 border-[#86A1AC] row-span-2"
                 }
@@ -3343,14 +3344,20 @@ function ThoughtDiary() {
                 <div className=" p-4 break-words ">
                   <label className="text-[20px] ">A) Activating Event</label>
                   <div className="flex flex-col leading-none  text-[32px] text-center ">
-                    <label className="text-[14px] font-normal text-justify text-blue-900 w-full  py-2 px-2 space-y-2">
-                      (What happened? What did I do? What did others do? What
-                      idea occurred to me? What’s stressing me out?)
-                    </label>
-                    <label className="text-[14px] text-blue-900  font-bold w-full">
-                      This may be either: an actual event or situation, a
-                      thought, mental picture or recollection.
-                    </label>
+                    {focusThoughtDiaryLetter === "a_1" ? (
+                      <>
+                        <label className="text-[14px] font-normal text-justify text-blue-900 w-full  py-2 px-2 space-y-2">
+                          (What happened? What did I do? What did others do?
+                          What idea occurred to me? What’s stressing me out?)
+                        </label>
+                        <label className="text-[14px] text-blue-900  font-bold w-full">
+                          This may be either: an actual event or situation, a
+                          thought, mental picture or recollection.
+                        </label>
+                      </>
+                    ) : (
+                      ""
+                    )}
 
                     <label
                       className="max-w-[300px] max-h-[250px]
@@ -3376,16 +3383,25 @@ function ThoughtDiary() {
                   {/* Hot emotion section */}
                   <label className="flex flex-col leading-none">
                     <label>
-                      <ol className="text-[14px] text-justify text-blue-900 font-normal  py-2 px-2 space-y-2">
-                        <li>1. Write down words describing how you feel.</li>
-                        <li>
-                          2. Underline the one that is most associated with the
-                          activating event.
-                        </li>
-                        <li>
-                          3. Rate the intensity of that feeling (0 to 100).
-                        </li>
-                      </ol>
+                      {/* {focusThoughtDiaryLetter === "a_1" ? (<></>):""} */}
+                      {focusThoughtDiaryLetter === "c_1" ? (
+                        <>
+                          <ol className="text-[14px] text-justify text-blue-900 font-normal  py-2 px-2 space-y-2">
+                            <li>
+                              1. Write down words describing how you feel.
+                            </li>
+                            <li>
+                              2. Underline the one that is most associated with
+                              the activating event.
+                            </li>
+                            <li>
+                              3. Rate the intensity of that feeling (0 to 100).
+                            </li>
+                          </ol>
+                        </>
+                      ) : (
+                        ""
+                      )}
                       <label className="text-[14px] text-blue-900  font-bold">
                         hot emotion: rated {getHotEmotionRate}/10
                       </label>
@@ -3432,12 +3448,18 @@ function ThoughtDiary() {
                   {/* Other emotions section */}
                   <label className="pt-10 flex flex-col leading-none">
                     <label>
-                      <ol className="text-[14px] text-justify text-blue-900 font-normal  py-2 px-2 space-y-2">
-                        <li>
-                          4. Jot down any physical sensations you experienced or
-                          actions carried out.
-                        </li>
-                      </ol>
+                      {focusThoughtDiaryLetter === "c_1" ? (
+                        <>
+                          <ol className="text-[14px] text-justify text-blue-900 font-normal  py-2 px-2 space-y-2">
+                            <li>
+                              4. Jot down any physical sensations you
+                              experienced or actions carried out.
+                            </li>
+                          </ol>
+                        </>
+                      ) : (
+                        ""
+                      )}
                       <label className="text-[14px] text-blue-900  font-bold">
                         other emotions you feel
                       </label>
@@ -3493,21 +3515,28 @@ function ThoughtDiary() {
                   {/* hot thought */}
                   <label className="flex flex-col leading-none">
                     <label>
-                      <ol className="text-[14px] text-justify text-blue-900 font-normal py-2 px-2 space-y-2">
-                        <li>
-                          1. List all statements that link A to C. Ask yourself
-                          "What was I thinking?" "What was I saying to myself?"
-                          "What was going through my head at the time?".
-                        </li>
-                        <li>
-                          2. Find the most distressing (hot) thought and
-                          underline it.
-                        </li>
-                        <li>
-                          3. Rate how much you believe this thought between (0
-                          to 100).
-                        </li>
-                      </ol>
+                      {focusThoughtDiaryLetter === "b_1" ? (
+                        <>
+                          <ol className="text-[14px] text-justify text-blue-900 font-normal py-2 px-2 space-y-2">
+                            <li>
+                              1. List all statements that link A to C. Ask
+                              yourself "What was I thinking?" "What was I saying
+                              to myself?" "What was going through my head at the
+                              time?".
+                            </li>
+                            <li>
+                              2. Find the most distressing (hot) thought and
+                              underline it.
+                            </li>
+                            <li>
+                              3. Rate how much you believe this thought between
+                              (0 to 100).
+                            </li>
+                          </ol>
+                        </>
+                      ) : (
+                        ""
+                      )}
                       <label className="text-[14px] text-blue-900  font-bold">
                         the hot thought: rated {getHotThoughtRate}/100
                       </label>
