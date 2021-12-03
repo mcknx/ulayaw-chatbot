@@ -1,6 +1,17 @@
 // const User = require('../models/auth.model');
 // const expressJwt = require('express-jwt');
 const { translate } = require("@paiva/translation-google");
+// const { translate } = require("bing-translate-api");
+// const translate = require("@vitalets/google-translate-api");
+// const translate = require("@asmagin/google-translate-api");
+// const translate = require("@imlinhanchao/google-translate-api");
+// const translate = require("@plainheart/google-translate-api");
+
+// const { translate } = require("./mckeen");
+// const { HttpsProxyAgent } = require("https-proxy-agent");
+// const translate = require("google-translate-api");
+// const translate = require("translate-google");
+
 const cookie = require("universal-cookie-express");
 var Sentiment = require("sentiment");
 const express = require("express");
@@ -36,8 +47,54 @@ exports.googleTranslate = async (req, res) => {
 };
 
 exports.understandUserInputController = async (req, res) => {
-  const { inputData } = req.params.words;
-  //   const inputData = "Matagal ako makatulog.";
+  const inputData = req.params.words;
+  // console.log(inputData);
+  // const inputData = "Ako ay napakalungkot ngayon";
+  // const inputData = "kahapon noong nasa kwarto ako gumagawa aralin";
+
+  let showExtension = false;
+  // let extension = "nagsimula akong maging ";
+  // let extensionMood = "malungkot ";
+
+  // inputData = extension + extensionMood + inputData;
+  // e detect ang (adverb) where, when ug how
+  //
+  // let inputData =
+  //   "nagsimula akong maging malunkgot sa palikoran kahapon noong akoy naninigarilyo dahil naalala ko ang aking kasintahan";
+
+  // good examples ----------------------------------------------------------------------------------------------------------------------------------------
+  // when, where, who
+  // let inputData = "nagsimula akong kabahan kahapon habang kaharap si maam";
+  // let inputData = "nagsimula akong magalit sa bahay kahapon habang katabi si mckeen";
+  // let inputData = "nagsimula akong maging malungkot kahapon habang kausap si mckeen";
+  // nagsimula akong magalit kahapon habang kausap si mister
+  // let inputData = "nagsimula akong maging malungkot kahapon";
+
+  // when
+  // -------------------------------------------------------
+  // nagalit ako kahapon or ngayon or kanina
+  // galit ako kahapon or ngayon or kanina
+
+  // when, who
+  // -------------------------------------------------------
+  // nagalit ako kahapon kay mckeen
+  // galit ako kahapon kay mckeen
+
+  // where
+  // -------------------------------------------------------
+  // nagalit ako sa bahay
+
+  // let inputData = "nagsimula akong magalit sa kanya kanina";
+  // let inputData = "nagsimula akong nagalit sa kanya kanina";
+  // let inputData =
+  //   "nagsimula akong maging malunkgot sa palikoran kahapon noong akoy naninigarilyo";
+  // const inputData =
+  //   "nagsimula akong maging malungkot kahapon habang ako ay nasa bahay";
+  // const inputData =
+  //   "nagsimula akong maging di mapakali ngayon lang dito sa bahay";
+  // let inputData =
+  //   "nagsimula akong hindi mapakali dahil sa capstone dahil kay maam";
+
   console.log(inputData);
   let translated;
 
@@ -293,42 +350,178 @@ exports.understandUserInputController = async (req, res) => {
     };
   });
   console.log(
-    "posTagCont",
-    posTagCont,
-    "basicDep",
-    basicDep,
+    // "posTagCont",
+    // posTagCont,
+    // "basicDep",
+    // basicDep,
     "translated",
-    translated,
-    "resultSentiment",
-    resultSentiment
+    translated
   );
+  console.log("resultSentiment", resultSentiment);
+  console.log("posTagCont", posTagCont, "basicDep", basicDep);
 
   let tagalogResponse;
 
-  if (resultSentiment.positive.length != 0) {
-    tagalogResponse = "I see that must be a good " + basicDep[0].dependentGloss;
-    console.log("I see that must be a good ", basicDep[0].dependentGloss);
-  }
+  // if (resultSentiment.positive.length != 0) {
+  //   tagalogResponse = "I see that must be a good " + basicDep[0].dependentGloss;
+  //   console.log("I see that must be a good ", basicDep[0].dependentGloss);
+  // }
 
-  if (resultSentiment.negative.length != 0) {
-    tagalogResponse = "I see that must be a bad " + basicDep[0].dependentGloss;
-    console.log("I see that must be a bad ", basicDep[0].dependentGloss);
-  }
+  // if (resultSentiment.negative.length != 0) {
+  //   tagalogResponse = "I see that must be a bad " + basicDep[0].dependentGloss;
+  //   console.log("I see that must be a bad ", basicDep[0].dependentGloss);
+  // }
+
+  // console.log(
+  //   "So you feel ",
+  //   // resultSentiment.negative[0],
+  //   posTagCont.map((tag) => {
+  //     return tag.pos === "JJ" ? tag.word : "";
+  //   }),
+  //   posTagCont.map((tag) => {
+  //     return tag.pos === "RB" ? tag.word : "";
+  //   }),
+  //   ", is there anything else?"
+  // );
+
+  let where = false;
+  let when = false;
+  let who = false;
+  let rootAns;
+  let rootAnsMood;
+
+  basicDep.map((item) => {
+    // if (item.dep === "ROOT") {
+    //   rootWord = item.dep;
+    // }
+
+    // when case
+    if (when === false) {
+      if (item.dep === "obl:tmod" || item.dep === "advmod") {
+        posTagCont.map((posItem) => {
+          // posItem.pos === "NN" &&
+          if (posItem.word === item.dependentGloss) {
+            // console.log(posItem.index, "361");
+            when = posItem.word;
+            rootAns = item.governorGloss;
+            rootAnsMood = posTagCont[item.governor].word;
+          }
+          // if only Adverb (ngayon lang) (kahapon lang)
+          // if (posItem.word === item.dependentGloss) {
+          //   // console.log(posItem.index, "361");
+          //   when = posItem.word;
+          //   rootAns = item.governorGloss;
+          //   rootAnsMood = posTagCont[item.governor].word;
+          // }
+        });
+      }
+    }
+
+    // where case
+    if (where === false) {
+      if (item.dep === "advcl" || item.dep === "obl") {
+        where = item.dependentGloss;
+
+        // console.log(item.dep, item.dependentGloss, item.governorGloss);
+        posTagCont.map((posItem) => {
+          if (posItem.word === item.governorGloss) {
+            // where = posItem.word;
+            console.log(posItem.index, "377");
+            who = posTagCont[item.dependent].word;
+            rootAns = item.governorGloss;
+            rootAnsMood = posTagCont[item.governor].word;
+          }
+        });
+      }
+    }
+  });
+
+  // tagalogResponse =
+  //   "You " +
+  //   " " +
+  //   rootAns +
+  //   " " +
+  //   rootAnsMood +
+  //   " " +
+  //   when +
+  //   " " +
+  //   "at" +
+  //   " " +
+  //   where +
+  //   " " +
+  //   `${who !== false ? who : ""}`;
+  // if (showExtension) {
+  //   tagalogResponse =
+  //     "You" +
+  //     rootAns +
+  //     rootAnsMood +
+  //     when +
+  //     "at" +
+  //     where +
+  //     " " +
+  //     `${who !== false ? who + "." : "."}` +
+  //     (when === "yesterday"
+  //       ? "You're still holding on to that mood, and i feel you."
+  //       : "");
+  // }
+  // console.log(
+  //   "You",
+  //   rootAns,
+  //   rootAnsMood,
+  //   when,
+  //   "at",
+  //   where,
+  //   `${who !== false ? who : ""}`
+  // );
+  console.log("when:", when);
+  console.log("where:", where);
+  console.log("who:", who);
+  console.log("You're still holding on to that mood, and i feel you");
+  tagalogResponse =
+    "You " +
+    " " +
+    (rootAns === false ? "?" : rootAns) +
+    " " +
+    (rootAnsMood === false ? "?" : rootAnsMood) +
+    " " +
+    (when === false ? "?" : when) +
+    " " +
+    "at" +
+    " " +
+    (where === false ? "?" : where) +
+    " " +
+    `${who !== false ? who : ""}` +
+    ". " +
+    (when === "yesterday"
+      ? "You're still holding on to that mood, and i feel you."
+      : "") +
+    (when === "today"
+      ? "Your mood still significant to you, Let's try to discuss it."
+      : "") +
+    (when === "earlier" || when === "recently" || when === "just now"
+      ? "I feel you, and I'm here to help you."
+      : "");
 
   let tagalogResponseResult;
-  await translate(tagalogResponse, {
+  return await translate(tagalogResponse, {
     from: "en",
     to: "tl",
-  }).then((res) => {
+  }).then((r) => {
     // console.log("@paiva/translation-google");
 
-    tagalogResponseResult = res.text;
-    console.log(tagalogResponseResult, "tagalogResponseResult");
-  });
-  console.log(tagalogResponseResult, "tagalogResponseResult2");
+    tagalogResponseResult = r.text;
 
-  //   Case (PRP)
-  return [tagalogResponseResult];
+    return res.json({
+      success: true,
+      fil: r.text,
+      eng: tagalogResponse,
+    });
+    // console.log(tagalogResponseResult, "tagalogResponseResult");
+  });
+  // console.log(tagalogResponseResult, "tagalogResponseResult2");
+
+  // Case(PRP);
+  // return [tagalogResponseResult];
 };
 function _handlePushContainer(val1, val2, arr, x) {
   if (val1 === val2) {

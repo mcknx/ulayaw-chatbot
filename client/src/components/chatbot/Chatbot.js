@@ -363,10 +363,27 @@ function Chatbot(props) {
     }
   }
 
-  function _handleInputKeyPress(e) {
+  async function _handleInputKeyPress(e) {
     if (e.key === "Enter") {
       if (claimCode) {
         claim_code(e.target.value);
+      } else if (getMoodStep1) {
+        // user response
+        _handleTranslate(e.target.value, e.target.value, true);
+
+        // bot reponse
+        let msgUnderstood = await _handleTranslateEng(e.target.value, true);
+        let engMsgUnderstood = await msgUnderstood.data.eng;
+        let filMsgUnderstood = await msgUnderstood.data.fil;
+
+        _handleTranslate(`${engMsgUnderstood}`, `${filMsgUnderstood}`);
+
+        // bot response
+        let assessStep1 = `Mayroon ka pa bang gusto sabihin? Pakilagay sa ibaba.`;
+        _handleTranslate(
+          `${await _handleTranslateEng(assessStep1)}?`,
+          assessStep1
+        );
       } else if (activateGetAdverseStep3 === 1) {
         // _handleGetAdverseStep3(e);
         setGetAdverseStep3UseState(e.target.value);
@@ -975,14 +992,18 @@ function Chatbot(props) {
 
   async function _handleTranslateEng(inputData, nlp) {
     if (nlp) {
+      setShowChatBox(false);
       return await axios
         .get(`/api/useApi/understand/${inputData}`)
         .then((res) => {
           console.log(res);
+          setShowChatBox(true);
           // return res.data.data;
+          return res;
         })
         .catch((err) => {
           console.log(err.response);
+          setShowChatBox(true);
           // toast.error(err.response.data.errors);
         });
     } else {
@@ -1331,9 +1352,8 @@ function Chatbot(props) {
       _handleMoods(selectedMoods),
       true
     );
-    setShowChatBox(true);
 
-    let ms = await _handleTranslateEng(inputData, true);
+    let ms = await _handleTranslateEng(inputData, false);
     _handleTranslate(`${ms}?`, inputData);
     // df_event_query("ABC_STEP1_MOOD_ASSESS");
     // _handleTranslate(
@@ -1342,6 +1362,7 @@ function Chatbot(props) {
     // );
 
     setGetMoodStep1(true);
+    setShowChatBox(true);
     // setShowMoods(false);
     // df_event_query("ASSESSMENT_DONE");
     // setClaimCode(false);
@@ -1705,39 +1726,41 @@ function Chatbot(props) {
           />
         </>
       );
-    } else if (
-      message.msg &&
-      message.msg.payload &&
-      message.msg.payload.fields &&
-      message.msg.payload.fields.mood_assess &&
-      getMoodStep1
-    ) {
-      return (
-        <>
-          {/* {getMoodStep1
-            ? renderOneMessageStatic(
-                "Do you have any ideas when these mood(s) first appeared?"
-              )
-            : ""} */}
+    }
+    // else if (
+    //   message.msg &&
+    //   message.msg.payload &&
+    //   message.msg.payload.fields &&
+    //   message.msg.payload.fields.mood_assess &&
+    //   getMoodStep1
+    // ) {
+    //   return (
+    //     <>
+    //       {/* {getMoodStep1
+    //         ? renderOneMessageStatic(
+    //             "Do you have any ideas when these mood(s) first appeared?"
+    //           )
+    //         : ""} */}
 
-          {/* {renderOneMessageStatic(
-            message.msg.payload.fields.mood_assess_text.stringValue
-          )} */}
-          <QuickReplies
-            text={""}
-            key={i}
-            replyClick={_handleQuickReplyPayload}
-            onChange={() => {
-              setShowThoughtDiaryTool(true);
-            }}
-            speaks={message.speaks}
-            payload={message.msg.payload.fields.mood_assess.listValue.values}
-            showDiary={true}
-          />
-          {/* {console.log(message)} */}
-        </>
-      );
-    } else if (
+    //       {/* {renderOneMessageStatic(
+    //         message.msg.payload.fields.mood_assess_text.stringValue
+    //       )} */}
+    //       <QuickReplies
+    //         text={""}
+    //         key={i}
+    //         replyClick={_handleQuickReplyPayload}
+    //         onChange={() => {
+    //           setShowThoughtDiaryTool(true);
+    //         }}
+    //         speaks={message.speaks}
+    //         payload={message.msg.payload.fields.mood_assess.listValue.values}
+    //         showDiary={true}
+    //       />
+    //       {/* {console.log(message)} */}
+    //     </>
+    //   );
+    // }
+    else if (
       message.msg &&
       message.msg.payload &&
       message.msg.payload.fields &&
