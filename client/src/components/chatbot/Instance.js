@@ -28,6 +28,7 @@ const Instance = (props) => {
         currentInstance={props.currentInstance}
         question_no={props.item.structValue.fields.question_num.numberValue}
         question_text={props.item.structValue.fields.question.stringValue}
+        doneAssess={props.doneAssess}
       />
     );
   }
@@ -88,38 +89,50 @@ const Instance = (props) => {
           }
         >
           {/* prev */}
-          <a
-            className={
-              prevBtn
-                ? "text-[#0C86BA]  cursor-pointer hover:underline select-none"
-                : "text-[#0C86BA]  cursor-pointer hover:underline select-none hidden"
-            }
-            onClick={() => _handlePrevClick()}
-          >
-            Previous
-          </a>
+          {!props.doneAssess ? (
+            <a
+              className={
+                prevBtn
+                  ? "text-[#0C86BA]  cursor-pointer hover:underline select-none"
+                  : "text-[#0C86BA]  cursor-pointer hover:underline select-none hidden"
+              }
+              onClick={() => _handlePrevClick()}
+            >
+              Previous
+            </a>
+          ) : (
+            ""
+          )}
           {/* next */}
-          <a
-            className={
-              nextBtn
-                ? "text-[#0C86BA]  cursor-pointer hover:underline select-none"
-                : "text-[#0C86BA]  cursor-pointer hover:underline select-none hidden"
-            }
-            onClick={() => _handleNextClick()}
-          >
-            Next
-          </a>
+          {!props.doneAssess ? (
+            <a
+              className={
+                nextBtn
+                  ? "text-[#0C86BA]  cursor-pointer hover:underline select-none"
+                  : "text-[#0C86BA]  cursor-pointer hover:underline select-none hidden"
+              }
+              onClick={() => _handleNextClick()}
+            >
+              Next
+            </a>
+          ) : (
+            ""
+          )}
           {/* done */}
-          <a
-            className={
-              doneBtn
-                ? "text-[#0C86BA]  cursor-pointer hover:underline select-none"
-                : "text-[#0C86BA]  cursor-pointer hover:underline select-none hidden"
-            }
-            onClick={(event) => props._handleDoneClick(event)}
-          >
-            Done
-          </a>
+          {!props.doneAssess ? (
+            <a
+              className={
+                doneBtn
+                  ? "text-[#0C86BA]  cursor-pointer hover:underline select-none"
+                  : "text-[#0C86BA]  cursor-pointer hover:underline select-none hidden"
+              }
+              onClick={(event) => props._handleDoneClick(event)}
+            >
+              Done
+            </a>
+          ) : (
+            ""
+          )}
         </div>
       </div>
     );
