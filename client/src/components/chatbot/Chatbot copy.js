@@ -1589,7 +1589,8 @@ function ChatbotCopy(props) {
                 }
               >
                 <span className="flex flex-wrap">
-                  <a
+                  <Link
+                    to={"/login"}
                     style={{ margin: 3 }}
                     onClick={() => {
                       // df_text_query("Show Thought Diary", false);
@@ -1600,7 +1601,7 @@ function ChatbotCopy(props) {
                     className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
                   >
                     Login
-                  </a>
+                  </Link>
                   {/* <a
                     style={{ margin: 3 }}
                     onClick={() => {

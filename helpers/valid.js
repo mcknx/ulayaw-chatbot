@@ -65,8 +65,7 @@ exports.forgotPasswordValidator = [
 
 exports.createCodeValidator = [
   check("email")
-    .not()
-    .isEmpty()
+    .notEmpty()
     .isEmail()
     .withMessage("Must be a valid email address"),
 ];

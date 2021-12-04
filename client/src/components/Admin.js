@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { ShowAdminRoute } from "../Context/ShowAdminRoute";
 import authSvg from "../assets/forget.svg";
 import ulayaw from "../assets/ulayaw.png";
 import { ToastContainer, toast } from "react-toastify";
+import { authenticate, isAuth } from "../helpers/auth";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 
 const Admin = ({ match }) => {
+  const { showAdminRoute, setShowAdminRoute } = useContext(ShowAdminRoute);
   const [users, setUsers] = useState([
     {
       first_name: "",
@@ -18,11 +21,18 @@ const Admin = ({ match }) => {
       createdAt: "",
     },
   ]);
+
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isUserLoaded, setIsUserLoaded] = useState(false);
   const [showUser, setShowUser] = useState(false);
   const [showCreateCode, setShowCreateCode] = useState(false);
-  const [selectedUser, setSelectedUser] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState();
+  const [selectedUser, setSelectedUser] = useState();
 
+  useEffect(() => {
+    toast.success(`Welcome Admin!`);
+    toast.success(isAuth().email);
+  }, []);
   useEffect(() => {
     axios
       .get(`/api/admin/all`)
@@ -30,27 +40,6 @@ const Admin = ({ match }) => {
         console.log(res);
         setUsers(res.data);
         setIsLoaded(true);
-        // res.data.map((user) => {
-        //   setUsers((prevUser) => {
-        //     return [
-        //       ...prevUser,
-        //       {
-        //         first_name: user.first_name,
-        //         last_name: user.last_name,
-        //         age: user.age,
-        //         gender: user.gender,
-        //         contact_no: user.contact_no,
-        //         gender: user.gender,
-        //         contact_no: user.contact_no,
-        //         location: user.location,
-        //         email: user.email,
-        //         createdAt: user.createdAt,
-        //       },
-        //     ];
-        //   });
-        // });
-
-        // toast.success(res.data.message);
       })
       .catch((err) => {
         // toast.error(
@@ -59,6 +48,41 @@ const Admin = ({ match }) => {
       });
     console.log(users);
   }, [isLoaded]);
+
+  let selectedUserLocal = [];
+  useEffect(() => {
+    if (isLoaded) {
+      users.map((user) => {
+        axios
+          .get(`/api/admin/${user.email}`)
+          .then((res) => {
+            console.log(res);
+            selectedUserLocal.push(res.data[0]);
+            console.log(selectedUserLocal);
+            if (!isUserLoaded) {
+              if (selectedUserLocal.length === users.length) {
+                setIsUserLoaded(true);
+                setSelectedUsers(selectedUserLocal);
+              }
+            }
+            console.log(isUserLoaded);
+          })
+          .catch((err) => {});
+      });
+      // setSelectedUser((prevSel) => {
+      //   return [...prevSel, selectedUserLocal];
+      // });
+    }
+
+    // console.log(selectedUser);
+  }, [isLoaded, isUserLoaded, selectedUsers]);
+
+  // if (selectedUserLocal) {
+  //   console.log(selectedUserLocal);
+  //   setIsUserLoaded(true);
+  // }
+  // console.log(selectedUserLocal);
+  // console.log(selectedUser);
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
@@ -69,7 +93,7 @@ const Admin = ({ match }) => {
           {/* table */}
           <div className="w-full h-full my-auto max-w-[1400px] max-h-[1000px] mx-auto bg-white shadow-lg rounded-sm border border-gray-200">
             <header className="px-5  border-b border-gray-100 flex justify-between">
-              <h2 className="py-4 font-semibold text-gray-800">Clients</h2>
+              <h2 className="py-4 font-semibold text-gray-800">Users</h2>
 
               <div className=" flex items-center ">
                 <h2
@@ -80,8 +104,13 @@ const Admin = ({ match }) => {
                   Create Code
                 </h2>
                 <div className="px-8 space-x-2 border-l-2 flex items-center">
-                  <h2 className="font-semibold text-gray-800">UIC Admin</h2>
-                  <div className="w-10 h-10 flex-shrink-0 mr-2 sm:mr-3">
+                  <h2
+                    onClick={() => setShowAdminRoute(false)}
+                    className="font-semibold text-gray-800 cursor-pointer"
+                  >
+                    Logout
+                  </h2>
+                  {/* <div className="w-10 h-10 flex-shrink-0 mr-2 sm:mr-3">
                     <img
                       className="rounded-full"
                       src={ulayaw}
@@ -89,7 +118,7 @@ const Admin = ({ match }) => {
                       height="40"
                       alt="Alex Shatov"
                     />
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </header>
@@ -121,7 +150,7 @@ const Admin = ({ match }) => {
                   </thead>
                   <tbody className="text-sm divide-y divide-gray-100">
                     {isLoaded ? (
-                      users.map((user) => {
+                      users.map((user, y) => {
                         return (
                           <tr>
                             {console.log(user)}
@@ -145,9 +174,75 @@ const Admin = ({ match }) => {
                               <div className="text-left">{user.email}</div>
                             </td>
                             <td className="p-2 whitespace-nowrap">
-                              <div className="text-left font-medium text-green-500">
-                                Low Risk
-                              </div>
+                              {isUserLoaded && selectedUsers != undefined ? (
+                                <>
+                                  {/* {selectedUsers[y] != undefined ? (
+                                    <>
+                                      {selectedUsers[y].user_email ===
+                                      user.email ? (
+                                        <>
+                                          {selectedUsers[y].result === "low" ? (
+                                            <div className="text-left font-medium text-green-500">
+                                              Low Risk
+                                            </div>
+                                          ) : (
+                                            <>
+                                              {selectedUsers[y].result ===
+                                              "high" ? (
+                                                <div className="text-left font-medium text-red-500">
+                                                  High Risk
+                                                </div>
+                                              ) : (
+                                                <div className="text-left font-medium">
+                                                  Not claimed
+                                                </div>
+                                              )}
+                                            </>
+                                          )}
+                                        </>
+                                      ) : (
+                                        <div className="text-left font-medium">
+                                          No Data
+                                        </div>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <div className="text-left font-medium">
+                                      No data
+                                    </div>
+                                  )} */}
+                                  {selectedUsers.map((s, i) => {
+                                    console.log(s);
+                                    if (s != undefined) {
+                                      if (s.user_email === user.email) {
+                                        if (s.result === "low") {
+                                          return (
+                                            <div className="text-left font-medium text-green-500">
+                                              Low Risk
+                                            </div>
+                                          );
+                                        } else if (s.result === "high") {
+                                          return (
+                                            <div className="text-left font-medium text-red-500">
+                                              High Risk
+                                            </div>
+                                          );
+                                        } else if (s.result === "0") {
+                                          return (
+                                            <div className="text-left font-medium ">
+                                              Not Claimed
+                                            </div>
+                                          );
+                                        }
+                                      }
+                                    }
+                                  })}
+                                </>
+                              ) : (
+                                <div className="text-left font-medium">
+                                  Loading...
+                                </div>
+                              )}
                             </td>
                             <td className="p-2 whitespace-nowrap">
                               <div className="mx-auto text-center hover:opacity-80 bg-[#5dcfff] cursor-pointer w-[50px] rounded-lg p-1 text-white hover:shadow-lg">
@@ -202,6 +297,20 @@ const Admin = ({ match }) => {
 };
 
 function GetUserDetails(props) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [selectedUser, setSelectedUser] = useState();
+  useEffect(async () => {
+    await axios
+      .get(`/api/admin/${props.user.email}`)
+      .then((res) => {
+        console.log(res);
+
+        setSelectedUser(res.data[0]);
+        setIsLoaded(true);
+      })
+      .catch((err) => {});
+  }, [isLoaded]);
+  if (isLoaded) console.log(selectedUser);
   return (
     <>
       <div className="left-0 fixed top-0 w-full h-full bg-black bg-opacity-[0.75] ">
@@ -256,23 +365,48 @@ function GetUserDetails(props) {
                     // value={last_name}
                   />
                 </label>
+                {isLoaded ? (
+                  <span className="   p-4  rounded-lg  w-full bg-gray-400 flex flex-col">
+                    <label>
+                      Name: {props.user.first_name} {props.user.last_name}
+                    </label>
+                    <label>Gender: {props.user.gender}</label>
+                    {/* <label>Address: {props.user.location}</label> */}
+                    <label>
+                      Location: {props.user.location.lat}{" "}
+                      {props.user.location.lng}
+                    </label>
+                    <label>Age: {props.user.age}</label>
+                    <label>Email Address: {props.user.email}</label>
+                    <label>Contact Number: {props.user.contact_no}</label>
+                    {selectedUser != undefined ? (
+                      <>
+                        <label>Code: {selectedUser.code}</label>
 
-                <span className="   p-4  rounded-lg  w-full bg-gray-400 flex flex-col">
-                  <label>
-                    Name: {props.user.first_name} {props.user.last_name}
-                  </label>
-                  <label>Gender: {props.user.gender}</label>
-                  {/* <label>Address: {props.user.location}</label> */}
-                  <label>
-                    Location: {props.user.location.lat}{" "}
-                    {props.user.location.lng}
-                  </label>
-                  <label>Age: {props.user.age}</label>
-                  <label>Email Address: {props.user.email}</label>
-                  <label>Contact Number: {props.user.contact_no}</label>
-                  <label>Code: {props.user.contact_no}</label>
-                  <label>Result: {props.user.contact_no}</label>
-                </span>
+                        <label>Result: {selectedUser.result}</label>
+                        <label>
+                          Companion Name:{" "}
+                          {selectedUser.companion.companion_first_name} {` `}{" "}
+                          {selectedUser.companion.companion_last_name}
+                        </label>
+                        <label>
+                          Companion Contact Number:{" "}
+                          {selectedUser.companion.companion_contact_no}
+                        </label>
+                      </>
+                    ) : (
+                      <>
+                        <label>Code: No Data</label>
+
+                        <label>Result: No Data</label>
+                        <label>Companion Name: No Data</label>
+                        <label>Companion Contact Number: No Data</label>
+                      </>
+                    )}
+                  </span>
+                ) : (
+                  "Loading .... "
+                )}
               </>
             </span>
 
@@ -296,19 +430,16 @@ function GetUserDetails(props) {
 }
 
 function CreateCode(props) {
+  const [isClicked, setIsClicked] = useState(false);
   const [formData, setFormData] = useState({
-    admin_id: "1",
-    admin_first_name: "Mckeen",
-    admin_last_name: "Asma",
-    admin_contact_no: "12345678999",
-    admin_email: "mckeen@gmail.com",
+    admin_email: isAuth().email,
     email: "",
     // token: "",
     // show: true,
   });
   const [createdCode, setCreatedCode] = useState(false);
   // const [code, setCreatedCode ] = useState(false)
-  const { email, textChange } = formData;
+  const { email, admin_email } = formData;
 
   const handleChange = (text, val) => (e) => {
     // console.log(email);
@@ -323,25 +454,34 @@ function CreateCode(props) {
 
       console.log("success here");
       setFormData({ ...formData, textChange: "Submitting" });
-      const res = await axios.post(`/api/admin/createCode`, {
-        formData,
-        email,
-      });
-      if (res) {
-        toast.success("Created the code! check email.");
-        toast.success(res.data.message);
-        setCreatedCode(res.data.code);
-      } else {
-        setFormData({
-          ...formData,
-
-          email: "",
+      await axios
+        .post(`/api/admin/createCode`, {
+          email,
+          admin_email,
+        })
+        .then((res) => {
+          if (res.data.errors) {
+            setIsClicked(false);
+            toast.error(res.data.errors);
+          } else {
+            toast.success("Created the code! check email.");
+            toast.success(res.data.message);
+            setCreatedCode(res.data.code);
+            console.log(res);
+          }
         });
-        // console.log(err.response);
-        toast.error(res.data.errors);
-      }
+      // .catch((err) => {
+      //   setFormData({
+      //     ...formData,
 
+      //     email: "",
+      //   });
+
+      //   // console.log(err.response);
+      //   toast.error(err.data.errors);
+      //   return setIsClicked(err.data.showBtn);
       // });
+
       console.log(formData);
     }
   }
@@ -413,12 +553,15 @@ function CreateCode(props) {
             {/* submit btn */}
             {!createdCode ? (
               <button
-                className="self-center rounded-[38px] bg-[#5DCFFF] space-x-[10px]  m-8 py-[20px] w-[405px] text-white text-[24px]"
+                className="self-center rounded-[38px] bg-[#5DCFFF] space-x-[10px]  m-8 py-[20px] w-[405px] text-white text-[24px] disabled:opacity-20 disabled:cursor-default"
                 onClick={(e) => {
                   // if (showRegister) {
                   handleSubmit(e);
+                  setIsClicked(!isClicked);
                   // }
                 }}
+                // onChange={setIsClicked(!isClicked)}
+                disabled={isClicked}
               >
                 Generate Code
               </button>

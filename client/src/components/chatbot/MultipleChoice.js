@@ -5,6 +5,7 @@ import Instance from "./Instance";
 function MultipleChoice(props) {
   const [currentInstance, setCurrentInstance] = useState(1);
   const [selectedChoices, setSelectedChoices] = useState([]);
+  const [doneAssess, setDoneAssess] = useState(false);
 
   function _handleDoneClick() {
     if (currentInstance == 4) {
@@ -14,6 +15,7 @@ function MultipleChoice(props) {
       }
       props._handleAssessmentResult(total);
       props.toast.success("Assessment done!");
+      setDoneAssess(true);
       // console.log(total);
       // console.log("You are done asdasd!");
       // console.log(selectedChoices);
@@ -86,6 +88,8 @@ function MultipleChoice(props) {
         setSelectedChoices={setSelectedChoices}
         selectedChoices={selectedChoices}
         _handleDoneClick={_handleDoneClick}
+        doneAssess={doneAssess}
+        setDoneAssess={setDoneAssess}
       />
     );
   }

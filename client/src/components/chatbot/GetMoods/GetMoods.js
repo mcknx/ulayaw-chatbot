@@ -5,6 +5,7 @@ import { ShowMoodsContext } from "../../../Context/ShowMoodsContext";
 import ReactPaginate from "react-paginate";
 import { GetHotEmotionCAnswerContext } from "../../../Context/GetHotEmotionCAnswerContext.js";
 import { GetOtherEmotionCAnswerContext } from "../../../Context/GetOtherEmotionCAnswerContext.js";
+import { PresentEmotion } from "../../../Context/PresentEmotion";
 import { ShowChatBox } from "../../../Context/ShowChatBox.js";
 import { MaxInputContext } from "../../../Context/MaxInputContext.js";
 import { ThoughtDiaryContext } from "../../../Context/ThoughtDiaryContext.js";
@@ -24,6 +25,8 @@ function GetMoods(props) {
   const { getOtherEmotionCAnswer, setGetOtherEmotionCAnswer } = useContext(
     GetOtherEmotionCAnswerContext
   );
+  const { showPresentEmotion, setShowPresentEmotion } =
+    useContext(PresentEmotion);
   const { showChatBox, setShowChatBox } = useContext(ShowChatBox);
   const [showMoods, setShowMoods] = useState(false);
   const { maxInput, setMaxInput } = useContext(MaxInputContext);
@@ -123,6 +126,7 @@ function GetMoods(props) {
 
     if (props.hotEmotion) {
       setGetHotEmotionCAnswer(props.selectedMoods);
+      setShowPresentEmotion(props.selectedMoods);
     }
 
     if (props.otherEmotion) {

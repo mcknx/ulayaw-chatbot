@@ -67,6 +67,7 @@
     "react-facebook-login": "^4.1.1",
     "react-hot-toast": "^2.1.1",
     "react-textfit": "^1.1.1",
+    "react-to-pdf": "^0.0.14",
     "sentiment": "^5.0.2",
     "tensify": "^0.0.4",
     "translate-google": "^1.5.0",
