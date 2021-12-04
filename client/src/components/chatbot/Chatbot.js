@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios/index";
 import Message from "./Message";
 import Card from "./Card";
+import { authenticate, isAuth } from "../../helpers/auth";
 import Cookies from "universal-cookie";
 import { ToastContainer, toast } from "react-toastify";
 import { v4 as uuid } from "uuid";
@@ -33,6 +34,7 @@ import { GetAgainstEvidenceDContext } from "../../Context/GetAgainstEvidenceDCon
 import useGeoLocation from "../../hooks/useGeolocation";
 import { GetLocationContext } from "../../Context/GetLocationContext";
 import { ContinueThoughtDiaryContext } from "../../Context/ContinueThoughtDiaryContext";
+import { PresentEmotion } from "../../Context/PresentEmotion";
 import MapContainer from "./MapContainer";
 import ModalLogin from "../ModalLogin";
 import { useDrop } from "react-dnd";
@@ -58,6 +60,8 @@ function Chatbot(props) {
   const [showModalLogin, setShowModalLogin] = useState(false);
   const [assessment_meron_companion, setassessment_meron_companion] =
     useState(false);
+  const [assessment_meron_companion_done, setassessment_meron_companion_done] =
+    useState(true);
   const [claimCode, setClaimCode] = useState(false);
   const [correctCode, setCorrectCode] = useState(false);
   const [assessmentScore, setAssessmentScore] = useState();
@@ -79,6 +83,9 @@ function Chatbot(props) {
   const [activatingEvents, setActivatingEvents] = useState([]);
   const [getMoodWhenStartedStep1, setGetMoodWhenStartedStep1] = useState("");
 
+  const { showPresentEmotion, setShowPresentEmotion } =
+    useContext(PresentEmotion);
+
   // Step 2: Intro or Not Intro Thought Diary
   const { showThoughtDiaryTool, setShowThoughtDiaryTool } =
     useContext(ThoughtDiaryContext);
@@ -94,6 +101,8 @@ function Chatbot(props) {
   // Step PDF: Save as PDF
   const [showPDF, setShowPDF] = useState(false);
 
+  // Assessment User
+  const [assessmentUser, setAssessmentUser] = useState();
   // Continue D, E, F
   const { continueThoughtDiary, setContinueThoughtDiary } = useContext(
     ContinueThoughtDiaryContext
@@ -365,19 +374,39 @@ function Chatbot(props) {
     setShowBot(false);
   }
 
-  function claim_code(input) {
-    const code = "123";
-    console.log(input);
+  async function claim_code(input) {
+    // const code = "123";
+    // let chat = e.target.value;
+    let email = isAuth().email;
+    // console.log(email, "email");
+    await axios
+      .post(`/api/admin/claimCode`, {
+        input,
+        email,
+      })
+      .then((res) => {
+        toast.success(res.data.message);
+        setCorrectCode(true);
+        console.log(res.data.user);
+        setAssessmentUser(res.data.user);
+        // toast.success(res.data.message);
+      })
+      .catch((err) => {
+        setCorrectCode(false);
+        // console.log(err.response);
+        toast.error(err.response.data.errors);
+      });
+    // console.log(input);
 
-    if (input === code) {
-      console.log("correct code");
-      // df_text_query("I have a code");
-      setCorrectCode(true);
-    } else {
-      console.log("wrong code");
-      // df_text_query("I have a code");
-      setCorrectCode(false);
-    }
+    // if (input === code) {
+    //   console.log("correct code");
+    //   // df_text_query("I have a code");
+    //   setCorrectCode(true);
+    // } else {
+    //   console.log("wrong code");
+    //   // df_text_query("I have a code");
+    //   setCorrectCode(false);
+    // }
   }
 
   async function _handleInputKeyPress(e) {
@@ -476,7 +505,7 @@ function Chatbot(props) {
                 `First, What were you thinking of that event?`,
                 `Una, Ano bang iniisip mo sa kaganapan na iyon? `
               );
-              setFocusThoughtDiaryLetter("b_c");
+              setFocusThoughtDiaryLetter("b");
               setGetOtherThoughtBool(true);
               setShowChatBox(true);
             }
@@ -492,8 +521,8 @@ function Chatbot(props) {
             setShowChatBox(true);
             _handleTranslate(`${chat}`, `${chat}`, true);
             _handleTranslate(
-              `What came to your mind at that time?`,
-              `Ano ang pumasok sa isip mo noong panahon na iyon? `
+              `What came to your mind at that time? As you feel troubled by the emotions you feel`,
+              `Ano ang pumasok sa isip mo noong panahon na iyon? Habang nababagabag ka sa mga emotion na iyong nararamdaman`
             );
             setFocusThoughtDiaryLetter("b_c");
 
@@ -507,15 +536,19 @@ function Chatbot(props) {
               `Finally, "What am I saying to myself?"`,
               `Panghuli, "Ano ba ang sinasabi ko sa sarili ko?"`
             );
-            setFocusThoughtDiaryLetter("b_c");
+            setFocusThoughtDiaryLetter("b");
 
             setMaxInput(2);
           }
           if (maxInput === 2) {
             _handleTranslate(
               `Have you been struck by the relationship of your negative thoughts?`,
-              `Napasin mo ba ang ugnayan ng iyong negatibong pagiisip?`
+              `Napansin mo ba ang ugnayan ng iyong negatibong pagiisip?`
             );
+            // _handleTranslate(
+            //   `Have you been struck by the relationship of your negative thoughts?`,
+            //   `Kanina kinuha ko yung present mood (${showPresentEmotion[0].mood_text}) mo pagkatapos`
+            // );
             df_event_query("ABC_THOUGHT_DIARY_B");
             setGetOtherThoughtBool(false);
             setShowChatBox(false);
@@ -863,11 +896,13 @@ function Chatbot(props) {
         // _handleTranslate(`Wala na`, `Wala na`);
         break;
       case "assessment_meron_companion":
+        df_event_query("ASSESSMENT_DONE");
         setShowModalLogin(true);
+
         setassessment_meron_companion(true);
         _handleTranslate(
-          `Nais kong panatilihing mo makiugnay kay $companion. Maaari mo siyang kausapin o bigyan ng indikasyon na-aayon sa iyong nararamdaman o naiisip.`,
-          `Nais kong panatilihing mo makiugnay kay $companion. Maaari mo siyang kausapin o bigyan ng indikasyon na-aayon sa iyong nararamdaman o naiisip.`
+          `Nais kong panatilihing mo makiugnay kay ${assessmentUser.companion.companion_first_name}. Maaari mo siyang kausapin o bigyan ng indikasyon na-aayon sa iyong nararamdaman o naiisip.`,
+          `Nais kong panatilihing mo makiugnay kay ${assessmentUser.companion.companion_first_name}. Maaari mo siyang kausapin o bigyan ng indikasyon na-aayon sa iyong nararamdaman o naiisip.`
         );
 
         _handleTranslate(
@@ -931,6 +966,11 @@ function Chatbot(props) {
         break;
 
       case "abc_continue_step_1":
+        console.log(assessmentUser);
+        _handleTranslate(
+          `Hi ${userLoggedIn.first_name}, I'm glad you are here today. Maybe we could start by getting your moods. I want you to pick the most likely feelings you are experiencing right now first.`,
+          `Hi ${userLoggedIn.first_name}, natutuwa ako na narito ka ngayon. Siguro maaari nating simulan sa pagkuha ng iyong mood. Pumili ka ng isa dito sa ating 'emotion box'`
+        );
         df_event_query("ABC_GETMOOD");
         break;
       // case "print_diary":
@@ -938,26 +978,30 @@ function Chatbot(props) {
       //   showChatBox(false);
       //   break;
       case "no_print_diary":
-        _handleTranslate(`Okay, Thank you!`, `Okay, Thank you!`);
+        _handleTranslate(`Okay, Thank you!`, `Okay, Maraming Salamat!`);
+        _handleTranslate(
+          `Just come back when you have a problem`,
+          `Mag balik ka lang pag may problema ka`
+        );
         setShowChatBox(false);
         break;
 
-      case "abc_oo_b_intro_deep":
-        setContinueThoughtDiary(true);
-        break;
-      case "abc_hindi_b_intro_deep":
-        _handleTranslate(
-          `Thank you so much for confirming, I'm happy with the things you share! I am glad you have the courage to share your thoughts with me.`,
-          `Maraming salamat sa pagkumpirma, masaya ako sa mga bagay na ibahagi mo! Masaya ako na mayroon kang katapangan na ibahagi ang iyong mga saloobin sa akin. `
-        );
-        _handleTranslate(
-          `Do you want to save this thought diary as PDF?`,
-          `Gusto mo bang e save itong thought diary as PDF?`
-        );
-        setShowChatBox(false);
-        setShowPDF(true);
-        df_event_query("ABC_THOUGHT_PRINT");
-        break;
+      // case "abc_oo_b_intro_deep":
+      //   setContinueThoughtDiary(true);
+      //   break;
+      // case "abc_hindi_b_intro_deep":
+      //   _handleTranslate(
+      //     `Thank you so much for confirming, I'm happy with the things you share! I am glad you have the courage to share your thoughts with me.`,
+      //     `Maraming salamat sa pagkumpirma, masaya ako sa mga bagay na ibahagi mo! Masaya ako na mayroon kang katapangan na ibahagi ang iyong mga saloobin sa akin. `
+      //   );
+      //   _handleTranslate(
+      //     `Do you want to save this thought diary as PDF?`,
+      //     `Gusto mo bang e save itong thought diary as PDF?`
+      //   );
+      //   setShowChatBox(false);
+      //   setShowPDF(true);
+      //   df_event_query("ABC_THOUGHT_PRINT");
+      //   break;
       // case "proceed_to_a":
 
       //   break;
@@ -983,17 +1027,30 @@ function Chatbot(props) {
 
       case "abc_hindi_b_after":
         _handleTranslate(
-          `I want to let you know. I use this tool to try to find out why your mood has changed. Because I want you to try to understand how important your thoughts are to affecting your mood and perspective.`,
-          `Nais kung ipaalam sayo kaibigan.Ginagamit ko ang tool na ito para subukang malaman kung bakit nagbago ang iyong mood. Dahil gusto kong subukan mong maunawaan kung gaano kahalaga ang iyong mga iniisip sa nakakaapekto sa iyong mood at pananaw.`
+          `Thank you so much for confirming, I'm happy with the things you share! I am glad you have the courage to share your thoughts with me.`,
+          `Maraming salamat sa pagkumpirma, masaya ako sa mga bagay na ibahagi mo! Masaya ako na mayroon kang katapangan na ibahagi ang iyong mga saloobin sa akin. `
         );
         _handleTranslate(
-          `Do you want to continue this conversation?`,
-          `Nais mo ba ipagpatuloy ang paguusap naito?`
+          `Do you want to save this thought diary as PDF?`,
+          `Gusto mo bang e save itong thought diary as PDF?`
         );
-        df_event_query("ABC_THOUGHT_DIARY_B_INTRO_TO_DEEP");
-        setGetAfterFeelings(false);
         setShowChatBox(false);
+        setShowPDF(true);
+        df_event_query("ABC_THOUGHT_PRINT");
         break;
+      // case "abc_hindi_b_after":
+      //   _handleTranslate(
+      //     `I want to let you know. I use this tool to try to find out why your mood has changed. Because I want you to try to understand how important your thoughts are to affecting your mood and perspective.`,
+      //     `Nais kung ipaalam sayo kaibigan.Ginagamit ko ang tool na ito para subukang malaman kung bakit nagbago ang iyong mood. Dahil gusto kong subukan mong maunawaan kung gaano kahalaga ang iyong mga iniisip sa nakakaapekto sa iyong mood at pananaw.`
+      //   );
+      //   _handleTranslate(
+      //     `Do you want to continue this conversation?`,
+      //     `Nais mo ba ipagpatuloy ang paguusap naito?`
+      //   );
+      //   df_event_query("ABC_THOUGHT_DIARY_B_INTRO_TO_DEEP");
+      //   setGetAfterFeelings(false);
+      //   setShowChatBox(false);
+      //   break;
 
       case "abc_hindi_b":
         _handleTranslate(
@@ -1203,8 +1260,14 @@ function Chatbot(props) {
       //   df_event_query("WELCOME_CONTINUE");
       //   break;
 
-      // case "exit_ulayaw":
-      // df_event_query("ABC_GETMOOD");
+      case "exit_ulayaw":
+        // _handleTranslate(`Exit`, `Exit`, true);
+        _handleTranslate(
+          `Okay thank you for using app!`,
+          `Okay salamat sa pag gamit ng app!`
+        );
+        setShowChatBox(false);
+        break;
 
       // case "training_assessment-continue":
       //   break;
@@ -1224,16 +1287,18 @@ function Chatbot(props) {
     let res = "";
     if (total >= 7) res = "high";
     if (total < 7) res = "low";
-
+    setAssessmentUser((prevAss) => {
+      return { ...prevAss, result: res };
+    });
+    console.log("Ass Result", assessmentUser);
     console.log("Assessment Result:", res, "Assessment Total:", total);
 
     // df_event_query("ASSESSMENT_DONE");
     df_event_query("ASSESSMENT_COMPANION");
-
+    setShowChatBox(false);
     _handleTranslate(
-      `Meron ka bang kasama ngayon? Ano ang kanyang pangalan?`,
-      `Meron ka bang kasama ngayon? Ano ang kanyang pangalan?`,
-      true
+      `Meron ka bang kasama ngayon?`,
+      `Meron ka bang kasama ngayon?`
     );
     setClaimCode(false);
   }
@@ -1367,6 +1432,48 @@ function Chatbot(props) {
         </div>
       </div>
     );
+  }
+  async function walaAkongCode(assessmentUser) {
+    let assessmentTaker = assessmentUser;
+    return await axios
+      .post(`/api/admin/addCompanion`, {
+        assessmentTaker,
+        companion_first_name: "",
+        companion_last_name: "",
+        companion_contact_no: "",
+      })
+      .then((res) => {
+        // toast.success(res.response.data);
+        df_event_query("ASSESSMENT_DONE");
+        setShowChatBox(false);
+        setassessment_meron_companion(false);
+        setassessment_meron_companion_done(false);
+        setShowModal(false);
+        _handleTranslate(
+          `I don't have a companion`,
+          `Wala akong ka kasama`,
+          true
+        );
+        _handleTranslate(
+          `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin  ${userLoggedIn.first_name}. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`,
+          `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin ${userLoggedIn.first_name}. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`
+        );
+
+        _handleTranslate(
+          `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`,
+          `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`
+        );
+
+        _handleTranslate(
+          `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`,
+          `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`
+        );
+      })
+      .catch((err) => {
+        // setCorrectCode(false);
+        // console.log(err.response);
+        toast.error(err.response.data.errors);
+      });
   }
 
   function renderOneMessage(message, i) {
@@ -1515,6 +1622,7 @@ function Chatbot(props) {
               >
                 <span className="flex flex-wrap">
                   <a
+                    // to={"/login"}
                     style={{ margin: 3 }}
                     onClick={() => {
                       // df_text_query("Show Thought Diary", false);
@@ -1567,6 +1675,102 @@ function Chatbot(props) {
                 payload={message.msg.payload.fields.show_diary.listValue.values}
                 // dontShowChatBox={true}
               />
+            </div>
+          ) : (
+            ""
+          )}
+        </>
+      );
+    } else if (
+      message.msg &&
+      message.msg.payload &&
+      message.msg.payload.fields &&
+      message.msg.payload.fields.assessment_ask_companion_replies &&
+      assessment_meron_companion_done
+    ) {
+      return (
+        <>
+          {assessment_meron_companion_done ? (
+            <div
+              className={
+                "flex justify-center space-x-2  p-2 rounded-lg bottom-0 "
+              }
+            >
+              <div
+                className={
+                  "rounded-[10px] self-center overflow-ellipsis  px-4 py-2  text-black font-medium text-left "
+                }
+              >
+                <span className="flex flex-wrap">
+                  <a
+                    // to={"/login"}
+                    style={{ margin: 3 }}
+                    onClick={() => {
+                      // df_text_query("Show Thought Diary", false);
+                      // setQuickRepliesWelcome(false);
+                      setShowChatBox(false);
+                      // df_event_query("ASSESSMENT_DONE");
+                      setShowModalLogin(true);
+                      // setassessment_meron_companion_done(false)
+                      setassessment_meron_companion(true);
+                    }}
+                    className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                  >
+                    Meron akong kasama
+                  </a>
+                  <a
+                    // to={"/login"}
+                    style={{ margin: 3 }}
+                    onClick={() => {
+                      console.log(assessmentUser, "cannot read sht");
+                      walaAkongCode(assessmentUser);
+                    }}
+                    // onChange={}
+                    // onClick={axios
+                    //   .post(`/api/admin/addCompanion`, {
+                    //     assessmentUser,
+                    //     companion_first_name: "",
+                    //     companion_last_name: "",
+                    //     companion_contact_no: "",
+                    //   })
+                    //   .then((res) => {
+                    //     // toast.success(res.response.data);
+                    //     df_event_query("ASSESSMENT_DONE");
+                    //     setShowChatBox(false);
+                    //     setassessment_meron_companion(false);
+                    //     setassessment_meron_companion_done(false);
+                    //     setShowModal(false);
+                    //     _handleTranslate(
+                    //       `I don't have a companion`,
+                    //       `Wala akong ka kasama`,
+                    //       true
+                    //     );
+                    //     _handleTranslate(
+                    //       `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin  ${userLoggedIn.first_name}. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`,
+                    //       `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin ${userLoggedIn.first_name}. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`
+                    //     );
+
+                    //     _handleTranslate(
+                    //       `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`,
+                    //       `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`
+                    //     );
+
+                    //     _handleTranslate(
+                    //       `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`,
+                    //       `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`
+                    //     );
+                    //   })
+                    //   .catch((err) => {
+                    //     // setCorrectCode(false);
+                    //     // console.log(err.response);
+                    //     toast.error(err.response.data.errors);
+                    //   })}
+                    className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                  >
+                    Wala akong kasama
+                  </a>
+                </span>
+              </div>
             </div>
           ) : (
             ""
@@ -1937,9 +2141,10 @@ function Chatbot(props) {
                       `Oo, Save as PDF`,
                       true
                     );
+                    _handleTranslate(`Okay, Saving...`, `Okay, Saving...`);
                     _handleTranslate(
-                      `Okay, Printing... Thank you!`,
-                      `Okay, Printing... Thank you!`
+                      `Just come back when you have a problem`,
+                      `Mag balik ka lang pag may problema ka`
                     );
                     // <PdfExtract />;
                     handleExportWithComponent();
@@ -2961,6 +3166,12 @@ function Chatbot(props) {
             _handleTranslate={_handleTranslate}
             assessment_meron_companion={assessment_meron_companion}
             setassessment_meron_companion={setassessment_meron_companion}
+            setAssessmentUser={setAssessmentUser}
+            assessmentUser={assessmentUser}
+            setassessment_meron_companion_done={
+              setassessment_meron_companion_done
+            }
+            assessment_meron_companion_done={assessment_meron_companion_done}
             // history={props.history}
           />
         ) : (
@@ -3112,6 +3323,8 @@ function ThoughtDiary() {
     GetAgainstEvidenceDContext
   );
   const { getLocation, setGetLocation } = useContext(GetLocationContext);
+  const { showPresentEmotion, setShowPresentEmotion } =
+    useContext(PresentEmotion);
 
   let firstHit = -1;
   let firstHitOther = -1;
@@ -3249,6 +3462,39 @@ function ThoughtDiary() {
               >
                 <label className="text-[20px] ">C) Consequences</label>
                 <div className=" text-center break-words max-w-[300px]">
+                  {/* Present emotion section */}
+                  <label className="flex flex-col leading-none">
+                    <label>
+                      <label className="text-[14px] text-blue-900  font-bold">
+                        present emotion
+                      </label>
+                    </label>
+
+                    <label className="">
+                      {showPresentEmotion != null ||
+                      (showPresentEmotion != undefined &&
+                        getAdverseStep3 != null) ||
+                      getAdverseStep3 != undefined
+                        ? showPresentEmotion.map((item, i) => {
+                            return (
+                              <>
+                                {_handleMoodResultGetHotEmotionCAnswer(item, i)}
+                              </>
+                            );
+                          })
+                        : ""}
+                      <span className="text-[50px] leading-[0px]">.</span>
+                      {/* {count === 1 ? (
+                      <span className="text-[50px] leading-[0px]">.</span>
+                    ) : (
+                      ""
+                    )} */}
+
+                      {/* Sad<span className="text-[50px] leading-[0px]">,</span> Low
+                    feeling<span className="text-[50px] leading-[0px]">.</span> */}
+                    </label>
+                  </label>
+
                   {/* Hot emotion section */}
                   <label className="flex flex-col leading-none">
                     <label>
@@ -3425,9 +3671,13 @@ function ThoughtDiary() {
 
                   {/* other thoughts */}
                   <label className="flex flex-col leading-none pt-10">
-                    <label className="text-[14px] text-blue-900  font-bold">
-                      other thoughts
-                    </label>
+                    {continueThoughtDiary ? (
+                      <label className="text-[14px] text-blue-900  font-bold">
+                        other thoughts
+                      </label>
+                    ) : (
+                      ""
+                    )}
                     {/* other thoughts instances */}
                     <div className="leading-normal flex flex-col w-full">
                       <label className="">
