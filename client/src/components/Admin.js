@@ -6,6 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { authenticate, isAuth } from "../helpers/auth";
 import axios from "axios";
 import jwt from "jsonwebtoken";
+import Select from "react-select";
 
 const Admin = ({ match }) => {
   const { showAdminRoute, setShowAdminRoute } = useContext(ShowAdminRoute);
@@ -297,6 +298,12 @@ const Admin = ({ match }) => {
 };
 
 function GetUserDetails(props) {
+  const options = [
+    { value: "masma_180000002118@uic.edu.ph", label: "Mckeen Asma" },
+    { value: "ebayacag_180000002988@uic.edu.ph", label: "Eldon Bayacag" },
+    { value: "jsurigao_180000002050@uic.edu.ph", label: "Jonash Surigao" },
+    { value: "ctalo_180000001941@uic.edu.ph", label: "Christian John Talo" },
+  ];
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedUser, setSelectedUser] = useState();
   useEffect(async () => {
@@ -344,22 +351,27 @@ function GetUserDetails(props) {
                 {/* first name */}
                 <label>Select Receiver Email</label>
                 <label className="space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full ">
-                  <input
+                  {/* <input
                     className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7]"
                     type="text"
                     placeholder="DR.JOSE RIZAL"
                     disabled
                     // onChange={handleChange("first_name")}
                     // value={first_name}
+                  /> */}
+                  <Select
+                    className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7]"
+                    options={options}
                   />
                 </label>
                 {/* last name */}
-                <label>Sender Name (Your Name)</label>
+                <label>Sender Email</label>
                 <label className="space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full ">
                   <input
                     className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7]"
                     type="text"
-                    placeholder="Jonash Surigao"
+                    placeholder={isAuth().email}
+                    value={isAuth().email}
                     disabled
                     // onChange={handleChange("last_name")}
                     // value={last_name}
