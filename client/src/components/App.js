@@ -22,6 +22,8 @@ import { GetForEvidenceDContext } from "../Context/GetForEvidenceDContext";
 import { GetAgainstEvidenceDContext } from "../Context/GetAgainstEvidenceDContext";
 import { GetLocationContext } from "../Context/GetLocationContext";
 import { ContinueThoughtDiaryContext } from "../Context/ContinueThoughtDiaryContext";
+import { ShowAdminRoute } from "../Context/ShowAdminRoute";
+import { PresentEmotion } from "../Context/PresentEmotion";
 
 import "./App.css";
 import Header from "./Header";
@@ -32,6 +34,7 @@ import ForgetPassword from "./ForgetPassword";
 import Reset from "./Reset.jsx";
 
 import Admin from "./Admin";
+import ModalLogin from "./ModalLogin";
 import PdfExtract from "./chatbot/PdfExtract";
 // import { PDFViewer } from "@react-pdf/renderer";
 
@@ -63,179 +66,217 @@ function App() {
   const [getAgainstEvidenceD, setGetAgainstEvidenceD] = useState([]);
   const [getLocation, setGetLocation] = useState(false);
   const [continueThoughtDiary, setContinueThoughtDiary] = useState(false);
+  const [showAdminRoute, setShowAdminRoute] = useState(false);
+  const [showPresentEmotion, setShowPresentEmotion] = useState(false);
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <ShowMoodsContext.Provider
+      <PresentEmotion.Provider
         value={{
-          showMoods,
-          setShowMoods,
+          showPresentEmotion,
+          setShowPresentEmotion,
         }}
       >
-        <div
-          className={
-            showMoods
-              ? "flex justify-center bg-[#3D829F] bg-opacity-[0.75]  w-full h-screen absolute"
-              : "flex justify-center w-full h-screen"
-          }
+        <ShowAdminRoute.Provider
+          value={{
+            showAdminRoute,
+            setShowAdminRoute,
+          }}
         >
-          <BrowserRouter>
-            <div className=" w-full h-full ">
-              <Header />
-              <ContinueThoughtDiaryContext.Provider
-                value={{
-                  continueThoughtDiary,
-                  setContinueThoughtDiary,
-                }}
-              >
-                <ThoughtDiaryContext.Provider
-                  value={{
-                    showThoughtDiaryTool,
-                    setShowThoughtDiaryTool,
-                  }}
-                >
-                  <GetAdverseAnswerContext.Provider
+          <ShowMoodsContext.Provider
+            value={{
+              showMoods,
+              setShowMoods,
+            }}
+          >
+            <div
+              className={
+                showMoods
+                  ? "flex justify-center bg-[#3D829F] bg-opacity-[0.75]  w-full h-screen absolute"
+                  : "flex justify-center w-full h-screen"
+              }
+            >
+              <BrowserRouter>
+                <div className=" w-full h-full ">
+                  {!showAdminRoute ? <Header /> : ""}
+                  <ContinueThoughtDiaryContext.Provider
                     value={{
-                      getAdverseStep3,
-                      setGetAdverseStep3,
+                      continueThoughtDiary,
+                      setContinueThoughtDiary,
                     }}
                   >
-                    <GetHotEmotionCAnswerContext.Provider
+                    <ThoughtDiaryContext.Provider
                       value={{
-                        getHotEmotionCAnswer,
-                        setGetHotEmotionCAnswer,
+                        showThoughtDiaryTool,
+                        setShowThoughtDiaryTool,
                       }}
                     >
-                      <GetOtherEmotionCAnswerContext.Provider
+                      <GetAdverseAnswerContext.Provider
                         value={{
-                          getOtherEmotionCAnswer,
-                          setGetOtherEmotionCAnswer,
+                          getAdverseStep3,
+                          setGetAdverseStep3,
                         }}
                       >
-                        <ShowChatBox.Provider
+                        <GetHotEmotionCAnswerContext.Provider
                           value={{
-                            showChatBox,
-                            setShowChatBox,
+                            getHotEmotionCAnswer,
+                            setGetHotEmotionCAnswer,
                           }}
                         >
-                          <ThoughtDiaryFocusContext.Provider
+                          <GetOtherEmotionCAnswerContext.Provider
                             value={{
-                              focusThoughtDiaryLetter,
-                              setFocusThoughtDiaryLetter,
+                              getOtherEmotionCAnswer,
+                              setGetOtherEmotionCAnswer,
                             }}
                           >
-                            <MaxInputContext.Provider
+                            <ShowChatBox.Provider
                               value={{
-                                maxInput,
-                                setMaxInput,
+                                showChatBox,
+                                setShowChatBox,
                               }}
                             >
-                              <GetOtherEmotionAllContext.Provider
+                              <ThoughtDiaryFocusContext.Provider
                                 value={{
-                                  getOtherEmotionAll,
-                                  setGetOtherEmotionAll,
+                                  focusThoughtDiaryLetter,
+                                  setFocusThoughtDiaryLetter,
                                 }}
                               >
-                                <HotEmotionRateContext.Provider
+                                <MaxInputContext.Provider
                                   value={{
-                                    getHotEmotionRate,
-                                    setGetHotEmotionRate,
+                                    maxInput,
+                                    setMaxInput,
                                   }}
                                 >
-                                  <GetOtherThoughtBContext.Provider
+                                  <GetOtherEmotionAllContext.Provider
                                     value={{
-                                      getOtherThoughtB,
-                                      setGetOtherThoughtB,
+                                      getOtherEmotionAll,
+                                      setGetOtherEmotionAll,
                                     }}
                                   >
-                                    <GetHotThoughtBContext.Provider
+                                    <HotEmotionRateContext.Provider
                                       value={{
-                                        getHotThoughtB,
-                                        setGetHotThoughtB,
+                                        getHotEmotionRate,
+                                        setGetHotEmotionRate,
                                       }}
                                     >
-                                      <ShowUTSContext.Provider
+                                      <GetOtherThoughtBContext.Provider
                                         value={{
-                                          showUTS,
-                                          setShowUTS,
+                                          getOtherThoughtB,
+                                          setGetOtherThoughtB,
                                         }}
                                       >
-                                        <GetUTSContext.Provider
+                                        <GetHotThoughtBContext.Provider
                                           value={{
-                                            getUTS,
-                                            setGetUTS,
+                                            getHotThoughtB,
+                                            setGetHotThoughtB,
                                           }}
                                         >
-                                          <GetUTSContainerContext.Provider
+                                          <ShowUTSContext.Provider
                                             value={{
-                                              getUTSContainer,
-                                              setGetUTSCointainer,
+                                              showUTS,
+                                              setShowUTS,
                                             }}
                                           >
-                                            <HotThoughtRateContext.Provider
+                                            <GetUTSContext.Provider
                                               value={{
-                                                getHotThoughtRate,
-                                                setGetHotThoughtRate,
+                                                getUTS,
+                                                setGetUTS,
                                               }}
                                             >
-                                              <GetForEvidenceDContext.Provider
+                                              <GetUTSContainerContext.Provider
                                                 value={{
-                                                  getForEvidenceD,
-                                                  setGetForEvidenceD,
+                                                  getUTSContainer,
+                                                  setGetUTSCointainer,
                                                 }}
                                               >
-                                                <GetAgainstEvidenceDContext.Provider
+                                                <HotThoughtRateContext.Provider
                                                   value={{
-                                                    getAgainstEvidenceD,
-                                                    setGetAgainstEvidenceD,
+                                                    getHotThoughtRate,
+                                                    setGetHotThoughtRate,
                                                   }}
                                                 >
-                                                  <GetLocationContext.Provider
+                                                  <GetForEvidenceDContext.Provider
                                                     value={{
-                                                      getLocation,
-                                                      setGetLocation,
+                                                      getForEvidenceD,
+                                                      setGetForEvidenceD,
                                                     }}
                                                   >
-                                                    {/* contexts above */}
-                                                    <Route
-                                                      exact
-                                                      path="/"
-                                                      component={Landing}
-                                                    />
-                                                    <Route
-                                                      path="/users/password/forget"
-                                                      exact
-                                                      render={(props) => (
-                                                        <ForgetPassword
-                                                          {...props}
+                                                    <GetAgainstEvidenceDContext.Provider
+                                                      value={{
+                                                        getAgainstEvidenceD,
+                                                        setGetAgainstEvidenceD,
+                                                      }}
+                                                    >
+                                                      <GetLocationContext.Provider
+                                                        value={{
+                                                          getLocation,
+                                                          setGetLocation,
+                                                        }}
+                                                      >
+                                                        {/* contexts above */}
+                                                        {!showAdminRoute ? (
+                                                          <Route
+                                                            exact
+                                                            path="/"
+                                                            component={Landing}
+                                                          />
+                                                        ) : (
+                                                          ""
+                                                        )}
+                                                        <Route
+                                                          path="/users/password/forget"
+                                                          exact
+                                                          render={(props) => (
+                                                            <ForgetPassword
+                                                              {...props}
+                                                            />
+                                                          )}
                                                         />
-                                                      )}
-                                                    />
 
-                                                    <Route
-                                                      path="/users/activate/:token"
-                                                      exact
-                                                      render={(props) => (
-                                                        <Activate {...props} />
-                                                      )}
-                                                    />
-                                                    <Route
-                                                      path="/users/password/reset/:token"
-                                                      exact
-                                                      render={(props) => (
-                                                        <Reset {...props} />
-                                                      )}
-                                                    />
-                                                    <Route
-                                                      path="/admin"
-                                                      exact
-                                                      render={(props) => (
-                                                        <Admin {...props} />
-                                                      )}
-                                                    />
+                                                        <Route
+                                                          path="/users/activate/:token"
+                                                          exact
+                                                          render={(props) => (
+                                                            <Activate
+                                                              {...props}
+                                                            />
+                                                          )}
+                                                        />
+                                                        <Route
+                                                          path="/users/password/reset/:token"
+                                                          exact
+                                                          render={(props) => (
+                                                            <Reset {...props} />
+                                                          )}
+                                                        />
+                                                        {/* <Route
+                                                        path="/admin"
+                                                        exact
+                                                        render={(props) => (
+                                                          <Admin {...props} />
+                                                        )}
+                                                      /> */}
+                                                        {/* <Route
+                                                        path="/login"
+                                                        exact
+                                                        render={(props) => (
+                                                          <ModalLogin
+                                                            {...props}
+                                                          />
+                                                        )}
+                                                      /> */}
+                                                        {showAdminRoute ? (
+                                                          <Admin />
+                                                        ) : (
+                                                          ""
+                                                        )}
+                                                        {!showAdminRoute ? (
+                                                          <Chatbot />
+                                                        ) : (
+                                                          ""
+                                                        )}
 
-                                                    <Chatbot />
-                                                    {/* <PDFViewer>
+                                                        {/* <PDFViewer>
                                                     <Route
                                                       path="/showPDF"
                                                       exact
@@ -246,31 +287,33 @@ function App() {
                                                       )}
                                                     />
                                                   </PDFViewer> */}
-                                                  </GetLocationContext.Provider>
-                                                </GetAgainstEvidenceDContext.Provider>
-                                              </GetForEvidenceDContext.Provider>
-                                            </HotThoughtRateContext.Provider>
-                                          </GetUTSContainerContext.Provider>
-                                        </GetUTSContext.Provider>
-                                      </ShowUTSContext.Provider>
-                                    </GetHotThoughtBContext.Provider>
-                                  </GetOtherThoughtBContext.Provider>
-                                </HotEmotionRateContext.Provider>
-                              </GetOtherEmotionAllContext.Provider>
-                            </MaxInputContext.Provider>
-                          </ThoughtDiaryFocusContext.Provider>
-                        </ShowChatBox.Provider>
-                      </GetOtherEmotionCAnswerContext.Provider>
-                    </GetHotEmotionCAnswerContext.Provider>
-                  </GetAdverseAnswerContext.Provider>
-                </ThoughtDiaryContext.Provider>
-              </ContinueThoughtDiaryContext.Provider>
+                                                      </GetLocationContext.Provider>
+                                                    </GetAgainstEvidenceDContext.Provider>
+                                                  </GetForEvidenceDContext.Provider>
+                                                </HotThoughtRateContext.Provider>
+                                              </GetUTSContainerContext.Provider>
+                                            </GetUTSContext.Provider>
+                                          </ShowUTSContext.Provider>
+                                        </GetHotThoughtBContext.Provider>
+                                      </GetOtherThoughtBContext.Provider>
+                                    </HotEmotionRateContext.Provider>
+                                  </GetOtherEmotionAllContext.Provider>
+                                </MaxInputContext.Provider>
+                              </ThoughtDiaryFocusContext.Provider>
+                            </ShowChatBox.Provider>
+                          </GetOtherEmotionCAnswerContext.Provider>
+                        </GetHotEmotionCAnswerContext.Provider>
+                      </GetAdverseAnswerContext.Provider>
+                    </ThoughtDiaryContext.Provider>
+                  </ContinueThoughtDiaryContext.Provider>
 
-              <Footer />
+                  {!showAdminRoute ? <Footer /> : ""}
+                </div>
+              </BrowserRouter>
             </div>
-          </BrowserRouter>
-        </div>
-      </ShowMoodsContext.Provider>
+          </ShowMoodsContext.Provider>
+        </ShowAdminRoute.Provider>
+      </PresentEmotion.Provider>
     </DndProvider>
   );
 }
