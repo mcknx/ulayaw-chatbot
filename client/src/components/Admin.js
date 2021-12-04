@@ -306,6 +306,24 @@ function GetUserDetails(props) {
   ];
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedUser, setSelectedUser] = useState();
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    age: "",
+    gender: "male",
+    contact_no: "",
+    location: {},
+    email: "",
+    admin_email: "",
+    r_email: "",
+    result: "",
+    cfirst_name: "",
+    clast_name: "",
+    ccontact_no: "",
+    password1: "",
+    password2: "",
+    textChange: "Sign Up",
+  });
   useEffect(async () => {
     await axios
       .get(`/api/admin/${props.user.email}`)
@@ -423,17 +441,26 @@ function GetUserDetails(props) {
             </span>
 
             {/* submit btn */}
-
-            <button
-              className="self-center rounded-[38px] bg-[#5DCFFF] space-x-[10px]  m-8 py-[20px] w-[405px] text-white text-[24px]"
-              // onClick={(e) => {
-              //   // if (showRegister) {
-              //   handleSubmit(e);
-              //   // }
-              // }}
-            >
-              SUBMIT
-            </button>
+            {selectedUser != undefined ? (
+              <>
+                {selectedUser.result != "0" ? (
+                  <button
+                    className="self-center rounded-[38px] bg-[#5DCFFF] space-x-[10px]  m-8 py-[20px] w-[405px] text-white text-[24px]"
+                    // onClick={(e) => {
+                    //   // if (showRegister) {
+                    //   handleSubmit(e);
+                    //   // }
+                    // }}
+                  >
+                    SUBMIT
+                  </button>
+                ) : (
+                  ""
+                )}
+              </>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </div>
