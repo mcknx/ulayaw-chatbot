@@ -26,6 +26,7 @@ const Choice = (props) => {
               props.choices.structValue.fields.score.stringValue
             )
           }
+          disabled={props.doneAssess}
           // checked={}
         />
         {props.choices.structValue.fields.text.stringValue}
