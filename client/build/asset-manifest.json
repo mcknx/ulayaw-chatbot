@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/static/css/main.a5fc5f6c.chunk.css",
-    "main.js": "/static/js/main.da99e6e2.chunk.js",
-    "main.js.map": "/static/js/main.da99e6e2.chunk.js.map",
+    "main.css": "/static/css/main.58e15714.chunk.css",
+    "main.js": "/static/js/main.dd37d08b.chunk.js",
+    "main.js.map": "/static/js/main.dd37d08b.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.776c1e0d.js",
     "runtime-main.js.map": "/static/js/runtime-main.776c1e0d.js.map",
     "static/css/2.f4c56af9.chunk.css": "/static/css/2.f4c56af9.chunk.css",
@@ -10,19 +10,23 @@
     "static/js/2.a164fbae.chunk.js.map": "/static/js/2.a164fbae.chunk.js.map",
     "index.html": "/index.html",
     "static/css/2.f4c56af9.chunk.css.map": "/static/css/2.f4c56af9.chunk.css.map",
-    "static/css/main.a5fc5f6c.chunk.css.map": "/static/css/main.a5fc5f6c.chunk.css.map",
+    "static/css/main.58e15714.chunk.css.map": "/static/css/main.58e15714.chunk.css.map",
     "static/js/2.a164fbae.chunk.js.LICENSE.txt": "/static/js/2.a164fbae.chunk.js.LICENSE.txt",
     "static/media/A.8f102823.gif": "/static/media/A.8f102823.gif",
     "static/media/B.4085cd66.gif": "/static/media/B.4085cd66.gif",
     "static/media/C.a6cef818.gif": "/static/media/C.a6cef818.gif",
     "static/media/Thought-Diary.e1aa9b3e.gif": "/static/media/Thought-Diary.e1aa9b3e.gif",
     "static/media/annoyed.6ffefe57.png": "/static/media/annoyed.6ffefe57.png",
+    "static/media/asma.e6d68af7.png": "/static/media/asma.e6d68af7.png",
+    "static/media/bayacag.73a7c7d0.png": "/static/media/bayacag.73a7c7d0.png",
     "static/media/exit.64e574b3.gif": "/static/media/exit.64e574b3.gif",
     "static/media/forget.4195c220.svg": "/static/media/forget.4195c220.svg",
     "static/media/frustrated.28237640.png": "/static/media/frustrated.28237640.png",
     "static/media/home_ulayaw.9d0286f6.png": "/static/media/home_ulayaw.9d0286f6.png",
     "static/media/nervous.c0f9a422.png": "/static/media/nervous.c0f9a422.png",
     "static/media/reset.0e0b445c.svg": "/static/media/reset.0e0b445c.svg",
+    "static/media/surigao.f533c1b4.png": "/static/media/surigao.f533c1b4.png",
+    "static/media/talo.0662128a.png": "/static/media/talo.0662128a.png",
     "static/media/welcome.160e2d9f.gif": "/static/media/welcome.160e2d9f.gif",
     "static/media/welcome.94d0cacf.svg": "/static/media/welcome.94d0cacf.svg",
     "static/media/worried.329eb542.png": "/static/media/worried.329eb542.png"
@@ -31,7 +35,7 @@
     "static/js/runtime-main.776c1e0d.js",
     "static/css/2.f4c56af9.chunk.css",
     "static/js/2.a164fbae.chunk.js",
-    "static/css/main.a5fc5f6c.chunk.css",
-    "static/js/main.da99e6e2.chunk.js"
+    "static/css/main.58e15714.chunk.css",
+    "static/js/main.dd37d08b.chunk.js"
   ]
 }
