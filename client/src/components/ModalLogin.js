@@ -10,7 +10,8 @@ import Admin from "./Admin";
 import asdfjkl from "asdfjkl";
 // import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input/input";
-
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
 export default function ModalLogin(props) {
   const { showAdminRoute, setShowAdminRoute } = useContext(ShowAdminRoute);
   const [showRegister, setShowRegister] = useState(false);
@@ -327,6 +328,7 @@ export default function ModalLogin(props) {
         // props.setShowModal(false);
         // const data = await axios.post('/someApiUrl')
         setShowAdminRoute(true);
+        cookies.set("adminLogged", true, { path: "/" });
 
         props.setShowModal(false);
 

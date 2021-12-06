@@ -44,7 +44,8 @@ import Chatbot from "./chatbot/Chatbot";
 // import PetCard from "./PetCard";
 import Basket from "./Basket";
 import UTS from "./UTS";
-
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
 function App() {
   const [showThoughtDiaryTool, setShowThoughtDiaryTool] = useState(false);
   const [getAdverseStep3, setGetAdverseStep3] = useState(null);
@@ -98,7 +99,11 @@ function App() {
             >
               <BrowserRouter>
                 <div className=" w-full h-full ">
-                  {!showAdminRoute ? <Header /> : ""}
+                  {!showAdminRoute && !cookies.get("adminLogged") ? (
+                    <Header />
+                  ) : (
+                    ""
+                  )}
                   <ContinueThoughtDiaryContext.Provider
                     value={{
                       continueThoughtDiary,
@@ -214,7 +219,10 @@ function App() {
                                                         }}
                                                       >
                                                         {/* contexts above */}
-                                                        {!showAdminRoute ? (
+                                                        {!showAdminRoute &&
+                                                        !cookies.get(
+                                                          "adminLogged"
+                                                        ) ? (
                                                           <Route
                                                             exact
                                                             path="/"
@@ -265,12 +273,17 @@ function App() {
                                                           />
                                                         )}
                                                       /> */}
-                                                        {showAdminRoute ? (
+                                                        {cookies.get(
+                                                          "adminLogged"
+                                                        ) || showAdminRoute ? (
                                                           <Admin />
                                                         ) : (
                                                           ""
                                                         )}
-                                                        {!showAdminRoute ? (
+                                                        {!showAdminRoute &&
+                                                        !cookies.get(
+                                                          "adminLogged"
+                                                        ) ? (
                                                           <Chatbot />
                                                         ) : (
                                                           ""
@@ -307,7 +320,11 @@ function App() {
                     </ThoughtDiaryContext.Provider>
                   </ContinueThoughtDiaryContext.Provider>
 
-                  {!showAdminRoute ? <Footer /> : ""}
+                  {!showAdminRoute && !cookies.get("adminLogged") ? (
+                    <Footer />
+                  ) : (
+                    ""
+                  )}
                 </div>
               </BrowserRouter>
             </div>

@@ -7,6 +7,8 @@ import { authenticate, isAuth } from "../helpers/auth";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import Select from "react-select";
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
 
 const Admin = ({ match }) => {
   const { showAdminRoute, setShowAdminRoute } = useContext(ShowAdminRoute);
@@ -106,7 +108,14 @@ const Admin = ({ match }) => {
                 </h2>
                 <div className="px-8 space-x-2 border-l-2 flex items-center">
                   <h2
-                    onClick={() => setShowAdminRoute(false)}
+                    onClick={() => {
+                      setShowAdminRoute(false);
+                      cookies.remove("adminLogged", { path: "/" });
+                      // cookies.set("adminLogged", false, { path: "/" });
+                      // console.log(!cookies.get("adminLogged"));
+
+                      // window.location.reload();
+                    }}
                     className="font-semibold text-gray-800 cursor-pointer"
                   >
                     Logout
