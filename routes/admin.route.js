@@ -10,6 +10,7 @@ const {
   claimCodeController,
   addCompanionController,
   fetchUserCodeController,
+  handOverController,
   // facebookController
 } = require("../controllers/admin.controller.js");
 
@@ -18,5 +19,6 @@ router.get("/admin/:email", fetchUserCodeController);
 router.post("/admin/createCode", createCodeValidator, createCodeController);
 router.post("/admin/claimCode", claimCodeController);
 router.post("/admin/addCompanion", addCompanionController);
+router.post("/admin/handOver", handOverController);
 
 module.exports = router;

@@ -36,8 +36,8 @@ function MessageFormat(props) {
     <div
       className={
         props.float === "left"
-          ? "flex justify-start space-x-2  p-2 rounded-lg bottom-0  max-w-[500px]"
-          : "flex flex-row-reverse space-x-2 space-x-reverse  p-2 rounded-lg max-w-[500px] break-words "
+          ? "flex justify-start space-x-2  p-2 rounded-lg bottom-0  max-w-[500px] break-words"
+          : "flex flex-row-reverse space-x-2 space-x-reverse  p-2 rounded-lg max-w-[500px] break-all text-justify"
       }
     >
       <div

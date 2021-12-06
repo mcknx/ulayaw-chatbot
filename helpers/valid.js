@@ -57,6 +57,12 @@ exports.validLogin = [
 
 exports.forgotPasswordValidator = [
   check("email")
+    .notEmpty()
+    .isEmail()
+    .withMessage("Must be a valid email address"),
+];
+exports.handOverValidator = [
+  check("r_email")
     .not()
     .isEmpty()
     .isEmail()
@@ -65,7 +71,8 @@ exports.forgotPasswordValidator = [
 
 exports.createCodeValidator = [
   check("email")
-    .notEmpty()
+    .not()
+    .isEmpty()
     .isEmail()
     .withMessage("Must be a valid email address"),
 ];

@@ -141,7 +141,7 @@ const Admin = ({ match }) => {
                       </th>
                       <th className="p-2 whitespace-nowrap">
                         <div className="font-semibold text-center">
-                          ABC Result
+                          ABC Thought Diary
                         </div>
                       </th>
                       <th className="p-2 whitespace-nowrap">
@@ -312,7 +312,7 @@ function GetUserDetails(props) {
     age: "",
     gender: "male",
     contact_no: "",
-    location: {},
+    location: { lat: "", lng: "" },
     email: "",
     admin_email: "",
     r_email: "",
@@ -320,10 +320,52 @@ function GetUserDetails(props) {
     cfirst_name: "",
     clast_name: "",
     ccontact_no: "",
-    password1: "",
-    password2: "",
     textChange: "Sign Up",
   });
+  const [selectedOptions, setSelectedOptions] = useState([]);
+
+  const { r_email } = formData;
+  // const handleChange = (text, val) => (e) => {
+  //   setFormData({ ...formData, [text]: e.target.value });
+  //   console.log(e.target.value);
+  // };
+  const handleChange = (options) => {
+    // setSelectedOptions(options);
+    setFormData({ ...formData, r_email: options.value });
+
+    // console.log(options);
+  };
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    if (r_email) {
+      console.log(formData);
+      // console.log("success here", formData);
+
+      // console.log("success here");
+      // setFormData({ ...formData, textChange: "Submitting" });
+      await axios
+        .post(`/api/admin/handOver`, {
+          r_email,
+          formData,
+        })
+        .then((res) => {
+          // console.log(res);
+          if (res.data.errors) {
+            toast.error(res.data.errors);
+          } else {
+            toast.success("Patient handover successful! check email.");
+            // toast.success(res.data.message);
+            console.log(res);
+          }
+        })
+        .catch((err) => {
+          toast.error(err.response.data.errors);
+        });
+
+      console.log(formData);
+    }
+  }
   useEffect(async () => {
     await axios
       .get(`/api/admin/${props.user.email}`)
@@ -331,11 +373,30 @@ function GetUserDetails(props) {
         console.log(res);
 
         setSelectedUser(res.data[0]);
+        setFormData({
+          ...formData,
+          first_name: props.user.first_name,
+          last_name: props.user.last_name,
+          gender: props.user.gender,
+          location: {
+            lat: props.user.location.lat,
+            lng: props.user.location.lng,
+          },
+          age: props.user.age,
+          email: props.user.email,
+          contact_no: props.user.contact_no,
+          admin_email: res.data[0].admin_email,
+          code: res.data[0].code,
+          result: res.data[0].result,
+          cfirst_name: res.data[0].companion.companion_first_name,
+          clast_name: res.data[0].companion.companion_last_name,
+          ccontact_no: res.data[0].companion.companion_contact_no,
+        });
         setIsLoaded(true);
       })
       .catch((err) => {});
   }, [isLoaded]);
-  if (isLoaded) console.log(selectedUser);
+  // if (isLoaded) console.log(selectedUser);
   return (
     <>
       <div className="left-0 fixed top-0 w-full h-full bg-black bg-opacity-[0.75] ">
@@ -380,6 +441,8 @@ function GetUserDetails(props) {
                   <Select
                     className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7]"
                     options={options}
+                    // onChange={handleChange("email")}
+                    onChange={handleChange}
                   />
                 </label>
                 {/* last name */}
@@ -446,11 +509,11 @@ function GetUserDetails(props) {
                 {selectedUser.result != "0" ? (
                   <button
                     className="self-center rounded-[38px] bg-[#5DCFFF] space-x-[10px]  m-8 py-[20px] w-[405px] text-white text-[24px]"
-                    // onClick={(e) => {
-                    //   // if (showRegister) {
-                    //   handleSubmit(e);
-                    //   // }
-                    // }}
+                    onClick={(e) => {
+                      // if (showRegister) {
+                      handleSubmit(e);
+                      // }
+                    }}
                   >
                     SUBMIT
                   </button>
@@ -479,10 +542,17 @@ function CreateCode(props) {
   const [createdCode, setCreatedCode] = useState(false);
   // const [code, setCreatedCode ] = useState(false)
   const { email, admin_email } = formData;
+  const [selectedOptions, setSelectedOptions] = useState([]);
 
   const handleChange = (text, val) => (e) => {
     // console.log(email);
+    // if (e.target.value !== "") {
     setFormData({ ...formData, [text]: e.target.value });
+    setIsClicked(false);
+    // } else {
+    //   toast.error("Field must not be empty");
+    //   setIsClicked(false);
+    // }
   };
 
   async function handleSubmit(e) {
@@ -499,6 +569,7 @@ function CreateCode(props) {
           admin_email,
         })
         .then((res) => {
+          // console.log(res);
           if (res.data.errors) {
             setIsClicked(false);
             toast.error(res.data.errors);
@@ -508,18 +579,19 @@ function CreateCode(props) {
             setCreatedCode(res.data.code);
             console.log(res);
           }
+        })
+        .catch((err) => {
+          // setFormData({
+          //   ...formData,
+
+          //   email: "",
+          // });
+
+          // console.log(err.response);
+          toast.error(err.response.data.errors);
+          setIsClicked(false);
+          // return setIsClicked(err.data.showBtn);
         });
-      // .catch((err) => {
-      //   setFormData({
-      //     ...formData,
-
-      //     email: "",
-      //   });
-
-      //   // console.log(err.response);
-      //   toast.error(err.data.errors);
-      //   return setIsClicked(err.data.showBtn);
-      // });
 
       console.log(formData);
     }

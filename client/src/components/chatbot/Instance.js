@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Choice from "./Choice";
-
+import { ShowChatBox } from "../../Context/ShowChatBox";
 const Instance = (props) => {
   const [nextBtn, setNextBtn] = useState(true);
   const [prevBtn, setPrevBtn] = useState(true);
   const [doneBtn, setDoneBtn] = useState(false);
-
+  const { showChatBox, setShowChatBox } = useContext(ShowChatBox);
   useEffect(() => {
     if (props.item.structValue.fields.question_num.numberValue === 4) {
       setNextBtn(false);
@@ -15,6 +15,7 @@ const Instance = (props) => {
     if (props.item.structValue.fields.question_num.numberValue === 1) {
       setPrevBtn(false);
     }
+    // setShowChatBox(false);
   });
 
   function renderChoiceInstance(item, i) {
@@ -126,7 +127,10 @@ const Instance = (props) => {
                   ? "text-[#0C86BA]  cursor-pointer hover:underline select-none"
                   : "text-[#0C86BA]  cursor-pointer hover:underline select-none hidden"
               }
-              onClick={(event) => props._handleDoneClick(event)}
+              onClick={(event) => {
+                props._handleDoneClick(event);
+                // setShowChatBox(true);
+              }}
             >
               Done
             </a>

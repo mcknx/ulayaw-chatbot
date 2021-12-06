@@ -91,7 +91,11 @@ export default function ModalLogin(props) {
           props.setassessment_meron_companion_done(false);
           props.setShowModal(false);
           toast.success("Successfully added Companion!");
-          props._handleTranslate(`I have a companion`, `Meron ka kasama`, true);
+          props._handleTranslate(
+            `I have a companion`,
+            `Meron kang kasama`,
+            true
+          );
           props._handleTranslate(
             `Nais kong panatilihing mo makiugnay kay ${formData.first_name}. Maaari mo siyang kausapin o bigyan ng indikasyon na-aayon sa iyong nararamdaman o naiisip.`,
             `Nais kong panatilihing mo makiugnay kay ${formData.first_name}. Maaari mo siyang kausapin o bigyan ng indikasyon na-aayon sa iyong nararamdaman o naiisip.`
@@ -108,6 +112,14 @@ export default function ModalLogin(props) {
           props._handleTranslate(
             `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`,
             `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`
+          );
+          // props.df_text_query(``, ``, `user`, ``, `diary`);
+          props.df_text_query(
+            `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
+            false,
+            `Lumipat sa iyong kasalukuyang lokasyon, isang malapit na istasyon ng pulisya, o isang malapit na ospital sa pamamagitan ng pag-click sa pulang bilog!`,
+            "bot",
+            "map"
           );
           props.df_event_query("ASSESSMENT_DONE");
           // setCorrectCode(true);

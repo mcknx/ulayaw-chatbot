@@ -18,7 +18,7 @@ function GetMoods(props) {
   const [checked, setChecked] = useState(false);
   const moodsPerPage = 6;
   const pagesVisited = moodsNumber * moodsPerPage;
-  const pageCount = Math.ceil(props.payload.length / moodsPerPage);
+  const pageCount = Math.ceil(6 / moodsPerPage);
   const { getHotEmotionCAnswer, setGetHotEmotionCAnswer } = useContext(
     GetHotEmotionCAnswerContext
   );
@@ -119,9 +119,10 @@ function GetMoods(props) {
 
   function _handleDoneClick() {
     // console.log(props.selectedMoods);
-    if (props.hotEmotion || props.otherEmotion) {
-      setShowChatBox(false);
-    } else setShowChatBox(true);
+    // if (props.hotEmotion || props.otherEmotion) {
+    //   setShowChatBox(false);
+    // } else setShowChatBox(true);
+    setShowChatBox(true);
     setShowMoods(false);
 
     if (props.hotEmotion) {
@@ -215,6 +216,7 @@ function GetMoods(props) {
         click={_handleClick}
         mood={mood}
         select={mood.select}
+        hotEmotion={props.hotEmotion}
         // setMoodCount={setMoodCount}
         // moodCount={moodCount}
         //   instanceLength={instanceLength}
@@ -228,6 +230,7 @@ function GetMoods(props) {
         checked={checked}
         dontShowChatBox={props.dontShowChatBox}
         otherEmotion={props.otherEmotion}
+        switchLanguage={props.switchLanguage}
         //   _handleDoneClick={_handleDoneClick}
       />
     );
@@ -243,7 +246,7 @@ function GetMoods(props) {
             {/* flex flex-col p-4 */}
             <div className="grid grid-cols-3  ">
               {moods
-                .slice(pagesVisited, pagesVisited + moodsPerPage)
+                // .slice(pagesVisited, pagesVisited + moodsPerPage)
                 .map((mood, i) => {
                   // console.log(mood, "mood");
                   // return _handleCheck(mood, i);
@@ -254,10 +257,11 @@ function GetMoods(props) {
             {/* Buttons */}
             <div className="flex flex-col justify-between">
               {/* React Paginate */}
-              <ReactPaginate
-                previousLabel={"Previous"}
-                nextLabel={"Next"}
-                previous={"Previous"}
+              {/* <ReactPaginate
+                // previousLabel={"Previous"}
+                // nextLabel={"Next"}
+                // previous={"Previous"}
+                nextRel={null}
                 pageCount={pageCount}
                 onPageChange={_changePage}
                 containerClassName={"paginationBttns"}
@@ -265,7 +269,7 @@ function GetMoods(props) {
                 nextLinkClassName={"nextBttn"}
                 disabledClassName={"paginationDisabled"}
                 activeClassName={"paginationActive"}
-              />
+              /> */}
 
               {/* done */}
               <a
@@ -274,6 +278,7 @@ function GetMoods(props) {
                   // setShowMoods(!showMoods);
                   // console.log(showMoods, "MOODSDSDS");
                   _handleDoneClick(event);
+                  setShowChatBox(true);
                 }}
               >
                 Done

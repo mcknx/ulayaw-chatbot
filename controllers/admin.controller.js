@@ -26,6 +26,53 @@ exports.fetchUserCodeController = async (req, res) => {
   }
 };
 
+exports.handOverController = async (req, res) => {
+  const {
+    formData,
+    // code,
+    // companion,
+  } = req.body;
+  console.log(formData);
+  const emailData = {
+    from: formData.admin_email,
+    to: formData.r_email,
+    subject: "HandOver Patient from Ulayaw",
+    html: `
+        <h1>This is the patient details.</h1>
+        <p>Name: ${formData.first_name} ${formData.last_name}</p>
+        <p>Gender: ${formData.gender} </p>
+        <p>Location: ${formData.location.lat} ${formData.location.lng}</p>
+        <p>Age: ${formData.age} </p>
+        <p>Email Address: ${formData.email} </p>
+        <p>Contact Number: ${formData.contact_no} </p>
+        <p>Code: ${formData.code} </p>
+        <p>Result: ${formData.result} </p>
+        <p>Companion Name: ${formData.cfirst_name} ${formData.clast_name}</p>
+        <p>Companion Contact Number: ${formData.ccontact_no}</p>
+
+        <p>Thank you! visit us here on</p>
+        <p>${config.clientURL}</p>
+        <hr />
+        <p>This email may contain sensitive information</p>
+        <p>${config.clientURL}</p>
+    `,
+  };
+
+  sgMail
+    .send(emailData)
+    .then((sent) => {
+      return res.json({
+        message: `Patient Details has been sent to ${formData.r_email}`,
+      });
+    })
+    .catch((err) => {
+      return res.status(400).json({
+        success: false,
+        errors: err,
+      });
+    });
+};
+
 exports.createCodeController = async (req, res) => {
   // const errors = validationResult(req);
   // if (!errors.isEmpty()) {
@@ -53,6 +100,7 @@ exports.createCodeController = async (req, res) => {
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    // console.log(errors.array().map((error) => error.msg)[0]);
     const firstError = errors.array().map((error) => error.msg)[0];
     return res.status(422).json({
       errors: firstError,

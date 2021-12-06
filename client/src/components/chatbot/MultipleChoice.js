@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Message from "./Message";
 import Instance from "./Instance";
+import { ShowChatBox } from "../../Context/ShowChatBox";
 
 function MultipleChoice(props) {
   const [currentInstance, setCurrentInstance] = useState(1);
   const [selectedChoices, setSelectedChoices] = useState([]);
   const [doneAssess, setDoneAssess] = useState(false);
-
+  const { showChatBox, setShowChatBox } = useContext(ShowChatBox);
   function _handleDoneClick() {
     if (currentInstance == 4) {
       let total = 0;
@@ -16,6 +17,7 @@ function MultipleChoice(props) {
       props._handleAssessmentResult(total);
       props.toast.success("Assessment done!");
       setDoneAssess(true);
+      // setShowChatBox(true);
       // console.log(total);
       // console.log("You are done asdasd!");
       // console.log(selectedChoices);

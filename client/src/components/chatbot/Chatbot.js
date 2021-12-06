@@ -43,7 +43,14 @@ import UTS from "../UTS";
 import { Textfit } from "react-textfit";
 import { Map, GoogleApiWrapper, Marker } from "google-maps-react";
 import ulayawFace from "../../assets/ulayaw.png";
+import ulayawA from "../../assets/ulayaw_gif/A.gif";
+import ulayawB from "../../assets/ulayaw_gif/B.gif";
+import ulayawC from "../../assets/ulayaw_gif/C.gif";
+import ulayawExit from "../../assets/ulayaw_gif/exit.gif";
+import ulayawWelcome from "../../assets/ulayaw_gif/welcome.gif";
+import ulayawTD from "../../assets/ulayaw_gif/Thought-Diary.gif";
 import PdfExtract from "./PdfExtract";
+import Textarea from "rc-textarea";
 
 const cookies = new Cookies();
 
@@ -165,6 +172,7 @@ function Chatbot(props) {
   const { getAgainstEvidenceD, setGetAgainstEvidenceD } = useContext(
     GetAgainstEvidenceDContext
   );
+  const [value, setValue] = useState();
 
   let messagesEnd = useRef(null);
   let talkInput = useRef(null);
@@ -172,6 +180,17 @@ function Chatbot(props) {
   if (cookies.get("userID") === undefined) {
     cookies.set("userID", uuid(), { path: "/" });
   }
+
+  const onChange = (e) => {
+    const {
+      target: { value: currentValue },
+    } = e;
+    setValue(currentValue);
+  };
+
+  const onResize = ({ width, height }) => {
+    console.log(`size is changed, width:${width} height:${height}`);
+  };
 
   async function df_text_query(
     queryText,
@@ -193,7 +212,7 @@ function Chatbot(props) {
             text: queryText,
             latitude: location.coordinates.lat,
             longitude: location.coordinates.lng,
-            key: "AIzaSyA6hz3_zGUdW-B6RrjX1zi2nKVfM9sRyjg",
+            key: "AIzaSyAzfKhs0GtFbKBjEfn61zNJN2NsaFk5fKs",
           },
         },
       };
@@ -203,6 +222,36 @@ function Chatbot(props) {
 
       // Free Key
       // AIzaSyAyesbQMyKVVbBgKVi2g6VX7mop2z96jBo
+    } else if (extra === "welcome") {
+      says = {
+        // speaks: "user",
+        speaks: speaker,
+        msg: {
+          welcome: {
+            text: extra,
+          },
+        },
+      };
+    } else if (extra === "exit") {
+      says = {
+        // speaks: "user",
+        speaks: speaker,
+        msg: {
+          exit: {
+            text: extra,
+          },
+        },
+      };
+    } else if (extra === "diary") {
+      says = {
+        // speaks: "user",
+        speaks: speaker,
+        msg: {
+          diary: {
+            text: extra,
+          },
+        },
+      };
     } else {
       says = {
         // speaks: "user",
@@ -298,7 +347,10 @@ function Chatbot(props) {
             
             https://support.google.com/chrome/answer/142065?hl=en.`,
             false,
-            "bot"
+            "bot",
+            `Mangyaring payagan ang paggamit ng lokasyon, pumunta at sundan ang site na ito. I-refresh ang page na ito pagkatapos ng Salamat!
+            
+            https://support.google.com/chrome/answer/142065?hl=en.`
           );
         }
       }
@@ -306,14 +358,24 @@ function Chatbot(props) {
         if (maxInput === 0) {
           if (cookies.get("termsAndConditions")) {
             _handleTranslate(
-              `Thank you for granting us access to your location!`,
-              `Maraming salamat sa pag bigay ng access sa iyong location!`
+              `Thank you for giving us permission to use your location. Please read the terms and conditions above.`,
+              `Maraming salamat sa pagbibigay sa amin ng pahintulot upang gamitin ang iyong lokasyon. Basahin muna ang kondisyon sa itaas.`
             );
+            // _handleTranslate(
+            //   `Please read the terms and conditions above.`,
+            //   ``
+            // );
+            df_text_query(``, ``, `user`, ``, `welcome`);
           } else {
             _handleTranslate(
-              `Thank you for granting us access to your location! Please read the terms and conditions above!`,
-              `Maraming salamat sa pag bigay ng access sa iyong location! Basahin muna ang terms and conditions sa itasa!`
+              `Thank you for giving us permission to use your location. Please read the terms and conditions above.`,
+              `Maraming salamat sa pagbibigay sa amin ng pahintulot upang gamitin ang iyong lokasyon. Basahin muna ang kondisyon sa itaas.`
             );
+            // _handleTranslate(
+            //   `Please read the terms and conditions above.`,
+            //   `Basahin muna ang kondisyon sa itaas.`
+            // );
+            df_text_query(``, ``, `user`, ``, `welcome`);
           }
 
           setMaxInput(maxInput + 1);
@@ -389,10 +451,12 @@ function Chatbot(props) {
         setCorrectCode(true);
         console.log(res.data.user);
         setAssessmentUser(res.data.user);
+        setShowChatBox(false);
         // toast.success(res.data.message);
       })
       .catch((err) => {
         setCorrectCode(false);
+        setShowChatBox(true);
         // console.log(err.response);
         toast.error(err.response.data.errors);
       });
@@ -413,6 +477,7 @@ function Chatbot(props) {
     if (e.key === "Enter") {
       if (claimCode) {
         claim_code(e.target.value);
+        // setShowChatBox(false)
       } else if (getMoodStep1) {
         if (e.target.value !== "") {
           // user response
@@ -442,7 +507,7 @@ function Chatbot(props) {
           _handleTranslate(e.target.value, e.target.value, true);
           let chat = e.target.value;
           // console.log(chat.split(/[ ,]+/));
-          setGetOtherEmotionAll(chat.split(/[ ,]+/));
+          setGetOtherEmotionAll(chat.split(/[,]+/));
           _handleTranslate(
             `Choose one of those citations that is more relevant to "activating events" or events.`,
             `Pumili ng isang sa mga na banggit na mas nauugnay sa "activating events" o kaganapan. `
@@ -483,12 +548,8 @@ function Chatbot(props) {
               if (chat > 50 && chat <= 100) {
                 _handleTranslate(`${chat}`, `${chat}`, true);
                 _handleTranslate(
-                  `Okay, that's pretty strong. It's not surprising that you've noticed that these things affected you.  '${_handleMoods(
-                    getHotEmotionCAnswer
-                  )}' and '${_handleShowList(getOtherEmotionAll)}'`,
-                  `Okay, medyo matindi nga iyon. Hindi nakakagulat na napansin mo ang mga bagay na ito ay nakaapekto sa iyo.'${_handleMoods(
-                    getHotEmotionCAnswer
-                  )}' and '${_handleShowList(getOtherEmotionAll)}'`
+                  `Okay, that's pretty strong. It's not surprising that you've noticed that these things affected you.`,
+                  `Okay, medyo matindi nga iyon. Hindi nakakagulat na napansin mo ang mga bagay na ito ay nakaapekto sa iyo.`
                 );
               }
 
@@ -505,7 +566,7 @@ function Chatbot(props) {
                 `First, What were you thinking of that event?`,
                 `Una, Ano bang iniisip mo sa kaganapan na iyon? `
               );
-              setFocusThoughtDiaryLetter("b");
+              setFocusThoughtDiaryLetter("b_1");
               setGetOtherThoughtBool(true);
               setShowChatBox(true);
             }
@@ -797,7 +858,8 @@ function Chatbot(props) {
         if (e.target.value !== "") df_text_query(e.target.value, true);
       }
 
-      e.target.value = "";
+      // e.target.value = "";
+      setValue("");
     }
   }
 
@@ -881,7 +943,8 @@ function Chatbot(props) {
           `Everything you share is part of the cause of the events or "Activating events".`,
           moodAssessRes
         );
-        let selectActivatingEvent = `Pwede mo bang piliin ang isa sa mga 'activating events' na nailahad mo?`;
+        let selectActivatingEvent = `Pwede ka bang pumili ng isang kaganapan?
+        'activating events' na nailahad mo?`;
         _handleTranslate(
           `Can you select one of the 'activating events' you have described?`,
           selectActivatingEvent
@@ -895,62 +958,63 @@ function Chatbot(props) {
 
         // _handleTranslate(`Wala na`, `Wala na`);
         break;
-      case "assessment_meron_companion":
-        df_event_query("ASSESSMENT_DONE");
-        setShowModalLogin(true);
+      // case "assessment_meron_companion":
+      //   df_event_query("ASSESSMENT_DONE");
+      //   setShowModalLogin(true);
 
-        setassessment_meron_companion(true);
-        _handleTranslate(
-          `Nais kong panatilihing mo makiugnay kay ${assessmentUser.companion.companion_first_name}. Maaari mo siyang kausapin o bigyan ng indikasyon na-aayon sa iyong nararamdaman o naiisip.`,
-          `Nais kong panatilihing mo makiugnay kay ${assessmentUser.companion.companion_first_name}. Maaari mo siyang kausapin o bigyan ng indikasyon na-aayon sa iyong nararamdaman o naiisip.`
-        );
+      //   setassessment_meron_companion(true);
+      //   _handleTranslate(
+      //     `Nais kong panatilihing mo makiugnay kay ${assessmentUser.companion.companion_first_name}. Maaari mo siyang kausapin o bigyan ng indikasyon na-aayon sa iyong nararamdaman o naiisip.`,
+      //     `Nais kong panatilihing mo makiugnay kay ${assessmentUser.companion.companion_first_name}. Maaari mo siyang kausapin o bigyan ng indikasyon na-aayon sa iyong nararamdaman o naiisip.`
+      //   );
 
-        _handleTranslate(
-          `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`,
-          `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`
-        );
+      //   _handleTranslate(
+      //     `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`,
+      //     `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`
+      //   );
 
-        _handleTranslate(
-          `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`,
-          `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`
-        );
+      //   _handleTranslate(
+      //     `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`,
+      //     `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`
+      //   );
 
-        _handleTranslate(
-          `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`,
-          `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`
-        );
-        // df_text_query(
-        //   `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
-        //   false,
-        //   `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
-        //   "bot",
-        //   "map"
-        // );
-        break;
-      case "assessment_wala_companion":
-        df_event_query("ASSESSMENT_DONE");
-        _handleTranslate(
-          `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`,
-          `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`
-        );
+      //   _handleTranslate(
+      //     `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`,
+      //     `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`
+      //   );
+      //   // df_text_query(``, ``, `user`, ``, `diary`);
+      //   df_text_query(
+      //     `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
+      //     false,
+      //     `Lumipat sa iyong kasalukuyang lokasyon, isang malapit na istasyon ng pulisya, o isang malapit na ospital sa pamamagitan ng pag-click sa pulang bilog!`,
+      //     "bot",
+      //     "map"
+      //   );
+      //   break;
+      // case "assessment_wala_companion":
+      //   df_event_query("ASSESSMENT_DONE");
+      //   _handleTranslate(
+      //     `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`,
+      //     `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`
+      //   );
 
-        _handleTranslate(
-          `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`,
-          `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`
-        );
+      //   _handleTranslate(
+      //     `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`,
+      //     `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`
+      //   );
 
-        _handleTranslate(
-          `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`,
-          `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`
-        );
-        // df_text_query(
-        //   `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
-        //   false,
-        //   `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
-        //   "bot",
-        //   "map"
-        // );
-        break;
+      //   _handleTranslate(
+      //     `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`,
+      //     `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`
+      //   );
+      //   df_text_query(
+      //     `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
+      //     false,
+      //     `Lumipat sa iyong kasalukuyang lokasyon, isang malapit na istasyon ng pulisya, o isang malapit na ospital sa pamamagitan ng pag-click sa pulang bilog!`,
+      //     "bot",
+      //     "map"
+      //   );
+      //   break;
       case "training_masterclass":
         df_event_query("MASTERCLASS");
         break;
@@ -1468,6 +1532,14 @@ function Chatbot(props) {
           `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`,
           `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`
         );
+        df_text_query(
+          `Change to your current location, a nearby police station, or a nearby hospital by clicking the red circle!`,
+          false,
+          `Lumipat sa iyong kasalukuyang lokasyon, isang malapit na istasyon ng pulisya, o isang malapit na ospital sa pamamagitan ng pag-click sa pulang bilog!`,
+          "bot",
+          "map"
+        );
+        // df_text_query(``, ``, `user`, ``, `diary`);
       })
       .catch((err) => {
         // setCorrectCode(false);
@@ -1518,6 +1590,12 @@ function Chatbot(props) {
                   }
                 >
                   <label className="text-center ">{message.msg.map.text}</label>
+                  {switchLanguage ? (
+                    <label className="text-center ">{`${userLoggedIn.first_name},  ito ang mga establisyimento at awtoridad na malapit sa iyong lokasyon. Maaari kang lumapit at makipag-ugnayan sa sandaling kailangan mo sila. Huwag mag-atubiling suriin at makipag-ugnayan. Salamat!
+`}</label>
+                  ) : (
+                    <label className="text-center ">{`${userLoggedIn.first_name},  these are the establishment and authorities near at your location. You can approach and contact as soon as you needed them. Don't hesitate to check and keep in touch. Thank you!`}</label>
+                  )}
 
                   <span className=" h-[350px] w-[350px] relative">
                     <MapContainer
@@ -1543,6 +1621,153 @@ function Chatbot(props) {
                     // streetview mode
                     // src={`https://www.google.com/maps/embed/v1/streetview?key=${message.msg.map.key}&location=${message.msg.map.latitude},${message.msg.map.longitude}&heading=210&pitch=10&fov=35`}
                   ></iframe> */}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className=" rounded-lg  mb-2 text-sm ">
+            <div>
+              <div
+                className={
+                  "flex justify-start space-x-2  p-2 rounded-lg bottom-0 "
+                }
+              >
+                <div className={"flex justify-end flex-col"}>
+                  <div className=" rounded-full flex justify-center  text-white h-10 w-10  ">
+                    <img src={ulayawFace} />
+                    {/* <a href="/">{speaks}</a> */}
+                  </div>
+                </div>
+
+                <div
+                  // space-x-2 py-2
+                  className={
+                    "rounded-[10px] self-center overflow-ellipsis  px-4    text-black font-medium text-left h-[300px] flex flex-col "
+                  }
+                >
+                  <span className=" bg-[#F2EFEF] h-[150px] w-full relative right-0">
+                    <div className="z-40">
+                      <img
+                        // h-[150px] w-[150px]
+                        // className=" h-[150px] "
+                        src={ulayawTD}
+                      />
+                    </div>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      );
+    } else if (message.msg && message.msg.welcome) {
+      return (
+        <>
+          <div className=" rounded-lg  mb-2 text-sm ">
+            <div>
+              <div
+                className={
+                  "flex justify-start space-x-2  p-2 rounded-lg bottom-0 "
+                }
+              >
+                <div className={"flex justify-end flex-col"}>
+                  <div className=" rounded-full flex justify-center  text-white h-10 w-10  ">
+                    <img src={ulayawFace} />
+                    {/* <a href="/">{speaks}</a> */}
+                  </div>
+                </div>
+
+                <div
+                  // space-x-2 py-2
+                  className={
+                    "rounded-[10px] self-center overflow-ellipsis  px-4    text-black font-medium text-left h-[300px] flex flex-col "
+                  }
+                >
+                  <span className=" bg-[#F2EFEF] h-[150px] w-full relative right-0">
+                    <div className="z-40">
+                      <img
+                        // h-[150px] w-[150px]
+                        // className=" h-[150px] "
+                        src={ulayawWelcome}
+                      />
+                    </div>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      );
+    } else if (message.msg && message.msg.exit) {
+      return (
+        <>
+          <div className=" rounded-lg  mb-2 text-sm ">
+            <div>
+              <div
+                className={
+                  "flex justify-start space-x-2  p-2 rounded-lg bottom-0 "
+                }
+              >
+                <div className={"flex justify-end flex-col"}>
+                  <div className=" rounded-full flex justify-center  text-white h-10 w-10  ">
+                    <img src={ulayawFace} />
+                    {/* <a href="/">{speaks}</a> */}
+                  </div>
+                </div>
+
+                <div
+                  // space-x-2 py-2
+                  className={
+                    "rounded-[10px] self-center overflow-ellipsis  px-4    text-black font-medium text-left h-[300px] flex flex-col "
+                  }
+                >
+                  <span className=" bg-[#F2EFEF] h-[150px] w-full relative right-0">
+                    <div className="z-40">
+                      <img
+                        // h-[150px] w-[150px]
+                        // className=" h-[150px] "
+                        src={ulayawExit}
+                      />
+                    </div>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      );
+    } else if (message.msg && message.msg.diary) {
+      return (
+        <>
+          <div className=" rounded-lg  mb-2 text-sm ">
+            <div>
+              <div
+                className={
+                  "flex justify-start space-x-2  p-2 rounded-lg bottom-0 "
+                }
+              >
+                <div className={"flex justify-end flex-col"}>
+                  <div className=" rounded-full flex justify-center  text-white h-10 w-10  ">
+                    <img src={ulayawFace} />
+                    {/* <a href="/">{speaks}</a> */}
+                  </div>
+                </div>
+
+                <div
+                  // space-x-2 py-2
+                  className={
+                    "rounded-[10px] self-center overflow-ellipsis  px-4    text-black font-medium text-left h-[300px] flex flex-col "
+                  }
+                >
+                  <span className=" bg-[#F2EFEF] h-[150px] w-full relative right-0">
+                    <div className="z-40">
+                      <img
+                        // h-[150px] w-[150px]
+                        // className=" h-[150px] "
+                        src={ulayawTD}
+                      />
+                    </div>
+                  </span>
                 </div>
               </div>
             </div>
@@ -1586,6 +1811,12 @@ function Chatbot(props) {
     ) {
       return (
         <>
+          {/* {!showChatBox ? (
+            <>{getMoodStep1 && !showChatBox ? setShowChatBox(true) : ""}</>
+          ) : (
+            ""
+          )} */}
+
           <QuickReplies
             text={
               message.msg.payload.fields.text
@@ -1630,7 +1861,7 @@ function Chatbot(props) {
                       setShowChatBox(false);
                       setShowModalLogin(true);
                     }}
-                    className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                    className="bg-[#5DCFFF] text-white rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
                   >
                     Login
                   </a>
@@ -1714,7 +1945,7 @@ function Chatbot(props) {
                       // setassessment_meron_companion_done(false)
                       setassessment_meron_companion(true);
                     }}
-                    className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                    className="bg-[#5DCFFF] text-white rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
                   >
                     Meron akong kasama
                   </a>
@@ -1722,7 +1953,7 @@ function Chatbot(props) {
                     // to={"/login"}
                     style={{ margin: 3 }}
                     onClick={() => {
-                      console.log(assessmentUser, "cannot read sht");
+                      // console.log(assessmentUser, "cannot read sht");
                       walaAkongCode(assessmentUser);
                     }}
                     // onChange={}
@@ -1765,7 +1996,7 @@ function Chatbot(props) {
                     //     // console.log(err.response);
                     //     toast.error(err.response.data.errors);
                     //   })}
-                    className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                    className="bg-[#5DCFFF] text-white rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
                   >
                     Wala akong kasama
                   </a>
@@ -1787,6 +2018,7 @@ function Chatbot(props) {
       // return renderOneMessageStatic("Tama ang code congrats!");
       return (
         <>
+          {/* {showChatBox ? setShowChatBox(false) : ""} */}
           <MultipleChoice
             key={i}
             _handleAssessmentResult={_handleAssessmentResult}
@@ -1829,6 +2061,7 @@ function Chatbot(props) {
             selectedMoods={selectedMoods}
             setSelectedMoods={setSelectedMoods}
             showAtEntrance={true}
+            switchLanguage={switchLanguage}
             // showDiary={true}
             // setAssessmentScore={setAssessmentScore}
             // assessmentScore={assessmentScore}
@@ -1851,9 +2084,10 @@ function Chatbot(props) {
             // onChange={() => {
             //   setShowThoughtDiaryTool(true);
             // }}
-            // mood_assess={true}
+            mood_assess={true}
             speaks={message.speaks}
             payload={message.msg.payload.fields.mood_assess.listValue.values}
+            // dontShowChatBox={true}
             // showDiary={true}
           />
           {/* {console.log(message)} */}
@@ -1868,6 +2102,7 @@ function Chatbot(props) {
     ) {
       return (
         <>
+          {showChatBox ? setShowChatBox(false) : ""}
           <div
             className={
               "flex justify-center space-x-2  p-2 rounded-lg bottom-0 "
@@ -1887,6 +2122,7 @@ function Chatbot(props) {
                         // df_text_query("Show Thought Diary", false);
                         _handleTranslate(item, item, true);
                         setGetMoodStep1(false);
+                        setShowChatBox(true);
                         // setShowThoughtDiaryTool(true);
                         // df_event_query("ABC_THOUGHT_DIARY_EXPLAINING_C");
                         setGetAdverseStep3(item);
@@ -1894,10 +2130,14 @@ function Chatbot(props) {
                           `Assume yourself in events. What words describe how you feel or what they are?`,
                           `Ipagpalagay mo ang iyong sarili sa mga kaganapan. Anong mga salita ang naglalarawan sa iyong nararamdaman o kinahihinatnan nito?`
                         );
+                        _handleTranslate(
+                          `Please put a comma in each description.`,
+                          `Pakilagyan ng kuwit (coma) ang bawat paglalarawan.`
+                        );
                         setFocusThoughtDiaryLetter("c_1");
                         setGetMoodOther(true);
                       }}
-                      className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                      className="bg-[#5DCFFF] text-white rounded-full  p-2 px-4 self-center h-auto cursor-pointer  flex flex-wrap max-w-[330px] break-all"
                     >
                       {item}
                     </a>
@@ -2062,6 +2302,7 @@ function Chatbot(props) {
                           `Can you rate how intense it is (0 to 100).`,
                           `Maaari mo bang i rate kung gaano ito katindi (0 hanggang 100).`
                         );
+                        setFocusThoughtDiaryLetter("c");
                         setShowChatBox(true);
                         setGetHotEmotionCAnswer([
                           { select: true, mood_text: item },
@@ -2073,7 +2314,7 @@ function Chatbot(props) {
 
                         // setGetMoodHot(true);
                       }}
-                      className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                      className="bg-[#5DCFFF] text-white flex flex-wrap max-w-[330px] break-all rounded-full  p-2 px-4 self-center h-auto cursor-pointer"
                     >
                       {item}
                     </a>
@@ -2121,6 +2362,7 @@ function Chatbot(props) {
     ) {
       return (
         <>
+          {showChatBox ? setShowChatBox(false) : ""}
           <div
             className={
               "flex justify-center space-x-2  p-2 rounded-lg bottom-0 "
@@ -2142,16 +2384,17 @@ function Chatbot(props) {
                       true
                     );
                     _handleTranslate(`Okay, Saving...`, `Okay, Saving...`);
+                    df_text_query(``, ``, `user`, ``, `exit`);
                     _handleTranslate(
-                      `Just come back when you have a problem`,
-                      `Mag balik ka lang pag may problema ka`
+                      `Just come back when you have a problem. If you have comments and feedback to our chatbot. Please don't hesitate to write it at our feedback page. Thank you again.`,
+                      `Mag balik ka lang pag may problema ka. Kung mayroon kang mga puna at feedback sa aming chatbot. Huwag sana kayong mag-atubili na isulat ito sa aming feedback page. Salamat muli.`
                     );
                     // <PdfExtract />;
                     handleExportWithComponent();
                     setShowChatBox(false);
                     setShowPDF(false);
                   }}
-                  className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                  className="bg-[#5DCFFF] text-white rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
                 >
                   Oo, Save as PDF
                 </a>
@@ -2160,10 +2403,15 @@ function Chatbot(props) {
                   onClick={() => {
                     _handleTranslate(`No`, `Hindi,`, true);
                     _handleTranslate(`Okay, Thank you!`, `Okay, Thank you!`);
+                    df_text_query(``, ``, `user`, ``, `exit`);
+                    _handleTranslate(
+                      `Just come back when you have a problem. If you have comments and feedback to our chatbot. Please don't hesitate to write it at our feedback page. Thank you again.`,
+                      `Mag balik ka lang pag may problema ka. Kung mayroon kang mga puna at feedback sa aming chatbot. Huwag sana kayong mag-atubili na isulat ito sa aming feedback page. Salamat muli.`
+                    );
                     showChatBox(false);
                     setShowPDF(false);
                   }}
-                  className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                  className="bg-[#5DCFFF] text-white rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
                 >
                   Hindi
                 </a>
@@ -2224,7 +2472,7 @@ function Chatbot(props) {
                         onClick={() => {
                           _handleUTSQuickReply(item, i);
                         }}
-                        className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                        className="bg-[#5DCFFF] text-white rounded-full  p-2 px-4 self-center h-auto flex flex-wrap cursor-pointer"
                       >
                         {item}
                       </a>
@@ -2237,7 +2485,7 @@ function Chatbot(props) {
                       onClick={() => {
                         _handleUTSQuickReply(item, i);
                       }}
-                      className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                      className="bg-[#5DCFFF] text-white flex flex-wrap max-w-[330px] break-all rounded-full  p-2 px-4 self-center  cursor-pointer"
                     >
                       {item}
                     </a>
@@ -2272,7 +2520,7 @@ function Chatbot(props) {
                     onClick={() => {
                       _handleHotThoughtQuickReply(item, i);
                     }}
-                    className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                    className="bg-[#5DCFFF] text-white flex flex-wrap max-w-[330px] break-all rounded-full  p-2 px-4 self-center cursor-pointer"
                   >
                     {item}
                   </a>
@@ -2307,7 +2555,7 @@ function Chatbot(props) {
                   onClick={() => {
                     _handleExplainDQuickReply();
                   }}
-                  className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                  className="bg-[#5DCFFF] text-white rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
                 >
                   Okay, continue.
                 </a>
@@ -2341,7 +2589,7 @@ function Chatbot(props) {
                   onClick={() => {
                     _handleExplainDQuickReply();
                   }}
-                  className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                  className="bg-[#5DCFFF] text-white rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
                 >
                   Okay I've seen the Disputation Questions
                 </a>
@@ -2375,7 +2623,7 @@ function Chatbot(props) {
                   onClick={() => {
                     _handleExplainDQuickReply();
                   }}
-                  className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                  className="bg-[#5DCFFF] text-white rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
                 >
                   Okay
                 </a>
@@ -2409,7 +2657,7 @@ function Chatbot(props) {
                   onClick={() => {
                     _handleExplainDQuickReply();
                   }}
-                  className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
+                  className="bg-[#5DCFFF] text-white rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
                 >
                   Okay I've seen the Disputation Questions
                 </a>
@@ -2971,8 +3219,9 @@ function Chatbot(props) {
     <div>
       <ToastContainer />
       <div className="z-40">
+        {/* md:w-96 xl bottom-[120px]  */}
         {showBot ? (
-          <div className="flex flex-col  md:w-96 xl:w-[500px] shadow-lg w-full border-2    bg-white right-0 bottom-[120px]  md:right-5  rounded-[20px] fixed  h-full md:h-3/4 ">
+          <div className="flex flex-col  md:w-[500px] shadow-lg w-full border-2    bg-white right-0 bottom-5 md:right-5  rounded-[20px] fixed  h-full md:h-5/6 ">
             {/* nav */}
             <nav className="border-b-[3px] border-[#E4E4E4]">
               <div className="p-4 flex flex-row justify-between ">
@@ -3041,19 +3290,24 @@ function Chatbot(props) {
                         }
                       >
                         <label>
-                          Kaibigan, ang pakikipag-usap na ito ay pribado. Ang
+                          {switchLanguage
+                            ? `Kaibigan, ang pakikipag-usap na ito ay pribado. Ang
                           iyong pagkakakilanlan ay protektado at may siguridad
                           ang bawat impormasyon mababanggit. Maaaring basahin
-                          muna ang
+                          muna ang`
+                            : `Friend, this conversation is private. Your identity is protected and you have to make sure every information is mentioned. The`}
                           <button
                             className="pl-1 underline font-bold text-[#5DCFFF] cursor-pointer transform hover:scale-105"
                             onClick={() => {
                               setShowModal(true);
                             }}
                           >
-                            kondisyon
+                            {switchLanguage ? `kondisyon` : `condition`}
+                            {/* kondisyon */}
                           </button>{" "}
-                          upang makapag patuloy.
+                          {switchLanguage
+                            ? `upang makapag patuloy.`
+                            : `can be read first to proceed.`}
                         </label>
                       </div>
                     </div>
@@ -3073,8 +3327,22 @@ function Chatbot(props) {
             {/* input */}
             {showChatBox && cookies.get("termsAndConditions") && getLocation ? (
               <label className="  border-[#E4E4E4]  w-full md:w-96  xl:w-[500px] flex flex-row border-t-2 rounded-b-[20px] ">
-                <input
+                {/* <input
                   className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-b-[20px]"
+                  type="text"
+                  onKeyPress={_handleInputKeyPress}
+                  placeholder="Iyong Mensahe ..."
+                  ref={(input) => {
+                    talkInput = input;
+                  }}
+                  disabled={!cookies.get("termsAndConditions")}
+                /> */}
+                <Textarea
+                  autoSize={{ maxRows: 3 }}
+                  onResize={onResize}
+                  value={value}
+                  onChange={onChange}
+                  className="  p-4 outline-none w-full rounded-b-[20px] mr-8 overflow-y-auto"
                   type="text"
                   onKeyPress={_handleInputKeyPress}
                   placeholder="Iyong Mensahe ..."
@@ -3417,9 +3685,11 @@ function ThoughtDiary() {
                 className={
                   focusThoughtDiaryLetter === "a" ||
                   focusThoughtDiaryLetter === "a_b" ||
-                  focusThoughtDiaryLetter === "a_1"
-                    ? "border-b-4 border-[#86A1AC] bg-white text-[#4CC2F4] row-span-2"
-                    : "border-b-4 border-[#86A1AC] row-span-2"
+                  focusThoughtDiaryLetter === "a_1" ||
+                  focusThoughtDiaryLetter === "c_1" ||
+                  focusThoughtDiaryLetter === "a_c"
+                    ? "border-b-4 border-[#86A1AC] bg-white text-[#4CC2F4] row-span-3"
+                    : "border-b-4 border-[#86A1AC] row-span-3"
                 }
               >
                 <div className=" p-4 break-words ">
@@ -3442,12 +3712,26 @@ function ThoughtDiary() {
 
                     <label
                       className="max-w-[300px] max-h-[250px]
-                    text-[14px]"
+                    text-[16px]"
                     >
                       {/* Crying out loud last week */}
                       {getAdverseStep3}
                     </label>
                   </div>
+                  {focusThoughtDiaryLetter === "a_1" ? (
+                    <div className="z-40">
+                      <img src={ulayawA} />
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {focusThoughtDiaryLetter === "c_1" ? (
+                    <div className="z-40">
+                      <img src={ulayawC} />
+                    </div>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
               {/* section 2 */}
@@ -3455,9 +3739,10 @@ function ThoughtDiary() {
                 className={
                   focusThoughtDiaryLetter === "c" ||
                   focusThoughtDiaryLetter === "b_c" ||
-                  focusThoughtDiaryLetter === "c_1"
-                    ? " bg-white p-4 text-[#4CC2F4] row-span-4"
-                    : " p-4 row-span-4"
+                  focusThoughtDiaryLetter === "c_1" ||
+                  focusThoughtDiaryLetter === "a_c"
+                    ? " bg-white p-4 text-[#4CC2F4] row-span-3"
+                    : " p-4 row-span-3"
                 }
               >
                 <label className="text-[20px] ">C) Consequences</label>
@@ -3621,7 +3906,8 @@ function ThoughtDiary() {
                 className={
                   focusThoughtDiaryLetter === "b" ||
                   focusThoughtDiaryLetter === "b_c" ||
-                  focusThoughtDiaryLetter === "a_b"
+                  focusThoughtDiaryLetter === "a_b" ||
+                  focusThoughtDiaryLetter === "b_1"
                     ? "pb-4 bg-white p-4 text-[#4CC2F4] row-span-4 border-b-4 border-[#86A1AC] max-h-[750px]"
                     : "pb-4 p-4 row-span-4 border-b-4 border-[#86A1AC] max-h-[750px]"
                 }
@@ -3629,45 +3915,45 @@ function ThoughtDiary() {
                 <label className="text-[20px] ">B) Beliefs</label>
                 <div className="text-center break-words max-w-[290px]">
                   {/* hot thought */}
-                  {continueThoughtDiary ? (
-                    <label className="flex flex-col leading-none">
-                      <label>
-                        {focusThoughtDiaryLetter === "b_1" ? (
-                          <>
-                            <ol className="text-[14px] text-justify text-blue-900 font-normal py-2 px-2 space-y-2">
-                              <li>
-                                1. List all statements that link A to C. Ask
-                                yourself "What was I thinking?" "What was I
-                                saying to myself?" "What was going through my
-                                head at the time?".
-                              </li>
-                              <li>
+                  {/* {continueThoughtDiary ? ( */}
+                  <label className="flex flex-col leading-none">
+                    <label>
+                      {focusThoughtDiaryLetter === "b_1" ? (
+                        <>
+                          <ol className="text-[14px] text-justify text-blue-900 font-normal py-2 px-2 space-y-2">
+                            <li>
+                              1. List all statements that link A to C. Ask
+                              yourself "What was I thinking?" "What was I saying
+                              to myself?" "What was going through my head at the
+                              time?".
+                            </li>
+                            {/* <li>
                                 2. Find the most distressing (hot) thought and
                                 underline it.
                               </li>
                               <li>
                                 3. Rate how much you believe this thought
                                 between (0 to 100).
-                              </li>
-                            </ol>
-                          </>
-                        ) : (
-                          ""
-                        )}
-                        <label className="text-[14px] text-blue-900  font-bold">
+                              </li> */}
+                          </ol>
+                        </>
+                      ) : (
+                        ""
+                      )}
+                      {/* <label className="text-[14px] text-blue-900  font-bold">
                           the hot thought: rated {getHotThoughtRate}/100
-                        </label>
-                      </label>
-
-                      <label className="">
-                        {getHotThoughtB[0]}
-                        {/* I'm always going to feel depressed
-                    <span className="text-[50px] leading-[0px]">.</span> */}
-                      </label>
+                        </label> */}
                     </label>
-                  ) : (
+
+                    {/* <label className=""> */}
+                    {/* {getHotThoughtB[0]} */}
+                    {/* I'm always going to feel depressed
+                    <span className="text-[50px] leading-[0px]">.</span> */}
+                    {/* </label> */}
+                  </label>
+                  {/* ) : (
                     ""
-                  )}
+                  )} */}
 
                   {/* other thoughts */}
                   <label className="flex flex-col leading-none pt-10">
@@ -3708,6 +3994,14 @@ function ThoughtDiary() {
                       </label>
                     </div>
                   </label>
+
+                  {focusThoughtDiaryLetter === "b_1" ? (
+                    <div className="z-40">
+                      <img src={ulayawB} />
+                    </div>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
 

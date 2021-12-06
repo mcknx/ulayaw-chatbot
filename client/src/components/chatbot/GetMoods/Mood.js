@@ -137,6 +137,66 @@ const Mood = (props) => {
       return emotions.stressed;
     }
   }
+
+  function _handleMoodTagalog(mood) {
+    if (mood === "low") {
+      return emotions.low;
+    }
+    if (mood === "sad") {
+      return "malungkot";
+    }
+    if (mood === "annoyed") {
+      return emotions.annoyed;
+    }
+    if (mood === "disappointed") {
+      return emotions.disappointed;
+    }
+    if (mood === "empty") {
+      return emotions.empty;
+    }
+    if (mood === "overwhelmed") {
+      return emotions.overwhelmed;
+    }
+    if (mood === "worried") {
+      return "nag-aalala";
+    }
+    if (mood === "frustrated") {
+      return "bigo";
+    }
+    if (mood === "guilty") {
+      return "nagkasala";
+    }
+    if (mood === "hopeless") {
+      return emotions.hopeless;
+    }
+    if (mood === "lonely") {
+      return emotions.lonely;
+    }
+    if (mood === "nervous") {
+      return "kinakabahan";
+    }
+    if (mood === "stressed") {
+      return emotions.stressed;
+    }
+    if (mood === "heavy") {
+      return emotions.heavy;
+    }
+    if (mood === "tired") {
+      return emotions.tired;
+    }
+    if (mood === "demotivated") {
+      return emotions.demotivated;
+    }
+    if (mood === "embarrased") {
+      return "nahihiya";
+    }
+    if (mood === "angry") {
+      return "galit";
+    }
+    if (mood === "anxious") {
+      return "balisa";
+    }
+  }
   return (
     <div className="py-5 p-2 select-none transform  scale-90">
       <label
@@ -154,6 +214,9 @@ const Mood = (props) => {
           onClick={(event) => {
             // props.onChange(!props.checked);
             props.click(event, props.mood.mood_text);
+            // if (props.hotEmotion) {
+            //   setShowChatBox(true);
+            // }
           }}
           onChange={(event) => {
             let check = event.target.checked;
@@ -286,7 +349,9 @@ const Mood = (props) => {
         />
 
         <p className="font-bold cursor-pointer inline-block">
-          {props.mood.mood_text}
+          {props.switchLanguage
+            ? _handleMoodTagalog(props.mood.mood_text)
+            : props.mood.mood_text}
         </p>
       </label>
       {/* <Toaster /> */}

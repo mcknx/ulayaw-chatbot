@@ -9,7 +9,7 @@ const QuickReply = (props) => {
       <a
         style={{ margin: 3 }}
         href="/"
-        className="bg-[#F2EFEF] rounded-full  p-2 px-4 self-center h-10  "
+        className="bg-[#5DCFFF] text-white rounded-full  p-2 px-4 self-center h-auto  "
         onClick={(event) => {
           props.click(
             event,
@@ -35,7 +35,7 @@ const QuickReply = (props) => {
             setShowChatBox(false);
           }
 
-          // if (props.dontShowChatBox) setShowChatBox(false);
+          if (props.dontShowChatBox === true) setShowChatBox(false);
         }}
       >
         {props.reply.structValue.fields.text.stringValue}
@@ -46,7 +46,7 @@ const QuickReply = (props) => {
       <a
         style={{ margin: 3 }}
         href={props.reply.structValue.fields.link.stringValue}
-        className="bg-gray-500 rounded-full p-2 text-white self-center h-10 w-10 "
+        className="bg-[#5DCFFF] rounded-full p-2 text-white self-center  w-10 h-auto"
       >
         {props.reply.structValue.fields.text.stringValue}
       </a>
