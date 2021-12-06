@@ -182,13 +182,16 @@ function Chatbot(props) {
   }
 
   const onChange = (e) => {
-    const {
-      target: { value: currentValue },
-    } = e;
-    setValue(currentValue);
+    let foo = e.target.value;
+    foo = foo.replace(/\r?\n|\r/g, "");
+    // const {
+    //   target: { value: currentValue },
+    // } = e;
+    setValue(foo);
   };
 
   const onResize = ({ width, height }) => {
+    // console.log(e.target.value);
     console.log(`size is changed, width:${width} height:${height}`);
   };
 
@@ -475,6 +478,7 @@ function Chatbot(props) {
 
   async function _handleInputKeyPress(e) {
     if (e.key === "Enter") {
+      setValue(e.target.value);
       if (claimCode) {
         claim_code(e.target.value);
         // setShowChatBox(false)
@@ -859,6 +863,7 @@ function Chatbot(props) {
       }
 
       // e.target.value = "";
+      // setValue(e.target.value.split(/[/n]+/));
       setValue("");
     }
   }
@@ -3338,13 +3343,15 @@ function Chatbot(props) {
                   disabled={!cookies.get("termsAndConditions")}
                 /> */}
                 <Textarea
-                  autoSize={{ maxRows: 3 }}
+                  autoSize={{ minRows: 1, maxRows: 3 }}
                   onResize={onResize}
                   value={value}
                   onChange={onChange}
                   className="  p-4 outline-none w-full rounded-b-[20px] mr-8 overflow-y-auto"
                   type="text"
+                  // onChange={_handleInputKeyPress}
                   onKeyPress={_handleInputKeyPress}
+                  // onPressEnter={_handleInputKeyPress}
                   placeholder="Iyong Mensahe ..."
                   ref={(input) => {
                     talkInput = input;
