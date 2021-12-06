@@ -55,7 +55,7 @@ const About = (props) => {
             <label>
               <img
                 className="rounded-full border-[10px] border-[#48B9E9]"
-                src={asma}
+                src={bayacag}
               />
             </label>
 
@@ -74,7 +74,7 @@ const About = (props) => {
             <label>
               <img
                 className="rounded-full border-[10px] border-[#48B9E9]"
-                src={bayacag}
+                src={talo}
               />
             </label>
 
@@ -93,7 +93,7 @@ const About = (props) => {
             <label>
               <img
                 className="rounded-full border-[10px] border-[#48B9E9]"
-                src={talo}
+                src={surigao}
               />
             </label>
 
