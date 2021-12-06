@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { ThoughtDiaryContext } from "../../Context/ThoughtDiaryContext";
 import { ShowMoodsContext } from "../../Context/ShowMoodsContext";
-import welcome from "../../assets/ulayaw_gif/welcome.gif";
+import welcome from "../../assets/ulayaw_gif/C.gif";
 
 const About = (props) => {
   const { showThoughtDiaryTool, setShowThoughtDiaryTool } =
@@ -32,14 +32,20 @@ const About = (props) => {
           {/* right */}
           <div className="col-span-7 flex flex-col">
             {/* text */}
-            <div className="text-[24px] font-medium flex flex-row space-x-[14px] w-[579px] text-white text-justify bg-[#48B9E9] p-12 rounded-[20px]">
+            <div className="text-[24px] font-medium flex flex-col  space-y-[50px] w-auto text-white text-justify justify-center items-center bg-[#48B9E9] p-8 rounded-[20px] min-w-[700px]">
               <label>
-                Ulayaw is proposed to be an assistive tool to the existing
-                intervention addressing its limitations and is in no way will
-                completely replace human interaction. This project Ulayaw as a
-                tool to help relieve mental stress, individuals experiencing
-                suicidal ideation in the Philippines will be alleviated.
+                Help us improve our app by filling up this google form:
               </label>
+              <iframe
+                src="https://docs.google.com/forms/d/e/1FAIpQLSfUxbsigksdYi9SMvdKQQf3QKo6r-jCLjGFdPVFfMi9NMNOMQ/viewform?embedded=true"
+                width="650"
+                height="546"
+                frameborder="0"
+                marginheight="0"
+                marginwidth="0"
+              >
+                Loading…
+              </iframe>
             </div>
           </div>
         </div>

@@ -418,13 +418,13 @@ function Chatbot(props) {
     //   setShopWelcomeSent(true);
     // }
 
-    props.history.listen(() => {
-      if (props.history.location.pathname === "/about" && !shopWelcomeSent) {
-        df_event_query("WELCOME_SHOP");
-        setShowBot(true);
-        setShopWelcomeSent(true);
-      }
-    });
+    // props.history.listen(() => {
+    //   if (props.history.location.pathname === "/about" && !shopWelcomeSent) {
+    //     df_event_query("WELCOME_SHOP");
+    //     setShowBot(true);
+    //     setShopWelcomeSent(true);
+    //   }
+    // });
   }, [location, getLocation, cookies.get("termsAndConditions")]);
 
   function show(event) {

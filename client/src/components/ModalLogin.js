@@ -247,6 +247,7 @@ export default function ModalLogin(props) {
                 if (isAuth() && isAuth().role === "admin") {
                   setShowAdminRoute(true);
                 } else {
+                  // cookies.set("clientLogged", true, { path: "/" });
                   toast.success(`Hey ${res.data.user.first_name}, Welcome!`);
                   props.setUserLoggedIn(res.data.user);
 

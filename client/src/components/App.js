@@ -29,6 +29,10 @@ import "./App.css";
 import Header from "./Header";
 import Footer from "./Footer";
 import Landing from "./pages/Landing";
+import Manual from "./pages/Manual";
+import Team from "./pages/Team";
+import About from "./pages/About";
+import Feedback from "./pages/Feedback";
 import Activate from "./Activate";
 import ForgetPassword from "./ForgetPassword";
 import Reset from "./Reset.jsx";
@@ -38,7 +42,6 @@ import ModalLogin from "./ModalLogin";
 import PdfExtract from "./chatbot/PdfExtract";
 // import { PDFViewer } from "@react-pdf/renderer";
 
-import About from "./pages/About";
 import Shop from "./shop/Shop";
 import Chatbot from "./chatbot/Chatbot";
 // import PetCard from "./PetCard";
@@ -227,6 +230,54 @@ function App() {
                                                             exact
                                                             path="/"
                                                             component={Landing}
+                                                          />
+                                                        ) : (
+                                                          ""
+                                                        )}
+                                                        {!showAdminRoute &&
+                                                        !cookies.get(
+                                                          "adminLogged"
+                                                        ) ? (
+                                                          <Route
+                                                            exact
+                                                            path="/manual"
+                                                            component={Manual}
+                                                          />
+                                                        ) : (
+                                                          ""
+                                                        )}
+                                                        {!showAdminRoute &&
+                                                        !cookies.get(
+                                                          "adminLogged"
+                                                        ) ? (
+                                                          <Route
+                                                            exact
+                                                            path="/team"
+                                                            component={Team}
+                                                          />
+                                                        ) : (
+                                                          ""
+                                                        )}
+                                                        {!showAdminRoute &&
+                                                        !cookies.get(
+                                                          "adminLogged"
+                                                        ) ? (
+                                                          <Route
+                                                            exact
+                                                            path="/about"
+                                                            component={About}
+                                                          />
+                                                        ) : (
+                                                          ""
+                                                        )}
+                                                        {!showAdminRoute &&
+                                                        !cookies.get(
+                                                          "adminLogged"
+                                                        ) ? (
+                                                          <Route
+                                                            exact
+                                                            path="/feedback"
+                                                            component={Feedback}
                                                           />
                                                         ) : (
                                                           ""

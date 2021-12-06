@@ -4,6 +4,7 @@ const Code = require("../models/code.model");
 const sgMail = require("@sendgrid/mail");
 const config = require("../config/keys");
 const _ = require("lodash");
+const opencage = require("opencage-api-client");
 sgMail.setApiKey(config.mailKey);
 
 exports.fetchAllController = async (req, res) => {
@@ -32,7 +33,35 @@ exports.handOverController = async (req, res) => {
     // code,
     // companion,
   } = req.body;
-  console.log(formData);
+  // console.log(formData);
+  // console.log(`${formData.location.lng}, ${formData.location.lat}`);
+
+  // opencage
+  //   .geocode({
+  //     q: `${formData.location.lat}, ${formData.location.lng}`,
+  //     language: "en",
+  //     key: "9cc3ec7ae0c1411ca25e2f57b759ad5f",
+  //   })
+  //   .then((data) => {
+  //     // console.log(JSON.stringify(data));
+  //     if (data.results.length > 0) {
+  //       const place = data.results[0];
+  //       console.log(place.formatted);
+  //       console.log(place.components.road);
+  //       console.log(place.annotations.timezone.name);
+  //     } else {
+  //       console.log("status", data.status.message);
+  //       console.log("total_results", data.total_results);
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     console.log("error", error.message);
+  //     if (error.status.code === 402) {
+  //       console.log("hit free trial daily limit");
+  //       // console.log("become a customer: https://opencagedata.com/pricing");
+  //     }
+  //   });
+
   const emailData = {
     from: formData.admin_email,
     to: formData.r_email,
@@ -41,7 +70,7 @@ exports.handOverController = async (req, res) => {
         <h1>This is the patient details.</h1>
         <p>Name: ${formData.first_name} ${formData.last_name}</p>
         <p>Gender: ${formData.gender} </p>
-        <p>Location: ${formData.location.lat} ${formData.location.lng}</p>
+        <p>Location: ${formData.location.lat} ${formData.location.lng} (Please copy paste lat and lng to google)</p>
         <p>Age: ${formData.age} </p>
         <p>Email Address: ${formData.email} </p>
         <p>Contact Number: ${formData.contact_no} </p>
