@@ -3577,9 +3577,9 @@ function Chatbot(props) {
         {showThoughtDiaryTool ? (
           <PDFExport
             ref={pdfExportComponent}
-            scale={0.5}
+            scale={0.8}
             paperSize="A4"
-            landscape={true}
+            // landscape={true}
           >
             <ThoughtDiary />
           </PDFExport>
@@ -3786,7 +3786,7 @@ function ThoughtDiary() {
   }
 
   return (
-    <div className="h-screen">
+    <div className="h-[1000px]">
       <div className="left-0 top-0  w-full h-full  bg-opacity-[0.60] z-20 mb-6">
         <div className="w-full items-start flex justify-center flex-col  xl:w-[1350px] xl:pl-[24px] xl:pt-[26px] h-[1000px]  ">
           {/* header */}
