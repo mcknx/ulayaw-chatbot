@@ -11,6 +11,8 @@ const {
   addCompanionController,
   fetchUserCodeController,
   handOverController,
+  thoughtDiaryController,
+  thoughtDiaryAdminController,
   // facebookController
 } = require("../controllers/admin.controller.js");
 
@@ -20,5 +22,7 @@ router.post("/admin/createCode", createCodeValidator, createCodeController);
 router.post("/admin/claimCode", claimCodeController);
 router.post("/admin/addCompanion", addCompanionController);
 router.post("/admin/handOver", handOverController);
+router.post("/admin/thoughtDiary", thoughtDiaryController);
+router.get("/admin/thoughtDiaryAdmin/:email", thoughtDiaryAdminController);
 
 module.exports = router;

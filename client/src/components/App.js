@@ -23,6 +23,7 @@ import { GetAgainstEvidenceDContext } from "../Context/GetAgainstEvidenceDContex
 import { GetLocationContext } from "../Context/GetLocationContext";
 import { ContinueThoughtDiaryContext } from "../Context/ContinueThoughtDiaryContext";
 import { ShowAdminRoute } from "../Context/ShowAdminRoute";
+import { ShowClientRoute } from "../Context/ShowClientRoute";
 import { PresentEmotion } from "../Context/PresentEmotion";
 
 import "./App.css";
@@ -71,6 +72,8 @@ function App() {
   const [getLocation, setGetLocation] = useState(false);
   const [continueThoughtDiary, setContinueThoughtDiary] = useState(false);
   const [showAdminRoute, setShowAdminRoute] = useState(false);
+  const [showClientRoute, setShowClientRoute] = useState(false);
+
   const [showPresentEmotion, setShowPresentEmotion] = useState(false);
 
   return (
@@ -81,241 +84,253 @@ function App() {
           setShowPresentEmotion,
         }}
       >
-        <ShowAdminRoute.Provider
+        <ShowClientRoute.Provider
           value={{
-            showAdminRoute,
-            setShowAdminRoute,
+            showClientRoute,
+            setShowClientRoute,
           }}
         >
-          <ShowMoodsContext.Provider
+          <ShowAdminRoute.Provider
             value={{
-              showMoods,
-              setShowMoods,
+              showAdminRoute,
+              setShowAdminRoute,
             }}
           >
-            <div
-              className={
-                showMoods
-                  ? "flex justify-center bg-[#3D829F] bg-opacity-[0.75]  w-full h-screen absolute"
-                  : "flex justify-center w-full h-screen"
-              }
+            <ShowMoodsContext.Provider
+              value={{
+                showMoods,
+                setShowMoods,
+              }}
             >
-              <BrowserRouter>
-                <div className=" w-full h-full ">
-                  {!showAdminRoute && !cookies.get("adminLogged") ? (
-                    <Header />
-                  ) : (
-                    ""
-                  )}
-                  <ContinueThoughtDiaryContext.Provider
-                    value={{
-                      continueThoughtDiary,
-                      setContinueThoughtDiary,
-                    }}
-                  >
-                    <ThoughtDiaryContext.Provider
+              <div
+                className={
+                  showMoods
+                    ? "flex justify-center bg-[#3D829F] bg-opacity-[0.75]  w-full h-screen absolute"
+                    : "flex justify-center w-full h-screen"
+                }
+              >
+                <BrowserRouter>
+                  <div className=" w-full h-full ">
+                    {!showAdminRoute && !cookies.get("adminLogged") ? (
+                      <Header />
+                    ) : (
+                      ""
+                    )}
+                    <ContinueThoughtDiaryContext.Provider
                       value={{
-                        showThoughtDiaryTool,
-                        setShowThoughtDiaryTool,
+                        continueThoughtDiary,
+                        setContinueThoughtDiary,
                       }}
                     >
-                      <GetAdverseAnswerContext.Provider
+                      <ThoughtDiaryContext.Provider
                         value={{
-                          getAdverseStep3,
-                          setGetAdverseStep3,
+                          showThoughtDiaryTool,
+                          setShowThoughtDiaryTool,
                         }}
                       >
-                        <GetHotEmotionCAnswerContext.Provider
+                        <GetAdverseAnswerContext.Provider
                           value={{
-                            getHotEmotionCAnswer,
-                            setGetHotEmotionCAnswer,
+                            getAdverseStep3,
+                            setGetAdverseStep3,
                           }}
                         >
-                          <GetOtherEmotionCAnswerContext.Provider
+                          <GetHotEmotionCAnswerContext.Provider
                             value={{
-                              getOtherEmotionCAnswer,
-                              setGetOtherEmotionCAnswer,
+                              getHotEmotionCAnswer,
+                              setGetHotEmotionCAnswer,
                             }}
                           >
-                            <ShowChatBox.Provider
+                            <GetOtherEmotionCAnswerContext.Provider
                               value={{
-                                showChatBox,
-                                setShowChatBox,
+                                getOtherEmotionCAnswer,
+                                setGetOtherEmotionCAnswer,
                               }}
                             >
-                              <ThoughtDiaryFocusContext.Provider
+                              <ShowChatBox.Provider
                                 value={{
-                                  focusThoughtDiaryLetter,
-                                  setFocusThoughtDiaryLetter,
+                                  showChatBox,
+                                  setShowChatBox,
                                 }}
                               >
-                                <MaxInputContext.Provider
+                                <ThoughtDiaryFocusContext.Provider
                                   value={{
-                                    maxInput,
-                                    setMaxInput,
+                                    focusThoughtDiaryLetter,
+                                    setFocusThoughtDiaryLetter,
                                   }}
                                 >
-                                  <GetOtherEmotionAllContext.Provider
+                                  <MaxInputContext.Provider
                                     value={{
-                                      getOtherEmotionAll,
-                                      setGetOtherEmotionAll,
+                                      maxInput,
+                                      setMaxInput,
                                     }}
                                   >
-                                    <HotEmotionRateContext.Provider
+                                    <GetOtherEmotionAllContext.Provider
                                       value={{
-                                        getHotEmotionRate,
-                                        setGetHotEmotionRate,
+                                        getOtherEmotionAll,
+                                        setGetOtherEmotionAll,
                                       }}
                                     >
-                                      <GetOtherThoughtBContext.Provider
+                                      <HotEmotionRateContext.Provider
                                         value={{
-                                          getOtherThoughtB,
-                                          setGetOtherThoughtB,
+                                          getHotEmotionRate,
+                                          setGetHotEmotionRate,
                                         }}
                                       >
-                                        <GetHotThoughtBContext.Provider
+                                        <GetOtherThoughtBContext.Provider
                                           value={{
-                                            getHotThoughtB,
-                                            setGetHotThoughtB,
+                                            getOtherThoughtB,
+                                            setGetOtherThoughtB,
                                           }}
                                         >
-                                          <ShowUTSContext.Provider
+                                          <GetHotThoughtBContext.Provider
                                             value={{
-                                              showUTS,
-                                              setShowUTS,
+                                              getHotThoughtB,
+                                              setGetHotThoughtB,
                                             }}
                                           >
-                                            <GetUTSContext.Provider
+                                            <ShowUTSContext.Provider
                                               value={{
-                                                getUTS,
-                                                setGetUTS,
+                                                showUTS,
+                                                setShowUTS,
                                               }}
                                             >
-                                              <GetUTSContainerContext.Provider
+                                              <GetUTSContext.Provider
                                                 value={{
-                                                  getUTSContainer,
-                                                  setGetUTSCointainer,
+                                                  getUTS,
+                                                  setGetUTS,
                                                 }}
                                               >
-                                                <HotThoughtRateContext.Provider
+                                                <GetUTSContainerContext.Provider
                                                   value={{
-                                                    getHotThoughtRate,
-                                                    setGetHotThoughtRate,
+                                                    getUTSContainer,
+                                                    setGetUTSCointainer,
                                                   }}
                                                 >
-                                                  <GetForEvidenceDContext.Provider
+                                                  <HotThoughtRateContext.Provider
                                                     value={{
-                                                      getForEvidenceD,
-                                                      setGetForEvidenceD,
+                                                      getHotThoughtRate,
+                                                      setGetHotThoughtRate,
                                                     }}
                                                   >
-                                                    <GetAgainstEvidenceDContext.Provider
+                                                    <GetForEvidenceDContext.Provider
                                                       value={{
-                                                        getAgainstEvidenceD,
-                                                        setGetAgainstEvidenceD,
+                                                        getForEvidenceD,
+                                                        setGetForEvidenceD,
                                                       }}
                                                     >
-                                                      <GetLocationContext.Provider
+                                                      <GetAgainstEvidenceDContext.Provider
                                                         value={{
-                                                          getLocation,
-                                                          setGetLocation,
+                                                          getAgainstEvidenceD,
+                                                          setGetAgainstEvidenceD,
                                                         }}
                                                       >
-                                                        {/* contexts above */}
-                                                        {!showAdminRoute &&
-                                                        !cookies.get(
-                                                          "adminLogged"
-                                                        ) ? (
-                                                          <Route
-                                                            exact
-                                                            path="/"
-                                                            component={Landing}
-                                                          />
-                                                        ) : (
-                                                          ""
-                                                        )}
-                                                        {!showAdminRoute &&
-                                                        !cookies.get(
-                                                          "adminLogged"
-                                                        ) ? (
-                                                          <Route
-                                                            exact
-                                                            path="/manual"
-                                                            component={Manual}
-                                                          />
-                                                        ) : (
-                                                          ""
-                                                        )}
-                                                        {!showAdminRoute &&
-                                                        !cookies.get(
-                                                          "adminLogged"
-                                                        ) ? (
-                                                          <Route
-                                                            exact
-                                                            path="/team"
-                                                            component={Team}
-                                                          />
-                                                        ) : (
-                                                          ""
-                                                        )}
-                                                        {!showAdminRoute &&
-                                                        !cookies.get(
-                                                          "adminLogged"
-                                                        ) ? (
-                                                          <Route
-                                                            exact
-                                                            path="/about"
-                                                            component={About}
-                                                          />
-                                                        ) : (
-                                                          ""
-                                                        )}
-                                                        {!showAdminRoute &&
-                                                        !cookies.get(
-                                                          "adminLogged"
-                                                        ) ? (
-                                                          <Route
-                                                            exact
-                                                            path="/feedback"
-                                                            component={Feedback}
-                                                          />
-                                                        ) : (
-                                                          ""
-                                                        )}
-                                                        <Route
-                                                          path="/users/password/forget"
-                                                          exact
-                                                          render={(props) => (
-                                                            <ForgetPassword
-                                                              {...props}
+                                                        <GetLocationContext.Provider
+                                                          value={{
+                                                            getLocation,
+                                                            setGetLocation,
+                                                          }}
+                                                        >
+                                                          {/* contexts above */}
+                                                          {!showAdminRoute &&
+                                                          !cookies.get(
+                                                            "adminLogged"
+                                                          ) ? (
+                                                            <Route
+                                                              exact
+                                                              path="/"
+                                                              component={
+                                                                Landing
+                                                              }
                                                             />
+                                                          ) : (
+                                                            ""
                                                           )}
-                                                        />
+                                                          {!showAdminRoute &&
+                                                          !cookies.get(
+                                                            "adminLogged"
+                                                          ) ? (
+                                                            <Route
+                                                              exact
+                                                              path="/manual"
+                                                              component={Manual}
+                                                            />
+                                                          ) : (
+                                                            ""
+                                                          )}
+                                                          {!showAdminRoute &&
+                                                          !cookies.get(
+                                                            "adminLogged"
+                                                          ) ? (
+                                                            <Route
+                                                              exact
+                                                              path="/team"
+                                                              component={Team}
+                                                            />
+                                                          ) : (
+                                                            ""
+                                                          )}
+                                                          {!showAdminRoute &&
+                                                          !cookies.get(
+                                                            "adminLogged"
+                                                          ) ? (
+                                                            <Route
+                                                              exact
+                                                              path="/about"
+                                                              component={About}
+                                                            />
+                                                          ) : (
+                                                            ""
+                                                          )}
+                                                          {!showAdminRoute &&
+                                                          !cookies.get(
+                                                            "adminLogged"
+                                                          ) ? (
+                                                            <Route
+                                                              exact
+                                                              path="/feedback"
+                                                              component={
+                                                                Feedback
+                                                              }
+                                                            />
+                                                          ) : (
+                                                            ""
+                                                          )}
+                                                          <Route
+                                                            path="/users/password/forget"
+                                                            exact
+                                                            render={(props) => (
+                                                              <ForgetPassword
+                                                                {...props}
+                                                              />
+                                                            )}
+                                                          />
 
-                                                        <Route
-                                                          path="/users/activate/:token"
-                                                          exact
-                                                          render={(props) => (
-                                                            <Activate
-                                                              {...props}
-                                                            />
-                                                          )}
-                                                        />
-                                                        <Route
-                                                          path="/users/password/reset/:token"
-                                                          exact
-                                                          render={(props) => (
-                                                            <Reset {...props} />
-                                                          )}
-                                                        />
-                                                        {/* <Route
+                                                          <Route
+                                                            path="/users/activate/:token"
+                                                            exact
+                                                            render={(props) => (
+                                                              <Activate
+                                                                {...props}
+                                                              />
+                                                            )}
+                                                          />
+                                                          <Route
+                                                            path="/users/password/reset/:token"
+                                                            exact
+                                                            render={(props) => (
+                                                              <Reset
+                                                                {...props}
+                                                              />
+                                                            )}
+                                                          />
+                                                          {/* <Route
                                                         path="/admin"
                                                         exact
                                                         render={(props) => (
                                                           <Admin {...props} />
                                                         )}
                                                       /> */}
-                                                        {/* <Route
+                                                          {/* <Route
                                                         path="/login"
                                                         exact
                                                         render={(props) => (
@@ -324,23 +339,24 @@ function App() {
                                                           />
                                                         )}
                                                       /> */}
-                                                        {cookies.get(
-                                                          "adminLogged"
-                                                        ) || showAdminRoute ? (
-                                                          <Admin />
-                                                        ) : (
-                                                          ""
-                                                        )}
-                                                        {!showAdminRoute &&
-                                                        !cookies.get(
-                                                          "adminLogged"
-                                                        ) ? (
-                                                          <Chatbot />
-                                                        ) : (
-                                                          ""
-                                                        )}
+                                                          {cookies.get(
+                                                            "adminLogged"
+                                                          ) ||
+                                                          showAdminRoute ? (
+                                                            <Admin />
+                                                          ) : (
+                                                            ""
+                                                          )}
+                                                          {!showAdminRoute &&
+                                                          !cookies.get(
+                                                            "adminLogged"
+                                                          ) ? (
+                                                            <Chatbot />
+                                                          ) : (
+                                                            ""
+                                                          )}
 
-                                                        {/* <PDFViewer>
+                                                          {/* <PDFViewer>
                                                     <Route
                                                       path="/showPDF"
                                                       exact
@@ -351,36 +367,40 @@ function App() {
                                                       )}
                                                     />
                                                   </PDFViewer> */}
-                                                      </GetLocationContext.Provider>
-                                                    </GetAgainstEvidenceDContext.Provider>
-                                                  </GetForEvidenceDContext.Provider>
-                                                </HotThoughtRateContext.Provider>
-                                              </GetUTSContainerContext.Provider>
-                                            </GetUTSContext.Provider>
-                                          </ShowUTSContext.Provider>
-                                        </GetHotThoughtBContext.Provider>
-                                      </GetOtherThoughtBContext.Provider>
-                                    </HotEmotionRateContext.Provider>
-                                  </GetOtherEmotionAllContext.Provider>
-                                </MaxInputContext.Provider>
-                              </ThoughtDiaryFocusContext.Provider>
-                            </ShowChatBox.Provider>
-                          </GetOtherEmotionCAnswerContext.Provider>
-                        </GetHotEmotionCAnswerContext.Provider>
-                      </GetAdverseAnswerContext.Provider>
-                    </ThoughtDiaryContext.Provider>
-                  </ContinueThoughtDiaryContext.Provider>
+                                                        </GetLocationContext.Provider>
+                                                      </GetAgainstEvidenceDContext.Provider>
+                                                    </GetForEvidenceDContext.Provider>
+                                                  </HotThoughtRateContext.Provider>
+                                                </GetUTSContainerContext.Provider>
+                                              </GetUTSContext.Provider>
+                                            </ShowUTSContext.Provider>
+                                          </GetHotThoughtBContext.Provider>
+                                        </GetOtherThoughtBContext.Provider>
+                                      </HotEmotionRateContext.Provider>
+                                    </GetOtherEmotionAllContext.Provider>
+                                  </MaxInputContext.Provider>
+                                </ThoughtDiaryFocusContext.Provider>
+                              </ShowChatBox.Provider>
+                            </GetOtherEmotionCAnswerContext.Provider>
+                          </GetHotEmotionCAnswerContext.Provider>
+                        </GetAdverseAnswerContext.Provider>
+                      </ThoughtDiaryContext.Provider>
+                    </ContinueThoughtDiaryContext.Provider>
 
-                  {!showAdminRoute && !cookies.get("adminLogged") ? (
-                    <Footer />
-                  ) : (
-                    ""
-                  )}
-                </div>
-              </BrowserRouter>
-            </div>
-          </ShowMoodsContext.Provider>
-        </ShowAdminRoute.Provider>
+                    {!showAdminRoute &&
+                    !showClientRoute &&
+                    !cookies.get("adminLogged") &&
+                    !cookies.get("clientLogged") ? (
+                      <Footer />
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </BrowserRouter>
+              </div>
+            </ShowMoodsContext.Provider>
+          </ShowAdminRoute.Provider>
+        </ShowClientRoute.Provider>
       </PresentEmotion.Provider>
     </DndProvider>
   );

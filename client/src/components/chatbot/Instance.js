@@ -18,7 +18,7 @@ const Instance = (props) => {
     // setShowChatBox(false);
   });
 
-  function renderChoiceInstance(item, i) {
+  function renderChoiceInstance(item, i, select) {
     return (
       <Choice
         key={i}
@@ -30,14 +30,44 @@ const Instance = (props) => {
         question_no={props.item.structValue.fields.question_num.numberValue}
         question_text={props.item.structValue.fields.question.stringValue}
         doneAssess={props.doneAssess}
+        select={select}
       />
     );
   }
 
   function renderChoice(instance) {
     if (instance) {
+      // console.log(instance);
+      // console.log(props.selectedChoices);
       return instance.map((item, i) => {
-        return renderChoiceInstance(item, i);
+        let select;
+        if (props.selectedChoices) {
+          if (props.selectedChoices !== undefined) {
+            if (props.selectedChoices.length !== 0) {
+              props.selectedChoices.map((selected, ind) => {
+                if (
+                  props.item.structValue.fields.question_num.numberValue ===
+                  selected.question_no
+                ) {
+                  if (
+                    selected.choice_text ===
+                    item.structValue.fields.text.stringValue
+                  ) {
+                    select = true;
+                  }
+                }
+                // props.item.structValue.fields.question_num.numberValue
+              });
+              console.log("props.selectedChoices length");
+            }
+            console.log("props.selectedChoices undefined");
+          }
+          console.log("props.selectedChoices");
+        }
+        console.log(select);
+
+        console.log(item);
+        return renderChoiceInstance(item, i, select);
       });
     } else {
       return null;

@@ -35,6 +35,7 @@ import useGeoLocation from "../../hooks/useGeolocation";
 import { GetLocationContext } from "../../Context/GetLocationContext";
 import { ContinueThoughtDiaryContext } from "../../Context/ContinueThoughtDiaryContext";
 import { PresentEmotion } from "../../Context/PresentEmotion";
+import { ShowClientRoute } from "../../Context/ShowClientRoute";
 import MapContainer from "./MapContainer";
 import ModalLogin from "../ModalLogin";
 import { useDrop } from "react-dnd";
@@ -172,6 +173,8 @@ function Chatbot(props) {
   const { getAgainstEvidenceD, setGetAgainstEvidenceD } = useContext(
     GetAgainstEvidenceDContext
   );
+  const { showClientRoute, setShowClientRoute } = useContext(ShowClientRoute);
+
   const [value, setValue] = useState();
 
   let messagesEnd = useRef(null);
@@ -194,6 +197,14 @@ function Chatbot(props) {
     // console.log(e.target.value);
     console.log(`size is changed, width:${width} height:${height}`);
   };
+
+  function _handleMoodResultGetHotEmotionCAnswer(item, i) {
+    // console.log(item, i, getHotEmotionCAnswer.length - 1, "test");
+
+    if (item.select) {
+      return item.mood_text;
+    }
+  }
 
   async function df_text_query(
     queryText,
@@ -387,11 +398,39 @@ function Chatbot(props) {
         // if (cookies.get("termsAndConditions")) {
         if (getLocation && cookies.get("termsAndConditions")) {
           setMaxInput(0);
-          df_event_query("Welcome");
-          _handleTranslate(
-            `How are you! I am Ulayaw. I am here to help and respond about your mental health. Do you want to login first?`,
-            `Kumusta! Ako si Ulayaw, nandito ako upang tulungan at tugunan ang iyong kaisipang pangkalusugan. Gusto mo bang mag login muna?`
-          );
+          // console.log(isAuth());
+          setUserLoggedIn(isAuth());
+          if (cookies.get("clientLogged") || showClientRoute) {
+            _handleTranslate(
+              `We appreciate your signing in, ${
+                isAuth().first_name
+              }. We've verified that you're ${
+                isAuth().age
+              } years old and that you're a ${isAuth().gender}.`,
+              `Hello ${
+                isAuth().first_name
+              }, nagpapasalamat kami sa iyong pag sign in. Napag alaman namin na ikaw ay ${
+                isAuth().age
+              } taong gulang at isang ${isAuth().gender}.`
+            );
+            _handleTranslate(
+              `The information will be included in your profile's documentation. You can be assured that your data will be kept confidential and secure while in our care.`,
+              `Ang mga impormasyong ito ay magiging bahagi lamang Sa dokumentasyon para sa iyong propayl. Makasisigurado po kayo na ang mga ito ay mananatiling pribado at ligtas sa aming pangangalaga.`
+            );
+
+            _handleTranslate(
+              `Do you want to start our conversation? 😳 or you have an Assessment Code from the PMHA?`,
+              `Gusto mo na bang mag simula? 😳 o mayroon kang Assessment Code mula sa PMHA?.`
+            );
+
+            df_event_query("LOGIN_CONTINUE");
+          } else {
+            df_event_query("Welcome");
+            _handleTranslate(
+              `How are you! I am Ulayaw. I am here to help and respond about your mental health. Do you want to login first?`,
+              `Kumusta! Ako si Ulayaw, nandito ako upang tulungan at tugunan ang iyong kaisipang pangkalusugan. Gusto mo bang mag login muna?`
+            );
+          }
         }
         // console.log(location);
       }
@@ -606,6 +645,7 @@ function Chatbot(props) {
             setMaxInput(2);
           }
           if (maxInput === 2) {
+            _handleTranslate(`${chat}`, `${chat}`, true);
             _handleTranslate(
               `Have you been struck by the relationship of your negative thoughts?`,
               `Napansin mo ba ang ugnayan ng iyong negatibong pagiisip?`
@@ -2304,8 +2344,8 @@ function Chatbot(props) {
                         df_event_query("ABC_THOUGHT_DIARY_C_RATE_EMOTION");
                         setGetRateEmotion(true);
                         _handleTranslate(
-                          `Can you rate how intense it is (0 to 100).`,
-                          `Maaari mo bang i rate kung gaano ito katindi (0 hanggang 100).`
+                          `Can you rate how intense it is (0 "as not intense" to 100 "if severely intense").`,
+                          `Maaari mo bang i rate kung gaano ito katindi (0 "bilang hindi matindi" hanggang 100  "kung napaka tindi"). `
                         );
                         setFocusThoughtDiaryLetter("c");
                         setShowChatBox(true);
@@ -2394,7 +2434,47 @@ function Chatbot(props) {
                       `Just come back when you have a problem. If you have comments and feedback to our chatbot. Please don't hesitate to write it at our feedback page. Thank you again.`,
                       `Mag balik ka lang pag may problema ka. Kung mayroon kang mga puna at feedback sa aming chatbot. Huwag sana kayong mag-atubili na isulat ito sa aming feedback page. Salamat muli.`
                     );
+
+                    let email = isAuth().email;
+                    let formData = [];
+                    formData.push({
+                      presentEmotion: showPresentEmotion.map((item, i) => {
+                        return _handleMoodResultGetHotEmotionCAnswer(item, i);
+                      }),
+                    });
+                    formData.push({ step1ActivatingEvents: activatingEvents });
+                    formData.push({ step1SelectedAE: getAdverseStep3 });
+                    formData.push({ step2Other: getOtherEmotionAll });
+                    formData.push({
+                      step3Hot: getHotEmotionCAnswer.map((item, i) => {
+                        return _handleMoodResultGetHotEmotionCAnswer(item, i);
+                      }),
+                    });
+                    formData.push({ step3Rate: getHotEmotionRate });
+                    formData.push({ step4Thoughts: getOtherThoughtB });
+                    formData.push({ step5AfterFeelings: getAfterFeelingsChat });
+                    // showChatBox(false);
+                    axios
+                      .post(`/api/admin/thoughtDiary`, {
+                        formData,
+                        email,
+                      })
+                      .then((res) => {
+                        toast.success(res.data.message);
+                        setCorrectCode(true);
+                        console.log(res.data.user);
+                        setAssessmentUser(res.data.user);
+                        setShowChatBox(false);
+                        // toast.success(res.data.message);
+                      })
+                      .catch((err) => {
+                        setCorrectCode(false);
+                        setShowChatBox(true);
+                        // console.log(err.response);
+                        toast.error(err.response.data.errors);
+                      });
                     // <PdfExtract />;
+                    setShowThoughtDiaryTool(false);
                     handleExportWithComponent();
                     setShowChatBox(false);
                     setShowPDF(false);
@@ -2406,6 +2486,7 @@ function Chatbot(props) {
                 <a
                   style={{ margin: 3 }}
                   onClick={() => {
+                    setShowThoughtDiaryTool(false);
                     _handleTranslate(`No`, `Hindi,`, true);
                     _handleTranslate(`Okay, Thank you!`, `Okay, Thank you!`);
                     df_text_query(``, ``, `user`, ``, `exit`);
@@ -2413,7 +2494,44 @@ function Chatbot(props) {
                       `Just come back when you have a problem. If you have comments and feedback to our chatbot. Please don't hesitate to write it at our feedback page. Thank you again.`,
                       `Mag balik ka lang pag may problema ka. Kung mayroon kang mga puna at feedback sa aming chatbot. Huwag sana kayong mag-atubili na isulat ito sa aming feedback page. Salamat muli.`
                     );
-                    showChatBox(false);
+                    let email = isAuth().email;
+                    let formData = [];
+                    formData.push({
+                      presentEmotion: showPresentEmotion.map((item, i) => {
+                        return _handleMoodResultGetHotEmotionCAnswer(item, i);
+                      }),
+                    });
+                    formData.push({ step1ActivatingEvents: activatingEvents });
+                    formData.push({ step1SelectedAE: getAdverseStep3 });
+                    formData.push({ step2Other: getOtherEmotionAll });
+                    formData.push({
+                      step3Hot: getHotEmotionCAnswer.map((item, i) => {
+                        return _handleMoodResultGetHotEmotionCAnswer(item, i);
+                      }),
+                    });
+                    formData.push({ step3Rate: getHotEmotionRate });
+                    formData.push({ step4Thoughts: getOtherThoughtB });
+                    formData.push({ step5AfterFeelings: getAfterFeelingsChat });
+                    setShowChatBox(false);
+                    axios
+                      .post(`/api/admin/thoughtDiary`, {
+                        formData,
+                        email,
+                      })
+                      .then((res) => {
+                        toast.success(res.data.message);
+                        setCorrectCode(true);
+                        console.log(res.data.user);
+                        setAssessmentUser(res.data.user);
+                        setShowChatBox(false);
+                        // toast.success(res.data.message);
+                      })
+                      .catch((err) => {
+                        setCorrectCode(false);
+                        setShowChatBox(true);
+                        // console.log(err.response);
+                        toast.error(err.response.data.errors);
+                      });
                     setShowPDF(false);
                   }}
                   className="bg-[#5DCFFF] text-white rounded-full  p-2 px-4 self-center h-10 cursor-pointer"
@@ -3668,11 +3786,11 @@ function ThoughtDiary() {
   }
 
   return (
-    <div className="h-screen bg-[#3D829F]">
-      <div className="left-0 top-0  w-[full] h-full  bg-opacity-[0.60] z-20 mb-6">
-        <div className=" left-0   w-[1350px] pl-[24px] pt-[26px] h-full  ">
+    <div className="h-screen">
+      <div className="left-0 top-0  w-full h-full  bg-opacity-[0.60] z-20 mb-6">
+        <div className="w-full items-start flex justify-center flex-col  xl:w-[1350px] xl:pl-[24px] xl:pt-[26px] h-[1000px]  ">
           {/* header */}
-          <div className=" w-[215px] h-[54px] rounded-t-[15px] ml-2 text-[20px] lg:text-[24px] p-[18px] lg:pt-[11px] px-[23px] text-white self-center bg-[#49c3f7] font-bold">
+          <div className=" w-[215px] h-[54px] rounded-t-[15px] ml-2 text-[20px] lg:text-[24px] p-[18px] lg:pt-[11px] px-[23px] text-white self-start bg-[#49c3f7] font-bold">
             <p>Thought Diary</p>
           </div>
 
@@ -3681,12 +3799,12 @@ function ThoughtDiary() {
           <div
             className={
               focusThoughtDiaryLetter != null
-                ? "bg-[#5DCFFF] w-full rounded-[15px]  self-center grid grid-cols-4  min-h-[750px]  text-white font-semibold  "
-                : "w-full rounded-[15px]  self-center grid grid-cols-4  min-h-[750px] text-[#4CC2F4] text-[20px] font-semibold bg-white "
+                ? "bg-[#5DCFFF] w-[655px] rounded-b-[15px]  self-start  grid grid-cols-2  min-h-[750px]  text-white font-semibold  "
+                : "w-[655px] rounded-b-[15px] self-start  grid grid-cols-2  min-h-[750px] text-[#4CC2F4] text-[20px] font-semibold bg-white"
             }
           >
             {/* A and C */}
-            <div className="grid grid-rows-6 max-h-[750px]">
+            <div className="w-[327.5px] border-l-4 border-b-4 border-t-4 border-[#86A1AC] rounded-b-[15px]  grid grid-rows-6 max-h-[750px]">
               {/* section 1 */}
               <div
                 className={
@@ -3695,8 +3813,8 @@ function ThoughtDiary() {
                   focusThoughtDiaryLetter === "a_1" ||
                   focusThoughtDiaryLetter === "c_1" ||
                   focusThoughtDiaryLetter === "a_c"
-                    ? "border-b-4 border-[#86A1AC] bg-white text-[#4CC2F4] row-span-3"
-                    : "border-b-4 border-[#86A1AC] row-span-3"
+                    ? "border-b-4 border-[#86A1AC] bg-white text-[#4CC2F4] row-span-3 rounded-b-[15px] "
+                    : "border-b-4 border-[#86A1AC] row-span-3 rounded-b-[15px] "
                 }
               >
                 <div className=" p-4 break-words ">
@@ -3748,8 +3866,8 @@ function ThoughtDiary() {
                   focusThoughtDiaryLetter === "b_c" ||
                   focusThoughtDiaryLetter === "c_1" ||
                   focusThoughtDiaryLetter === "a_c"
-                    ? " bg-white p-4 text-[#4CC2F4] row-span-3"
-                    : " p-4 row-span-3"
+                    ? " bg-white p-4 text-[#4CC2F4] row-span-3 rounded-[15px]"
+                    : " p-4 row-span-3 rounded-[15px]"
                 }
               >
                 <label className="text-[20px] ">C) Consequences</label>
@@ -3907,7 +4025,7 @@ function ThoughtDiary() {
               </div>
             </div>
             {/* B */}
-            <div className="border-l-4 border-[#86A1AC] grid grid-rows-6 ">
+            <div className="w-[327.5px] rounded-b-[15px]  border-l-4 border-r-4 border-b-4 border-t-4 border-[#86A1AC] grid grid-rows-6 ">
               {/* section 1 */}
               <div
                 className={
@@ -3966,7 +4084,7 @@ function ThoughtDiary() {
                   <label className="flex flex-col leading-none pt-10">
                     {continueThoughtDiary ? (
                       <label className="text-[14px] text-blue-900  font-bold">
-                        other thoughts
+                        your thoughts
                       </label>
                     ) : (
                       ""
@@ -4134,148 +4252,6 @@ function ThoughtDiary() {
                 )}
               </div>
             </div>
-            {/* D */}
-
-            <div
-              className={
-                focusThoughtDiaryLetter === "d"
-                  ? " bg-white border-l-4 text-[#4CC2F4] border-[#86A1AC] grid grid-rows-6 p-4"
-                  : "border-l-4 border-[#86A1AC] grid grid-rows-6 p-4"
-              }
-            >
-              {/* section 1 */}
-              {continueThoughtDiary ? (
-                <div className="  break-words max-w-[330px] row-span-3 ">
-                  {/* Check the evidence */}
-                  <label className="text-[14px] text-blue-900  font-bold text-left">
-                    1. Check the evidence
-                  </label>
-
-                  <div className="text-center flex flex-col justify-between h-full ">
-                    {/* for evidence */}
-                    <div className="h-[100px]">
-                      <label className="flex flex-col leading-none ">
-                        <label className="underline text-[14px]  text-blue-900 font-normal">
-                          Factual evidence FOR my hot thought:
-                        </label>
-
-                        <div className="leading-none flex flex-col">
-                          <label className="">
-                            {/* {_handleShowList(getOtherThoughtB)} */}
-                            {getForEvidenceD.length != 0
-                              ? getForEvidenceD.map((item, i) => {
-                                  return (
-                                    <>
-                                      {/* .select && i != firstHitOther */}
-                                      {i != 0 ? (
-                                        <span className="text-[50px] leading-[0px]">
-                                          ,
-                                        </span>
-                                      ) : (
-                                        ""
-                                      )}
-                                      {item}
-                                    </>
-                                  );
-                                })
-                              : ""}
-                            <span className="text-[50px] leading-[0px]">.</span>
-                          </label>
-                        </div>
-                      </label>
-                    </div>
-                    {/* against evidence */}
-                    <div className="h-[300px]">
-                      <label className="flex flex-col leading-none ">
-                        <label className="underline text-[14px]  text-blue-900 font-normal">
-                          Factual evidence AGAINST my hot thought:
-                        </label>
-
-                        <div className="leading-none flex flex-col">
-                          <label className="">
-                            {/* {_handleShowList(getOtherThoughtB)} */}
-                            {getAgainstEvidenceD.length != 0
-                              ? getAgainstEvidenceD.map((item, i) => {
-                                  return (
-                                    <>
-                                      {/* .select && i != firstHitOther */}
-                                      {i != 0 ? (
-                                        <span className="text-[50px] leading-[0px]">
-                                          ,
-                                        </span>
-                                      ) : (
-                                        ""
-                                      )}
-                                      {item}
-                                    </>
-                                  );
-                                })
-                              : ""}
-                            <span className="text-[50px] leading-[0px]">.</span>
-                          </label>
-                        </div>
-                      </label>
-                    </div>
-                    <div className="h-[0px]"></div>
-                  </div>
-                </div>
-              ) : (
-                ""
-              )}
-              {/* section 2 */}
-              {continueThoughtDiary ? (
-                <div className="text-left row-span-1">
-                  {/* Challenge unhelpful thinking styles */}
-                  <label className="text-[14px] text-blue-900  font-bold">
-                    2. Challenge unhelpful thinking styles
-                  </label>
-                  <label className="flex flex-col leading-none">
-                    <label className="text-[14px] text-justify text-blue-900 font-normal italic pl-4">
-                      Answer the disputation questions that apply to the
-                      unhelpful thinking styles you've picked
-                    </label>
-
-                    <div className="leading-none flex flex-col"></div>
-                  </label>
-                </div>
-              ) : (
-                ""
-              )}
-              {/* section 3 */}
-              {continueThoughtDiary ? (
-                <div className=" text-center break-words max-w-[330px] row-span-2">
-                  {/* Change my perspective */}
-                  <div className="text-left">
-                    <label className="text-[14px] text-blue-900  font-bold">
-                      3. Change my perspective
-                    </label>
-
-                    <label className="flex flex-col leading-none">
-                      <label className="text-[14px] text-justify text-blue-900 font-normal italic pl-4">
-                        What are other ways of viewing the situation? What would
-                        you say to someone you care about? To change how you
-                        act, how would you need to think differently?
-                      </label>
-
-                      <div className="leading-none flex flex-col"></div>
-                    </label>
-                  </div>
-                  <div></div>
-                </div>
-              ) : (
-                ""
-              )}
-            </div>
-
-            {continueThoughtDiary ? (
-              <div className="border-l-4 border-[#86A1AC] p-4">
-                <label className="text-[20px] text-[#4CC2F4]">
-                  E) End Result
-                </label>
-              </div>
-            ) : (
-              ""
-            )}
           </div>
         </div>
       </div>

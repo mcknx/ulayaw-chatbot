@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { GoogleLogin } from "react-google-login";
 import { ShowAdminRoute } from "../Context/ShowAdminRoute";
+import { ShowClientRoute } from "../Context/ShowClientRoute";
 import { FaGoogle } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
@@ -14,6 +15,7 @@ import Cookies from "universal-cookie";
 const cookies = new Cookies();
 export default function ModalLogin(props) {
   const { showAdminRoute, setShowAdminRoute } = useContext(ShowAdminRoute);
+  const { showClientRoute, setShowClientRoute } = useContext(ShowClientRoute);
   const [showRegister, setShowRegister] = useState(false);
   const [selectedGender, setSelectedGender] = useState(false);
   const [value, setValue] = useState();
@@ -244,42 +246,61 @@ export default function ModalLogin(props) {
                 //   ? props.history.push("/admin")
                 //   : props.history.push("/client");
                 console.log(isAuth());
-                if (isAuth() && isAuth().role === "admin") {
-                  setShowAdminRoute(true);
+                if (props.admin) {
+                  if (isAuth() && isAuth().role === "admin") {
+                    setShowAdminRoute(true);
+                    cookies.set("adminLogged", true, { path: "/" });
+                  } else {
+                    toast.error("Admin does not exist");
+                    toast.error("Admin with that email does not exist");
+                  }
                 } else {
-                  // cookies.set("clientLogged", true, { path: "/" });
-                  toast.success(`Hey ${res.data.user.first_name}, Welcome!`);
-                  props.setUserLoggedIn(res.data.user);
+                  if (isAuth() && isAuth().role === "subscriber") {
+                    cookies.set("clientLogged", true, { path: "/" });
+                    setShowAdminRoute(false);
+                    setShowClientRoute(true);
+                    toast.success(`Hey ${res.data.user.first_name}, Welcome!`);
+                    props.setUserLoggedIn(res.data.user);
 
-                  props._handleTranslate(`Login`, `Login`, true);
-                  props._handleTranslate(
-                    `We appreciate your signing in, ${res.data.user.first_name}. We've verified that you're ${res.data.user.age} years old and that you're a ${res.data.user.gender}.`,
-                    `Hello ${res.data.user.first_name}, nagpapasalamat kami sa iyong pag sign in. Napag alaman namin na ikaw ay ${res.data.user.age} taong gulang at isang ${res.data.user.gender}.`
-                  );
-                  props._handleTranslate(
-                    `The information will be included in your profile's documentation. You can be assured that your data will be kept confidential and secure while in our care.`,
-                    `Ang mga impormasyong ito ay magiging bahagi lamang Sa dokumentasyon para sa iyong propayl. Makasisigurado po kayo na ang mga ito ay mananatiling pribado at ligtas sa aming pangangalaga.`
-                  );
+                    props._handleTranslate(`Login`, `Login`, true);
+                    props._handleTranslate(
+                      `We appreciate your signing in, ${res.data.user.first_name}. We've verified that you're ${res.data.user.age} years old and that you're a ${res.data.user.gender}.`,
+                      `Hello ${res.data.user.first_name}, nagpapasalamat kami sa iyong pag sign in. Napag alaman namin na ikaw ay ${res.data.user.age} taong gulang at isang ${res.data.user.gender}.`
+                    );
+                    props._handleTranslate(
+                      `The information will be included in your profile's documentation. You can be assured that your data will be kept confidential and secure while in our care.`,
+                      `Ang mga impormasyong ito ay magiging bahagi lamang Sa dokumentasyon para sa iyong propayl. Makasisigurado po kayo na ang mga ito ay mananatiling pribado at ligtas sa aming pangangalaga.`
+                    );
 
-                  props._handleTranslate(
-                    `Do you want to start our conversation? 😳 or you have an Assessment Code from the PMHA?`,
-                    `Gusto mo na bang mag simula? 😳 o mayroon kang Assessment Code mula sa PMHA?.`
-                  );
+                    props._handleTranslate(
+                      `Do you want to start our conversation? 😳 or you have an Assessment Code from the PMHA?`,
+                      `Gusto mo na bang mag simula? 😳 o mayroon kang Assessment Code mula sa PMHA?.`
+                    );
 
-                  props.df_event_query("LOGIN_CONTINUE");
-                  props.setShowModal(false);
+                    props.df_event_query("LOGIN_CONTINUE");
+                    props.setShowModal(false);
+                  } else {
+                    toast.error("Client does not exist");
+                    toast.error("Client with that email does not exist");
+                  }
                 }
               });
             })
             .catch((err) => {
-              setFormData({
-                ...formData,
-                email: "",
-                password1: "",
-                textChange: "Sign In",
-              });
-              console.log(err.response);
-              toast.error(err.response.data.errors);
+              // setFormData({
+              //   ...formData,
+              //   email: "",
+              //   password1: "",
+              //   textChange: "Sign In",
+              // });
+              // console.log(err.response);
+
+              if (props.admin) {
+                toast.error("Admin does not exist");
+                toast.error("Admin with that email does not exist");
+              } else {
+                toast.error(err.response.data.errors);
+              }
             });
 
           console.log(formData);
@@ -516,21 +537,21 @@ export default function ModalLogin(props) {
                 ""
               ) : (
                 <>
-                  {props.admin ? (
+                  {/* {props.admin ? (
                     ""
-                  ) : (
-                    <label className="space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full ">
-                      {/* email */}
+                  ) : ( */}
+                  <label className="space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full ">
+                    {/* email */}
 
-                      <input
-                        className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7]"
-                        type="email"
-                        placeholder="Email address"
-                        onChange={handleChange("email")}
-                        value={email}
-                      />
-                    </label>
-                  )}
+                    <input
+                      className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7]"
+                      type="email"
+                      placeholder="Email address"
+                      onChange={handleChange("email")}
+                      value={email}
+                    />
+                  </label>
+                  {/* )} */}
                 </>
               )}
               {props.assessment_meron_companion ? (
@@ -539,19 +560,19 @@ export default function ModalLogin(props) {
                 <span className={showRegister ? "grid grid-cols-2" : ""}>
                   {/* password 1 */}
 
-                  {props.admin ? (
+                  {/* {props.admin ? (
                     ""
-                  ) : (
-                    <label className="space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full ">
-                      <input
-                        className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7]"
-                        type="password"
-                        placeholder="Password"
-                        onChange={handleChange("password1")}
-                        value={password1}
-                      />
-                    </label>
-                  )}
+                  ) : ( */}
+                  <label className="space-x-[10px]  text-gray-600 inline-block p-4  rounded-lg  select-none w-full ">
+                    <input
+                      className=" focus:ring-1 focus:ring-[#5DCFFF] p-4 outline-none w-full rounded-[15px]  bg-[#F2F3F7]"
+                      type="password"
+                      placeholder="Password"
+                      onChange={handleChange("password1")}
+                      value={password1}
+                    />
+                  </label>
+                  {/* )} */}
                   {/* password 2 */}
                   {!showRegister ? (
                     ""
@@ -583,24 +604,24 @@ export default function ModalLogin(props) {
             )}
 
             {/* submit btn */}
-            {props.admin ? (
+            {/* {props.admin ? (
               ""
-            ) : (
-              <button
-                className="self-center rounded-[38px] bg-[#5DCFFF] space-x-[10px]  m-8 py-[20px] w-[405px] text-white text-[24px]"
-                onClick={(e) => {
-                  // if (showRegister) {
-                  handleSubmit(e);
-                  // }
-                }}
-              >
-                {props.assessment_meron_companion ? (
-                  "SAVE"
-                ) : (
-                  <>{showRegister ? "REGISTER" : "LOGIN"}</>
-                )}
-              </button>
-            )}
+            ) : ( */}
+            <button
+              className="self-center rounded-[38px] bg-[#5DCFFF] space-x-[10px]  m-8 py-[20px] w-[405px] text-white text-[24px]"
+              onClick={(e) => {
+                // if (showRegister) {
+                handleSubmit(e);
+                // }
+              }}
+            >
+              {props.assessment_meron_companion ? (
+                "SAVE"
+              ) : (
+                <>{showRegister ? "REGISTER" : "LOGIN"}</>
+              )}
+            </button>
+            {/* )} */}
             {props.admin ? (
               <button
                 className="self-center rounded-[38px] bg-[#5DCFFF] space-x-[10px]   py-[20px] w-[405px] text-white text-[24px]"

@@ -1,4 +1,5 @@
 const User = require("../models/auth.model");
+const ThoughtDiary = require("../models/ThoughtDiary");
 const { validationResult } = require("express-validator");
 const Code = require("../models/code.model");
 const sgMail = require("@sendgrid/mail");
@@ -6,6 +7,132 @@ const config = require("../config/keys");
 const _ = require("lodash");
 const opencage = require("opencage-api-client");
 sgMail.setApiKey(config.mailKey);
+
+exports.thoughtDiaryAdminController = async (req, res) => {
+  const email = req.params.email;
+
+  await ThoughtDiary.findOne(
+    {
+      email: email,
+    },
+    (err, user) => {
+      if (err || !user) {
+        return res.status(400).json({
+          error: "User does not have Thought Diary yet",
+        });
+      } else {
+        return res.json({
+          formData: user,
+        });
+      }
+    }
+  );
+  // console.log(email);
+};
+
+exports.thoughtDiaryController = async (req, res) => {
+  const { email, formData } = req.body;
+  let presentEmotion;
+  formData[0].presentEmotion.map((item) => {
+    if (item != null) {
+      presentEmotion = item;
+    }
+  });
+  let step1ActivatingEvents = formData[1].step1ActivatingEvents;
+  let step1SelectedAE = formData[2].step1SelectedAE;
+  let step2Other = formData[3].step2Other;
+  let step3Hot = formData[4].step3Hot;
+  let step3Rate = formData[5].step3Rate;
+  let step4Thoughts = formData[6].step4Thoughts;
+  let step5AfterFeelings = formData[7].step5AfterFeelings;
+
+  User.findOne(
+    {
+      email,
+    },
+    async (err, user) => {
+      if (err || !user) {
+        return res.status(400).json({
+          error: "User with that email does not exist",
+        });
+      }
+
+      await ThoughtDiary.findOne(
+        {
+          email: email,
+        },
+        (err12, userHasThoughtDiary) => {
+          if (!userHasThoughtDiary) {
+            console.log("User does not have thought Diary");
+            const td = new ThoughtDiary({
+              email: email,
+              presentEmotion: presentEmotion,
+              step1ActivatingEvents: step1ActivatingEvents,
+              step1SelectedAE: step1SelectedAE,
+              step2Other: step2Other,
+              step3Hot: step3Hot,
+              step3Rate: step3Rate,
+              step4Thoughts: step4Thoughts,
+              step5AfterFeelings: step5AfterFeelings,
+            });
+            td.save((error, thoughtD) => {
+              if (error) {
+                console.log("Save error", error);
+                return res.status(401).json({
+                  errors: error,
+                });
+              } else {
+                return res.json({
+                  success: true,
+                  message: "new ThoughtDiary has been saved",
+                });
+              }
+            });
+          } else {
+            console.log("User has thought Diary");
+            const updatedFields = {
+              presentEmotion: presentEmotion,
+              step1ActivatingEvents: step1ActivatingEvents,
+              step1SelectedAE: step1SelectedAE,
+              step2Other: step2Other,
+              step3Hot: step3Hot,
+              step3Rate: step3Rate,
+              step4Thoughts: step4Thoughts,
+              step5AfterFeelings: step5AfterFeelings,
+            };
+            userHasThoughtDiary = _.extend(userHasThoughtDiary, updatedFields);
+
+            userHasThoughtDiary.save((error, thoughtD) => {
+              if (error) {
+                console.log("Save error", error);
+                return res.status(401).json({
+                  errors: error,
+                });
+              } else {
+                return res.json({
+                  success: true,
+                  message: "ThoughtDiary has been updated",
+                });
+              }
+            });
+          }
+        }
+      );
+      console.log(user);
+    }
+  );
+
+  // console.log(presentEmotion, "presentEmotion");
+  // console.log(formData[1].step1ActivatingEvents, "step1ActivatingEvents");
+  // console.log(formData[2].step1SelectedAE, "step1SelectedAE");
+  // console.log(formData[3].step2Other, "step2Other");
+  // console.log(formData[4].step3Hot[0], "step3Hot");
+  // console.log(formData[5].step3Rate, "step3Rate");
+  // console.log(formData[6].step4Thoughts, "step4Thoughts");
+  // console.log(formData[7].step5AfterFeelings, "step5AfterFeelings");
+  // console.log(email, "email");
+  // console.log(formData, "formData");
+};
 
 exports.fetchAllController = async (req, res) => {
   try {

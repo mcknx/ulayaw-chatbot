@@ -27,7 +27,7 @@ const Choice = (props) => {
             )
           }
           disabled={props.doneAssess}
-          // checked={}
+          checked={props.select}
         />
         {props.choices.structValue.fields.text.stringValue}
       </label>

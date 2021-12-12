@@ -3,12 +3,15 @@ const mongoose = require("mongoose");
 // user schema
 const thoughtDiarySchema = new mongoose.Schema(
   {
-    user_id: { type: String, default: "" },
-    td_a: { type: Array, default: ["sad", "because my dog died"] },
-    td_b: { type: Array, default: ["jksaldka", "ajsldkasjld"] },
-    td_c: { type: Array, default: ["asjkdaklsd", "jasdlkajdkl"] },
-    td_d: { type: Array, default: ["asdjslakdj", "asdajkldklj"] },
-    td_e: { type: Array, default: ["asdjslakdj", "asdajkldklj"] },
+    email: { type: String },
+    presentEmotion: { type: String },
+    step1ActivatingEvents: { type: Array },
+    step1SelectedAE: { type: String },
+    step2Other: { type: Array },
+    step3Hot: { type: Array },
+    step3Rate: { type: Number },
+    step4Thoughts: { type: Array },
+    step5AfterFeelings: { type: Array },
   },
   {
     timestamps: true,

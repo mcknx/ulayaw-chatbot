@@ -7,6 +7,7 @@ import { authenticate, isAuth } from "../helpers/auth";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import Select from "react-select";
+import { Link } from "react-router-dom";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
@@ -28,6 +29,7 @@ const Admin = ({ match }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isUserLoaded, setIsUserLoaded] = useState(false);
   const [showUser, setShowUser] = useState(false);
+  const [showTD, setShowTD] = useState(false);
   const [showCreateCode, setShowCreateCode] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState();
   const [selectedUser, setSelectedUser] = useState();
@@ -111,6 +113,7 @@ const Admin = ({ match }) => {
                     onClick={() => {
                       setShowAdminRoute(false);
                       cookies.remove("adminLogged", { path: "/" });
+                      window.location.reload();
                       // cookies.set("adminLogged", false, { path: "/" });
                       // console.log(!cookies.get("adminLogged"));
 
@@ -118,7 +121,7 @@ const Admin = ({ match }) => {
                     }}
                     className="font-semibold text-gray-800 cursor-pointer"
                   >
-                    Logout
+                    <Link to={"/feedback"}>Logout</Link>
                   </h2>
                   {/* <div className="w-10 h-10 flex-shrink-0 mr-2 sm:mr-3">
                     <img
@@ -255,7 +258,13 @@ const Admin = ({ match }) => {
                               )}
                             </td>
                             <td className="p-2 whitespace-nowrap">
-                              <div className="mx-auto text-center hover:opacity-80 bg-[#5dcfff] cursor-pointer w-[50px] rounded-lg p-1 text-white hover:shadow-lg">
+                              <div
+                                className="mx-auto text-center hover:opacity-80 bg-[#5dcfff] cursor-pointer w-[50px] rounded-lg p-1 text-white hover:shadow-lg"
+                                onClick={() => {
+                                  setShowTD(true);
+                                  setSelectedUser(user);
+                                }}
+                              >
                                 show
                               </div>
                             </td>
@@ -283,6 +292,15 @@ const Admin = ({ match }) => {
           </div>
         </div>
       </div>
+      {showTD ? (
+        <ThoughtDiary
+          user={selectedUser}
+          setShowModal={setShowTD}
+          showModal={showTD}
+        />
+      ) : (
+        ""
+      )}
       {showUser ? (
         <GetUserDetails
           user={selectedUser}
@@ -410,9 +428,9 @@ function GetUserDetails(props) {
     <>
       <div className="left-0 fixed top-0 w-full h-full bg-black bg-opacity-[0.75] ">
         <ToastContainer />
-        <div className="h-full flex flex-col  justify-center align-center">
+        <div className="h-full flex flex-col  justify-center align-center ">
           {/* header */}
-          <div className="w-[600px] rounded-t-[10px] text-[25px] lg:text-[35px] p-[18px] lg:p-[28px]  text-white self-center bg-[#5DCFFF] font-semibold text-center relative">
+          <div className="w-full top-[60px] md:top-[70px] h-[129.5px] md:w-[600px] rounded-t-[10px] text-[25px] lg:text-[35px] p-[18px] lg:p-[28px]  text-white self-center bg-[#5DCFFF] font-semibold text-center relative">
             <button
               className=" text-white px-[13px] py-[8px] absolute top-4  right-4 lg:w-[70px] w-[60px] rounded-[5px] bg-[#2E93BE] text-[14px]"
               onClick={() => {
@@ -432,9 +450,9 @@ function GetUserDetails(props) {
           </div>
 
           {/* body */}
-          <div className="w-[600px] rounded-b-[10px] text-[12px] lg:text-[16px] p-[18px] px-[71px] py-[55px] self-center bg-white justify-center flex flex-col ">
+          <div className=" w-full h-full  2xl:h-[800px] md:w-[600px] rounded-b-[10px] text-[12px] lg:text-[16px] p-[18px] px-[71px] py-[55px] self-center bg-white justify-center flex flex-col ">
             {/* inputs */}
-            <span>
+            <span className="overflow-y-auto mt-[60px]">
               <>
                 {/* first name */}
                 <label>Select Receiver Email</label>
@@ -611,7 +629,7 @@ function CreateCode(props) {
         <ToastContainer />
         <div className="h-full flex flex-col  justify-center align-center">
           {/* header */}
-          <div className="w-[600px] rounded-t-[10px] text-[25px] lg:text-[35px] p-[18px] lg:p-[28px]  text-white self-center bg-[#5DCFFF] font-semibold text-center relative">
+          <div className="w-full md:h-[129.5px] md:w-[600px] mx-auto rounded-t-[10px] text-[25px] lg:text-[35px] p-[18px] lg:p-[28px]  text-white self-center bg-[#5DCFFF] font-semibold text-center relative">
             <button
               className=" text-white px-[13px] py-[8px] absolute top-4  right-4 lg:w-[70px] w-[60px] rounded-[5px] bg-[#2E93BE] text-[14px]"
               onClick={() => {
@@ -630,7 +648,7 @@ function CreateCode(props) {
           </div>
 
           {/* body */}
-          <div className="w-[600px] rounded-b-[10px] text-[12px] lg:text-[16px] p-[18px] px-[71px] py-[55px] self-center bg-white justify-center flex flex-col ">
+          <div className="w-full h-full md:h-[362px] md:w-[600px] mx-auto rounded-b-[10px] text-[12px] lg:text-[16px] p-[18px] px-[71px] py-[55px] self-center bg-white justify-center flex flex-col ">
             {/* inputs */}
             <span>
               <>
@@ -695,4 +713,251 @@ function CreateCode(props) {
   );
 }
 
+function ThoughtDiary(props) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [selectedUser, setSelectedUser] = useState();
+  let presentEmotion;
+  let step1ActivatingEvents;
+  let step1SelectedAE;
+  let step2Other;
+  let step3Hot;
+  let step3Rate;
+  let step4Thoughts;
+  let step5AfterFeelings;
+
+  // console.log(props.user.email);
+  useEffect(async () => {
+    await axios
+      .get(`/api/admin/thoughtDiaryAdmin/${props.user.email}`)
+      .then((res) => {
+        console.log(res);
+        setSelectedUser(res.data.formData);
+        // presentEmotion = res.data.formData.presentEmotion;
+        // step1ActivatingEvents = res.data.formData.step1ActivatingEvents;
+        // step1SelectedAE = res.data.formData.step1SelectedAE;
+        // step2Other = res.data.formData.step2Other;
+        // step3Hot = res.data.formData.step3Hot[0];
+        // step3Rate = res.data.formData.step3Rate;
+        // step4Thoughts = res.data.formData.step4Thoughts;
+        // step5AfterFeelings = res.data.formData.step5AfterFeelings;
+        setIsLoaded(true);
+      })
+      .catch((err) => {});
+  }, [isLoaded]);
+  console.log(selectedUser);
+  function _handleMoodResultGetOtherEmotionAll(item, i) {
+    if (item) {
+      return item;
+    }
+  }
+  return (
+    <div className="overflow-auto left-0 fixed top-0 w-full h-full bg-black bg-opacity-[0.75]">
+      <div className="left-0 top-0  w-full h-full  bg-opacity-[0.60] z-20 mb-6">
+        <div className=" items-center flex justify-center flex-col  xl:w-[1350px] xl:pl-[24px] xl:pt-[26px] h-[1000px]  ">
+          {/* header */}
+          <div>
+            <div className="w-[655px] h-[54px] rounded-t-[15px] text-[20px] lg:text-[24px] p-[18px] lg:pt-[11px] px-[23px] text-white self-center bg-[#49c3f7] font-bold text-center">
+              <p>Thought Diary</p>
+            </div>
+            <button
+              className=" text-white px-[13px] py-[8px] absolute top-4  right-4 lg:w-[70px] w-[60px] rounded-[5px] bg-[#2E93BE] text-[14px]"
+              onClick={() => {
+                props.setShowModal(!props.showModal);
+              }}
+            >
+              Close
+            </button>
+          </div>
+
+          {/* body */}
+          {/* bg-black bg-opacity-[0.75] text-opacity-0  */}
+          <div
+            className={
+              "w-[655px] rounded-b-[15px]  self-center grid grid-cols-2  min-h-[750px] text-[#4CC2F4] text-[20px] font-semibold bg-white"
+            }
+          >
+            {/* A and C */}
+            <div className="w-[327.5px] border-l-4 border-b-4 border-t-4 border-[#86A1AC] rounded-b-[15px]  grid grid-rows-6 max-h-[750px]">
+              {/* section 1 */}
+              <div
+                className={
+                  "border-b-4 border-[#86A1AC] row-span-3 rounded-[15px]"
+                }
+              >
+                <div className=" p-4 break-words ">
+                  <label className="text-[20px] ">A) Activating Event</label>
+                  <div className="flex flex-col leading-none  text-[32px] text-center ">
+                    <label
+                      className="max-w-[300px] max-h-[250px]
+                    text-[16px]"
+                    >
+                      {/* Crying out loud last week */}
+                      {/* {getAdverseStep3} */}
+                      {isLoaded ? selectedUser.step1SelectedAE : "Loading..."}
+                    </label>
+                  </div>
+                </div>
+              </div>
+              {/* section 2 */}
+              <div className={" p-4 row-span-3 rounded-[15px]"}>
+                <label className="text-[20px] ">C) Consequences</label>
+                <div className=" text-center break-words max-w-[300px]">
+                  {/* Present emotion section */}
+                  <label className="flex flex-col leading-none">
+                    <label>
+                      <label className="text-[14px] text-blue-900  font-bold">
+                        present emotion
+                      </label>
+                    </label>
+
+                    <label className="">
+                      {isLoaded ? selectedUser.presentEmotion : "Loading..."}
+                      <span className="text-[50px] leading-[0px]">.</span>
+                      {/* {count === 1 ? (
+                      <span className="text-[50px] leading-[0px]">.</span>
+                    ) : (
+                      ""
+                    )} */}
+
+                      {/* Sad<span className="text-[50px] leading-[0px]">,</span> Low
+                    feeling<span className="text-[50px] leading-[0px]">.</span> */}
+                    </label>
+                  </label>
+
+                  {/* Hot emotion section */}
+                  <label className="flex flex-col leading-none">
+                    <label>
+                      <label className="text-[14px] text-blue-900  font-bold">
+                        hot emotion: rated{" "}
+                        {isLoaded ? selectedUser.step3Rate : "Loading..."}/100
+                      </label>
+                    </label>
+                    {/* <label className="text-[14px] text-blue-900  font-bold">
+                    hot emotion: rated {getHotEmotionRate}/10
+                  </label> */}
+                    <label className="">
+                      {isLoaded ? selectedUser.step3Hot[0] : "Loading..."}
+                      <span className="text-[50px] leading-[0px]">.</span>
+                      {/* {count === 1 ? (
+                      <span className="text-[50px] leading-[0px]">.</span>
+                    ) : (
+                      ""
+                    )} */}
+
+                      {/* Sad<span className="text-[50px] leading-[0px]">,</span> Low
+                    feeling<span className="text-[50px] leading-[0px]">.</span> */}
+                    </label>
+                  </label>
+
+                  {/* Other emotions section */}
+                  <label className="pt-10 flex flex-col leading-none">
+                    <label>
+                      <label className="text-[14px] text-blue-900  font-bold">
+                        other emotions you feel
+                      </label>
+                    </label>
+
+                    <label className="">
+                      {isLoaded
+                        ? selectedUser.step2Other.map((item, i) => {
+                            return (
+                              <>
+                                {i != 0 ? (
+                                  <span className="text-[50px] leading-[0px]">
+                                    ,
+                                  </span>
+                                ) : (
+                                  ""
+                                )}
+                                {_handleMoodResultGetOtherEmotionAll(item, i)}
+                              </>
+                            );
+                          })
+                        : "Loading..."}
+                      <span className="text-[50px] leading-[0px]">.</span>
+                    </label>
+                  </label>
+                </div>
+              </div>
+            </div>
+            {/* B */}
+            <div className="w-[327.5px] rounded-b-[15px] border-l-4 border-r-4 border-b-4 border-t-4 border-[#86A1AC] grid grid-rows-6 ">
+              {/* section 1 */}
+              <div
+                className={
+                  "pb-4 p-4 row-span-4 border-b-4 border-[#86A1AC] max-h-[750px]"
+                }
+              >
+                <label className="text-[20px] ">B) Beliefs</label>
+                <div className="text-center break-words max-w-[290px]">
+                  {/* hot thought */}
+                  {/* {continueThoughtDiary ? ( */}
+                  <label className="flex flex-col leading-none">
+                    <label>
+                      {/* <label className="text-[14px] text-blue-900  font-bold">
+                          the hot thought: rated {getHotThoughtRate}/100
+                        </label> */}
+                    </label>
+
+                    {/* <label className=""> */}
+                    {/* {getHotThoughtB[0]} */}
+                    {/* I'm always going to feel depressed
+                    <span className="text-[50px] leading-[0px]">.</span> */}
+                    {/* </label> */}
+                  </label>
+                  {/* ) : (
+                    ""
+                  )} */}
+
+                  {/* other thoughts */}
+                  <label className="flex flex-col leading-none pt-10">
+                    <label className="text-[14px] text-blue-900  font-bold">
+                      your thoughts
+                    </label>
+
+                    {/* other thoughts instances */}
+                    <div className="leading-normal flex flex-col w-full">
+                      <label className="">
+                        {isLoaded
+                          ? selectedUser.step4Thoughts.map((item, i) => {
+                              return (
+                                <>
+                                  {i != 0 ? (
+                                    <span className="text-[50px] leading-[0px]">
+                                      ,
+                                    </span>
+                                  ) : (
+                                    ""
+                                  )}
+                                  {item}
+                                </>
+                              );
+                            })
+                          : "Loading..."}
+
+                        <span className="text-[50px] leading-[0px]">.</span>
+                      </label>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* section 2 */}
+
+              <div
+                className={
+                  " text-center break-words max-w-[330px]  pt-2 pb-4 px-4 row-span-2"
+                }
+              >
+                {/* The hot thought Unhelpful Thinking Styles */}
+
+                {/* Other Unhelpful Thinking Styles  */}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 export default Admin;
