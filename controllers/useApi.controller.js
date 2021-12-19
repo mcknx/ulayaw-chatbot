@@ -168,7 +168,7 @@ exports.understandUserInputController = async (req, res) => {
               "If everyone thinks you're worthless, then maybe you need to find new people to hang out with.Seriously, the social context in which a person lives is a big influence in self-esteem.Otherwise, you can go round and round trying to understand why you're not worthless, then go back to the same crowd and be knocked down again.There are many inspirational messages you can find in social media.  Maybe read some of the ones which state that no person is worthless, and that everyone has a good purpose to their life.Also, since our culture is so saturated with the belief that if someone doesn't feel good about themselves that this is somehow terrible.Bad feelings are part of living.  They are the motivation to remove ourselves from situations and relationships which do us more harm than good.Bad feelings do feel terrible.   Your feeling of worthlessness may be good in the sense of motivating you to find out that you are much better than your feelings today.",
             ],
           ],
-          max_tokens: 20,
+          max_tokens: 55,
           stop: ["\n", "<|endoftext|>"],
         });
       };
