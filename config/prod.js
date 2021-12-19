@@ -9,4 +9,5 @@ module.exports = {
   mailKey: process.env.MAIL_KEY,
   emailFrom: process.env.EMAIL_FROM,
   jwtAccountActivation: process.env.JWT_ACCOUNT_ACTIVATION,
+  OPENAI_API_KEY: process.env.OPENAI_API_KEY,
 };
