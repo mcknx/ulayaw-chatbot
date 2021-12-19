@@ -25,6 +25,7 @@ var tensify = require("tensify");
 
 exports.googleTranslate = async (req, res) => {
   const inputData = req.params.words;
+
   console.log(inputData);
 
   // @paiva/translation-google
@@ -51,43 +52,16 @@ exports.googleTranslate = async (req, res) => {
 };
 
 exports.understandUserInputController = async (req, res) => {
+  const OpenAI = require("openai-api");
+
+  // Load your key from an environment variable or secret management service
+  // (do not include your key directly in your code)
+  // const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+  const OPENAI_API_KEY = "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";
+
+  const openai = new OpenAI(OPENAI_API_KEY);
+  const emotionData = req.params.emotion;
   const inputData = req.params.words;
-  // console.log(inputData);
-  // const inputData = "Ako ay napakalungkot ngayon";
-  // const inputData = "kahapon noong nasa kwarto ako gumagawa aralin";
-
-  let showExtension = false;
-  // let extension = "nagsimula akong maging ";
-  // let extensionMood = "malungkot ";
-
-  // inputData = extension + extensionMood + inputData;
-  // e detect ang (adverb) where, when ug how
-  //
-  // let inputData =
-  //   "nagsimula akong maging malunkgot sa palikoran kahapon noong akoy naninigarilyo dahil naalala ko ang aking kasintahan";
-
-  // good examples ----------------------------------------------------------------------------------------------------------------------------------------
-  // when, where, who
-  // let inputData = "nagsimula akong kabahan kahapon habang kaharap si maam";
-  // let inputData = "nagsimula akong magalit sa bahay kahapon habang katabi si mckeen";
-  // let inputData = "nagsimula akong maging malungkot kahapon habang kausap si mckeen";
-  // nagsimula akong magalit kahapon habang kausap si mister
-  // let inputData = "nagsimula akong maging malungkot kahapon";
-
-  // when
-  // -------------------------------------------------------
-  // nagalit ako kahapon or ngayon or kanina
-  // galit ako kahapon or ngayon or kanina
-
-  // when, who
-  // -------------------------------------------------------
-  // nagalit ako kahapon kay mckeen
-  // galit ako kahapon kay mckeen
-
-  // where
-  // -------------------------------------------------------
-  // nagalit ako sa bahay
-
   // let inputData = "nagsimula akong magalit sa kanya kanina";
   // let inputData = "nagsimula akong nagalit sa kanya kanina";
   // let inputData =
@@ -100,6 +74,7 @@ exports.understandUserInputController = async (req, res) => {
   //   "nagsimula akong hindi mapakali dahil sa capstone dahil kay maam";
 
   console.log(inputData);
+  console.log(emotionData);
   let translated;
 
   // @paiva/translation-google
@@ -107,429 +82,215 @@ exports.understandUserInputController = async (req, res) => {
     from: "tl",
     to: "en",
   })
-    .then((res) => {
-      // console.log("@paiva/translation-google");
-      // console.log(res.text, "res.text");
-      translated = res.text;
-      // return res.json({
-      //   success: true,
-      //   data: res.text,
-      // });
-      // return res.text;
+    .then(async (res1) => {
+      // Completion API call
+      const topic = async () => {
+        return await openai.complete({
+          engine: "davinci",
+          // prompt:
+          //   "The following is a list user inputs and the categories they fall into\n\nAt school, it feels like I've lost all my friends: loss of friends, losing a friend/s, friend problem\nI've been really weird with my sleeping patterns: sleep problems, sleep issues\nI'm going through some things with my feelings and myself: self-esteem, self-confidence, self-image\nAt cemetery, I visited my dad who lost his life: death of a loved one, death of a family member\nI feel like I am not at a good state of mind: mental health, mental illness\nI'm very unsettled in my soul. I'm not happy with myself or the decisions I make, which makes me not happy with anyone else: self-esteem, self-confidence, self-image\nI feel like a failure most of my days. I don't feel like I'm good at anything anymore. I feel like less of a person: self-esteem, self-confidence, self-image\n",
+          prompt: `The following is a list of user inputs and the emotional categories to which they belong\n\nAt school, it feels like I've lost all my friends: loss of friends, losing a friend/s, friend problem\nI've been really weird with my sleeping patterns: sleep problems, sleep issues\nI'm going through some things with my feelings and myself: self-esteem, self-confidence, self-image\nAt cemetery, I visited my dad who lost his life: death of a loved one, death of a family member\nI feel like I am not at a good state of mind: mental health, mental illness\nI'm very unsettled in my soul. I'm not happy with myself or the decisions I make, which makes me not happy with anyone else: self-esteem, self-confidence, self-image\nI feel like a failure most of my days. I don't feel like I'm good at anything anymore. I feel like less of a person: self-esteem, self-confidence, self-image\nI started to get restless because of the capstone because of maam: restless about capstone, capstone class\nI started to get restless because of our project: restless about project, project class\n${emotionData}, ${res1.text}:`,
+
+          maxTokens: 60,
+          temperature: 0,
+          topP: 1,
+          presencePenalty: 0,
+          frequencyPenalty: 0.89,
+
+          stop: ["\n"],
+        });
+
+        // console.log(generate_essay.data);
+      };
+
+      const topicRes = await topic();
+
+      const second_person = async () => {
+        return await openai.complete({
+          engine: "davinci",
+          prompt: `First-person to second-person\n\nInput: I decided to make a movie about Ada Lovelace.\nOutput: Okay, I've learned that you adore Ada Lovelace and have decided to make a movie about her.\n\nInput: My biggest fear was that I wasn't able to write the story adequately.\nOutput: Okay, I see you're worried. Your main concern seems to be that you won't be able to write a good enough story.\n\nInput: i started to feel nervous in the toilet yesterday when i was smoking because i remembered my boyfriend\nOutput: Okay, I've learned that you recently started to feel nervous in the toilet when you were smoking. You mentioned that this was because you remembered your boyfriend.\n\nInput: When I'm in large crowds I get angry and I just can't deal with people. I don't really like other people (I prefer animals) they make me nervous and scared.\nOutput: Okay, I've learned that you get angry and can't deal with people in large crowds. You prefer animals to people.\n\nInput: I'm going through some things with my feelings and myself. I barely sleep and I do nothing but think about how I'm worthless and how I shouldn't be here.\nOutput: Okay, I've learned that you're going through some things with your feelings and yourself. You don't sleep and you think about how you're worthless and how you shouldn't be here.\n\nInput: At school, it feels like I've lost all my friends\nOutput: Okay, I've learned that you feel like you've lost all your friends at school.\n\nInput: At cemetery, I visited my dad who lost his life\nOutput: Okay, I've learned that you visited your dad at a cemetery.\n\nInput: ${res1.text}\nOutput:`,
+
+          maxTokens: 60,
+          temperature: 0.3,
+          topP: 1,
+          presencePenalty: 0,
+          frequencyPenalty: 0,
+
+          stop: ["\n"],
+        });
+
+        // console.log(generate_essay.data);
+      };
+
+      const second_personRes = await second_person();
+
+      const generate_essay = async () => {
+        return await openai.complete({
+          engine: "davinci",
+          prompt: `Create an essay about loss of friends, losing a friend/s, friend problem and suggest a solution: Losing a friend is one of the most painful experiences in life, and it can be even more difficult to deal with when you have lost a friend to death. When you lose someone close to you, it can leave a hole in your heart that will never heal.\n\nCreate an essay about sleep problems, sleep issues and suggest a solution: Sleep problems are one of the most common problems faced by people today. Sleep disorders can be caused by a number of factors, including stress, anxiety, depression and other physical or psychological factors.\n\nCreate an essay about self-esteem, self-confidence, self-image and suggest a solution: Self-esteem is the value that a person places on himself. It is important to have good self-esteem, because it helps you to feel good about yourself and boosts your confidence.\n\nCreate an essay about death of a loved one, death of a family member and suggest a solution: Death is one of the most painful experiences that anyone can go through. When you lose a loved one, it can leave you feeling empty and alone.\n\nCreate an essay about stress, anxiety and suggest a solution: Stress is one of the most common problems faced by people today. Stress can be caused by a number of factors, including work, school, family and other physical or psychological factors.\n\nCreate an essay about ${emotionData}, ${topicRes.data.choices[0].text} and suggest a solution:`,
+          maxTokens: 60,
+          temperature: 0.5,
+          topP: 1,
+          presencePenalty: 0,
+          frequencyPenalty: 0.81,
+          stop: ["\n"],
+        });
+      };
+
+      const generate_essayRes = await generate_essay();
+
+      const generate_answer = async () => {
+        return await openai.answers({
+          documents: [
+            "Have you used meditation or hypnosis? Relaxing the mind and connecting with your true self is a great way to calm your thoughts and get to peace and calm. Hypnosis and meditation have helped a lot of people with anxiety and depression. Google hypnotherapists near me or write for a while about what is going on.",
+            "Answers about our inner lives are most successfully reached from a sense of feeling grounded in oneself.First step is to accept your nervousness and restless sleep.  As often as possible, sleep during daytimes in order for your body to catch up on its need for rest.Accept too about feeling down.  It is normal to feel down once in a while.  From this place of self-acceptance, trust any answers which come up to your mind.  Often answers about complicated topics come in small pieces, not all at once as a whole unit.Also, your description about panic attacks is also completely normal.   They often arise unrelated to particular conditions at a given moment.  They are a healthy symptom your body is trying to expel bad feelings and does this by having the anxiety erupt at times.So, self-acceptance, tolerance of being on a process of clearing out worn out emotional clutter, and sleep at odd times if possible, are all ways to stabilize yourself, which will also feel calm and good!",
+          ],
+          question: res1.text,
+          search_model: "davinci",
+          model: "davinci",
+          examples_context:
+            "Answers about our inner lives are most successfully reached from a sense of feeling grounded in oneself.First step is to accept your nervousness and restless sleep.  As often as possible, sleep during daytimes in order for your body to catch up on its need for rest.Accept too about feeling down.  It is normal to feel down once in a while.  From this place of self-acceptance, trust any answers which come up to your mind.  Often answers about complicated topics come in small pieces, not all at once as a whole unit.Also, your description about panic attacks is also completely normal.   They often arise unrelated to particular conditions at a given moment.  They are a healthy symptom your body is trying to expel bad feelings and does this by having the anxiety erupt at times.So, self-acceptance, tolerance of being on a process of clearing out worn out emotional clutter, and sleep at odd times if possible, are all ways to stabilize yourself, which will also feel calm and good!",
+          examples: [
+            [
+              "I'm going through some things with my feelings and myself. I barely sleep and I do nothing but think about how I'm worthless and how I shouldn't be here. I've never tried or contemplated suicide. I've always wanted to fix my issues, but I never get around to it. How can I change my feeling of being worthless to everyone?",
+              "If everyone thinks you're worthless, then maybe you need to find new people to hang out with.Seriously, the social context in which a person lives is a big influence in self-esteem.Otherwise, you can go round and round trying to understand why you're not worthless, then go back to the same crowd and be knocked down again.There are many inspirational messages you can find in social media.  Maybe read some of the ones which state that no person is worthless, and that everyone has a good purpose to their life.Also, since our culture is so saturated with the belief that if someone doesn't feel good about themselves that this is somehow terrible.Bad feelings are part of living.  They are the motivation to remove ourselves from situations and relationships which do us more harm than good.Bad feelings do feel terrible.   Your feeling of worthlessness may be good in the sense of motivating you to find out that you are much better than your feelings today.",
+            ],
+          ],
+          max_tokens: 60,
+          stop: ["\n", "<|endoftext|>"],
+        });
+      };
+
+      const generate_answerRes = await generate_answer();
+
+      // Translate 1
+      const filTopic = async () => {
+        return await translate(topicRes.data.choices[0].text, {
+          from: "en",
+          to: "tl",
+        })
+          .then((r) => {
+            // console.log("@paiva/translation-google");
+            // console.log(r.text, "res.text");
+            // return res.json({
+            //   success: true,
+            //   data: r.text,
+            // });
+            return r.text;
+          })
+          .catch((err) => {
+            console.error(err);
+            // return res.json({
+            //   errors: errorHandler(err),
+            // });
+          });
+      };
+
+      // Translate 2
+      const filSecondPerson = async () => {
+        return await translate(second_personRes.data.choices[0].text, {
+          from: "en",
+          to: "tl",
+        })
+          .then((r) => {
+            // console.log("@paiva/translation-google");
+            // console.log(r.text, "res.text");
+            // return res.json({
+            //   success: true,
+            //   data: r.text,
+            // });
+            return r.text;
+          })
+          .catch((err) => {
+            console.error(err);
+            // return res.json({
+            //   errors: errorHandler(err),
+            // });
+          });
+      };
+
+      // Translate 3
+      const filEssay = async () => {
+        return await translate(generate_essayRes.data.choices[0].text, {
+          from: "en",
+          to: "tl",
+        })
+          .then((r) => {
+            // console.log("@paiva/translation-google");
+            // console.log(r.text, "res.text");
+            // return res.json({
+            //   success: true,
+            //   data: r.text,
+            // });
+            return r.text;
+          })
+          .catch((err) => {
+            console.error(err);
+            // return res.json({
+            //   errors: errorHandler(err),
+            // });
+          });
+      };
+
+      // Translate 4
+      const filAnswers = async () => {
+        return await translate(generate_answerRes.data.answers, {
+          from: "en",
+          to: "tl",
+        })
+          .then((r) => {
+            // console.log("@paiva/translation-google");
+            // console.log(r.text, "res.text");
+            // return res.json({
+            //   success: true,
+            //   data: r.text,
+            // });
+            return r.text;
+          })
+          .catch((err) => {
+            console.error(err);
+            // return res.json({
+            //   errors: errorHandler(err),
+            // });
+          });
+      };
+
+      const awaitfilTopic = await filTopic();
+      const awaitfilSecondPerson = await filSecondPerson();
+      const awaitfilEssay = await filEssay();
+      const awaitfilAnswers = await filAnswers();
+      // Orig Query English Converted
+      console.log(res1.text);
+      // Topic
+      console.log(topicRes.data.choices[0].text);
+      // Secondary Person Explanation
+      console.log(second_personRes.data.choices[0].text);
+      // Essay about the topic
+      console.log(generate_essayRes.data.choices[0].text);
+      // Answer
+      console.log(generate_answerRes.data.answers);
+      // Translate to tagalog
+      console.log(awaitfilTopic);
+      console.log(awaitfilSecondPerson);
+      console.log(awaitfilEssay);
+      console.log(awaitfilAnswers);
+      return res.json({
+        success: true,
+        filTopic: awaitfilTopic,
+        filSecondPerson: awaitfilSecondPerson,
+        filEssay: awaitfilEssay,
+        filAnswers: awaitfilAnswers,
+        topic: topicRes.data.choices[0].text,
+        second_person: second_personRes.data.choices[0].text,
+        generate_essay: generate_essayRes.data.choices[0].text,
+        generate_answer: generate_answerRes.data.answers[0],
+      });
     })
     .catch((err) => {
-      console.error(err);
-      // return res.json({
-      //   errors: errorHandler(err),
-      // });
-    });
-  // niaging week sukad pag announce sa deadline sa capstone
-
-  // Simple
-  // Ang buhay mismo ay ang pinaka kahanga-hangang fairy tale.
-  // Ang tunay na kaluwalhatian ay nagmumula sa tahimik na pananakop sa ating sarili.
-
-  // Compound
-  // Maaaring mahirap sa una, ngunit ang lahat ay mahirap sa una.
-  // Alam nating nagsi sinungaling sila, alam nilang nagsisinungaling sila, alam nilang nagsisinungaling sila, alam nating alam nating nagsisinungaling sila, pero nagsisinungaling pa rin sila.
-
-  // const StanfordCoreNLPClient = require("corenlp-client");
-  // const client = new StanfordCoreNLPClient(
-  //   "https://corenlp.run",
-  //   "tokenize,ssplit,parse,pos"
-  // );
-
-  // JSON.stringify(result, null, 2)
-
-  // Other containers
-  let rootWordIndex;
-  let rootWordPrevCon = [];
-  let rootWordNextCon = [];
-  let basicDep = [];
-  let posTagCont = [];
-
-  // BasicDEP containers
-  // https://stackoverflow.com/questions/50431155/whats-the-tags-meaning-of-stanford-dependency-parser3-9-1
-
-  // https://wiki.opencog.org/w/Dependency_relations
-
-  // https://downloads.cs.stanford.edu/nlp/software/dependencies_manual.pdf
-  // https://universaldependencies.org/u/dep/
-  let rootWord = [];
-  let nsubj = [];
-  let acl = [];
-  let acl_relcl = [];
-  let advcl = [];
-  let advmod = [];
-  let advmod_emph = [];
-  let advmod_lmod = [];
-  let amod = [];
-  let appos = [];
-  let aux = [];
-  let auxpass = [];
-  let case1 = [];
-  let cc = [];
-  let cc_preconj = [];
-  let ccomp = [];
-  let clf = [];
-
-  let compound = [];
-  let compound_lvc = [];
-  let compound_prt = [];
-  let compound_redup = [];
-  let compound_svc = [];
-  let conj = [];
-  let cop = [];
-  let csubj = [];
-  let csubjpass = [];
-  let dep = [];
-  let det_numgov = [];
-  let det_nummod = [];
-  let det_poss = [];
-  let discourse = [];
-  let dislocated = [];
-  // let dobj = [];
-  let expl = [];
-  let expl_impers = [];
-  let expl_pass = [];
-  let expl_pv = [];
-  // let foreign = [];
-  let fixed = [];
-  let flat = [];
-  let flat_foreign = [];
-  let flat_name = [];
-  let goeswith = [];
-  let iobj = [];
-  let list = [];
-  let mark = [];
-  // let mwe = [];
-  // let name = [];
-  // let neg = [];
-  let nmod = [];
-  // let nmod_npmod = [];
-  let nmod_poss = [];
-  let nmod_tmod = [];
-  let nsubjpass = [];
-  let nummod = [];
-  let nummod_gov = [];
-  let obj = [];
-  let obl = [];
-  let obl_agent = [];
-  let obl_arg = [];
-  let obl_lmod = [];
-  let obl_tmod = [];
-  let orphan = [];
-  let parataxis = [];
-  let punct = [];
-  // let remnant = [];
-  let reparandum = [];
-  let root = [];
-  let vocative = [];
-  let xcomp = [];
-
-  // POS containers
-  // https://stackoverflow.com/questions/1833252/java-stanford-nlp-part-of-speech-labels
-  let verb = [];
-
-  //   sentiment
-  var sentiment = new Sentiment();
-  var resultSentiment = sentiment.analyze(translated);
-
-  console.dir(resultSentiment); // Score: -2, Comparative: -0.666
-
-  //   corenlp
-  const StanfordCoreNLPClient = require("corenlp-client");
-  // http://localhost:9000
-  const client = new StanfordCoreNLPClient(
-    "https://corenlp.run",
-    "tokenize,ssplit,parse,pos"
-  );
-  const annotatedText = await client
-    .annotate(translated)
-    // .annotate("I am a bad person")
-    .then((result) => {
-      // console.log(result.sentences[0].basicDependencies.length);
-      basicDep = result.sentences[0].basicDependencies;
-      posTagCont = result.sentences[0].tokens;
-
-      result.sentences[0].basicDependencies.map((x) => {
-        if (x.dep === "ROOT") {
-          rootWord = x;
-        }
-        _handlePushContainer(x.dep, "acl", acl, x);
-        _handlePushContainer(x.dep, "acl:relcl", acl_relcl, x);
-        _handlePushContainer(x.dep, "advcl", advcl, x);
-        _handlePushContainer(x.dep, "advmod", advmod, x);
-        _handlePushContainer(x.dep, "advmod:emph", advmod_emph, x);
-        _handlePushContainer(x.dep, "advmod:lmod", advmod_lmod, x);
-        _handlePushContainer(x.dep, "amod", amod, x);
-        _handlePushContainer(x.dep, "appos", appos, x);
-        _handlePushContainer(x.dep, "aux", aux, x);
-        _handlePushContainer(x.dep, "auxpass", auxpass, x);
-        _handlePushContainer(x.dep, "case1", case1, x);
-        _handlePushContainer(x.dep, "cc", cc, x);
-        _handlePushContainer(x.dep, "cc:preconj", cc_preconj, x);
-        _handlePushContainer(x.dep, "ccomp", ccomp, x);
-        _handlePushContainer(x.dep, "clf", clf, x);
-        _handlePushContainer(x.dep, "compound", compound, x);
-        _handlePushContainer(x.dep, "compound:lvc", compound_lvc, x);
-        _handlePushContainer(x.dep, "compound:prt", compound_prt, x);
-        _handlePushContainer(x.dep, "compound:redup", compound_redup, x);
-        _handlePushContainer(x.dep, "compound:svc", compound_svc, x);
-        _handlePushContainer(x.dep, "conj", conj, x);
-        _handlePushContainer(x.dep, "cop", cop, x);
-        _handlePushContainer(x.dep, "csubj", csubj, x);
-        _handlePushContainer(x.dep, "csubjpass", csubjpass, x);
-        _handlePushContainer(x.dep, "dep", dep, x);
-        _handlePushContainer(x.dep, "det:numgov", det_numgov, x);
-        _handlePushContainer(x.dep, "det:nummod", det_nummod, x);
-        _handlePushContainer(x.dep, "det:poss", det_poss, x);
-        _handlePushContainer(x.dep, "discourse", discourse, x);
-        _handlePushContainer(x.dep, "dislocated", dislocated, x);
-        _handlePushContainer(x.dep, "expl", expl, x);
-        _handlePushContainer(x.dep, "expl:impers", expl_impers, x);
-        _handlePushContainer(x.dep, "expl:pass", expl_pass, x);
-        _handlePushContainer(x.dep, "expl:pv", expl_pv, x);
-        _handlePushContainer(x.dep, "fixe:", fixed, x);
-        _handlePushContainer(x.dep, "flat", flat, x);
-        _handlePushContainer(x.dep, "flat:foreign", flat_foreign, x);
-        _handlePushContainer(x.dep, "flat:name", flat_name, x);
-        _handlePushContainer(x.dep, "goeswith", goeswith, x);
-        _handlePushContainer(x.dep, "iobj", iobj, x);
-        _handlePushContainer(x.dep, "list", list, x);
-        _handlePushContainer(x.dep, "mark", mark, x);
-        _handlePushContainer(x.dep, "nmod", nmod, x);
-        _handlePushContainer(x.dep, "nmod:poss", nmod_poss, x);
-        _handlePushContainer(x.dep, "nmod:tmod", nmod_tmod, x);
-        _handlePushContainer(x.dep, "nsubj", nsubj, x);
-        _handlePushContainer(x.dep, "nsubjpass", nsubjpass, x);
-        _handlePushContainer(x.dep, "nummod", nummod, x);
-        _handlePushContainer(x.dep, "nummod_gov", nummod_gov, x);
-        _handlePushContainer(x.dep, "obj", obj, x);
-        _handlePushContainer(x.dep, "obl", obl, x);
-        _handlePushContainer(x.dep, "obl:agent", obl_agent, x);
-        _handlePushContainer(x.dep, "obl:arg", obl_arg, x);
-        _handlePushContainer(x.dep, "obl:lmod", obl_lmod, x);
-        _handlePushContainer(x.dep, "obl:tmod", obl_tmod, x);
-        _handlePushContainer(x.dep, "orphan", orphan, x);
-        _handlePushContainer(x.dep, "parataxis", parataxis, x);
-        _handlePushContainer(x.dep, "punct", punct, x);
-        _handlePushContainer(x.dep, "reparandum", reparandum, x);
-        _handlePushContainer(x.dep, "root", root, x);
-        _handlePushContainer(x.dep, "vocative", vocative, x);
-        _handlePushContainer(x.dep, "xcomp", xcomp, x);
+      // console.error(err);
+      return res.json({
+        error: "Server Error",
       });
-      result.sentences[0].tokens.map((x) => {
-        // getting the verbs
-        if (
-          x.pos === "VBG" ||
-          x.pos === "VBD" ||
-          x.pos === "VBN" ||
-          x.pos === "VBG" ||
-          x.pos === "VBP" ||
-          x.pos === "VBZ"
-        ) {
-          if (!verb.includes(x)) {
-            verb.push(x);
-          }
-        }
-      });
-      return result;
     });
-
-  //   return [
-  //     // "annotatedText",
-  //     // annotatedText,
-  //     "translated",
-  //     translated,
-  //     "resultSentiment",
-  //     resultSentiment,
-  //   ];
-  posTagCont = posTagCont.map((item) => {
-    return {
-      index: item.index,
-      pos: item.pos,
-      word: item.word,
-      originWord: item.originalText,
-    };
-  });
-  console.log(
-    // "posTagCont",
-    // posTagCont,
-    // "basicDep",
-    // basicDep,
-    "translated",
-    translated
-  );
-  console.log("resultSentiment", resultSentiment);
-  console.log("posTagCont", posTagCont, "basicDep", basicDep);
-
-  let tagalogResponse;
-
-  // if (resultSentiment.positive.length != 0) {
-  //   tagalogResponse = "I see that must be a good " + basicDep[0].dependentGloss;
-  //   console.log("I see that must be a good ", basicDep[0].dependentGloss);
-  // }
-
-  // if (resultSentiment.negative.length != 0) {
-  //   tagalogResponse = "I see that must be a bad " + basicDep[0].dependentGloss;
-  //   console.log("I see that must be a bad ", basicDep[0].dependentGloss);
-  // }
-
-  // console.log(
-  //   "So you feel ",
-  //   // resultSentiment.negative[0],
-  //   posTagCont.map((tag) => {
-  //     return tag.pos === "JJ" ? tag.word : "";
-  //   }),
-  //   posTagCont.map((tag) => {
-  //     return tag.pos === "RB" ? tag.word : "";
-  //   }),
-  //   ", is there anything else?"
-  // );
-
-  let where = false;
-  let when = false;
-  let who = false;
-  let rootAns;
-  let rootAnsMood;
-
-  basicDep.map((item) => {
-    // if (item.dep === "ROOT") {
-    //   rootWord = item.dep;
-    // }
-
-    // when case
-    if (when === false) {
-      if (item.dep === "obl:tmod" || item.dep === "advmod") {
-        posTagCont.map((posItem) => {
-          // posItem.pos === "NN" &&
-          if (posItem.word === item.dependentGloss) {
-            // console.log(posItem.index, "361");
-            when = posItem.word;
-            rootAns = item.governorGloss;
-            rootAnsMood = posTagCont[item.governor].word;
-          }
-          // if only Adverb (ngayon lang) (kahapon lang)
-          // if (posItem.word === item.dependentGloss) {
-          //   // console.log(posItem.index, "361");
-          //   when = posItem.word;
-          //   rootAns = item.governorGloss;
-          //   rootAnsMood = posTagCont[item.governor].word;
-          // }
-        });
-      }
-    }
-
-    // where case
-    if (where === false) {
-      if (item.dep === "advcl" || item.dep === "obl") {
-        where = item.dependentGloss;
-
-        // console.log(item.dep, item.dependentGloss, item.governorGloss);
-        posTagCont.map((posItem) => {
-          if (posItem.word === item.governorGloss) {
-            // where = posItem.word;
-            console.log(posItem.index, "377");
-            who = posTagCont[item.dependent].word;
-            rootAns = item.governorGloss;
-            rootAnsMood = posTagCont[item.governor].word;
-          }
-        });
-      }
-    }
-  });
-
-  // tagalogResponse =
-  //   "You " +
-  //   " " +
-  //   rootAns +
-  //   " " +
-  //   rootAnsMood +
-  //   " " +
-  //   when +
-  //   " " +
-  //   "at" +
-  //   " " +
-  //   where +
-  //   " " +
-  //   `${who !== false ? who : ""}`;
-  // if (showExtension) {
-  //   tagalogResponse =
-  //     "You" +
-  //     rootAns +
-  //     rootAnsMood +
-  //     when +
-  //     "at" +
-  //     where +
-  //     " " +
-  //     `${who !== false ? who + "." : "."}` +
-  //     (when === "yesterday"
-  //       ? "You're still holding on to that mood, and i feel you."
-  //       : "");
-  // }
-  // console.log(
-  //   "You",
-  //   rootAns,
-  //   rootAnsMood,
-  //   when,
-  //   "at",
-  //   where,
-  //   `${who !== false ? who : ""}`
-  // );
-  console.log("when:", when);
-  console.log("where:", where);
-  console.log("who:", who);
-  console.log("You're still holding on to that mood, and i feel you");
-  tagalogResponse =
-    "You " +
-    " " +
-    (rootAns === false ? "?" : rootAns) +
-    " " +
-    (rootAnsMood === false ? "?" : rootAnsMood) +
-    " " +
-    (when === false ? "?" : when) +
-    " " +
-    "at" +
-    " " +
-    (where === false ? "?" : where) +
-    " " +
-    `${who !== false ? who : ""}` +
-    ". " +
-    (when === "yesterday"
-      ? "You're still holding on to that mood, and i feel you."
-      : "") +
-    (when === "today"
-      ? "Your mood still significant to you, Let's try to discuss it."
-      : "") +
-    (when === "earlier" || when === "recently" || when === "just now"
-      ? "I feel you, and I'm here to help you."
-      : "");
-
-  let tagalogResponseResult;
-  return await translate(tagalogResponse, {
-    from: "en",
-    to: "tl",
-  }).then((r) => {
-    // console.log("@paiva/translation-google");
-
-    tagalogResponseResult = r.text;
-
-    return res.json({
-      success: true,
-      fil: r.text,
-      eng: tagalogResponse,
-    });
-    // console.log(tagalogResponseResult, "tagalogResponseResult");
-  });
-  // console.log(tagalogResponseResult, "tagalogResponseResult2");
-
-  // Case(PRP);
-  // return [tagalogResponseResult];
+  // console.log(translated);
 };
-function _handlePushContainer(val1, val2, arr, x) {
-  if (val1 === val2) {
-    return arr.push(x);
-  }
-  // return false;
-}

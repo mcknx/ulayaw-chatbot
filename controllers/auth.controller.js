@@ -65,7 +65,7 @@ exports.registerController = (req, res) => {
       },
       config.jwtAccountActivation,
       {
-        expiresIn: "5m",
+        expiresIn: "3600m",
       }
     );
 

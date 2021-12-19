@@ -64,6 +64,7 @@
     "mongoose": "^5.13.13",
     "morgan": "^1.10.0",
     "node-code-generator": "^1.0.3",
+    "openai-api": "^1.2.6",
     "opencage-api-client": "^1.0.0",
     "react-facebook-login": "^4.1.1",
     "react-hot-toast": "^2.1.1",

@@ -10,7 +10,7 @@ const {
 
 // router.get("/user/:id", requireSignin, readController);
 router.get("/useApi/translate/:words", googleTranslate);
-router.get("/useApi/understand/:words", understandUserInputController);
+router.get("/useApi/understand/:words/:emotion", understandUserInputController);
 // router.post("/useApi/showPDF", showPDFController);
 // router.post("/useApi/understand", understandUserInputController);
 

@@ -523,6 +523,8 @@ function Chatbot(props) {
         // setShowChatBox(false)
       } else if (getMoodStep1) {
         if (e.target.value !== "") {
+          setShowChatBox(false);
+
           // user response
           let chat = e.target.value;
           _handleTranslate(e.target.value, e.target.value, true);
@@ -531,12 +533,48 @@ function Chatbot(props) {
           });
 
           // bot reponse
-          // let msgUnderstood = await _handleTranslateEng(e.target.value, true);
+
+          let emotion;
+          showPresentEmotion.map((item, i) => {
+            if (item.select) {
+              emotion = item.mood_text;
+            }
+          });
+          await axios
+            .get(`/api/useApi/understand/${e.target.value}/${emotion}`)
+            .then((res) => {
+              console.log(res);
+              // setShowChatBox(false);
+              // return res.data.data;
+              // return res;
+              _handleTranslate(
+                `Topic: ${res.data.topic}`,
+                `Topic: ${res.data.filTopic}`
+              );
+              _handleTranslate(
+                `${res.data.second_person}`,
+                `${res.data.filSecondPerson}`
+              );
+              _handleTranslate(
+                `${res.data.generate_essay}`,
+                `${res.data.filEssay}`
+              );
+              _handleTranslate(
+                `${res.data.generate_answer}`,
+                `${res.data.filAnswers}`
+              );
+            })
+            .catch((err) => {
+              // console.log(err.response);
+              // setShowChatBox(false);
+              // toast.error("Sorry there was an error");
+              _handleTranslate(`Okay`, `Okay`);
+            });
+          // console.log(emotion, "test");
           // let engMsgUnderstood = await msgUnderstood.data.eng;
           // let filMsgUnderstood = await msgUnderstood.data.fil;
 
           // _handleTranslate(`${engMsgUnderstood}`, `${filMsgUnderstood}`);
-          _handleTranslate(`Okay`, `Okay`);
 
           // bot response
           let assessStep1 = `Mayroon ka pa bang gusto sabihin?`;
@@ -933,13 +971,13 @@ function Chatbot(props) {
         .get(`/api/useApi/understand/${inputData}`)
         .then((res) => {
           console.log(res);
-          setShowChatBox(true);
+          setShowChatBox(false);
           // return res.data.data;
           return res;
         })
         .catch((err) => {
           console.log(err.response);
-          setShowChatBox(true);
+          setShowChatBox(false);
           // toast.error(err.response.data.errors);
         });
     } else {
@@ -3328,6 +3366,11 @@ function Chatbot(props) {
     }
   });
   // }, [getLocation, cookies.get("termsAndConditions")]);
+
+  // useEffect(() => {
+  //   const timer = setTimeout(() => console.log("Initial timeout!"), 1000);
+  //   return () => clearTimeout(timer);
+  // }, [messages]);
 
   function resolveAfterXSeconds(x) {
     return new Promise((resolve) => {
