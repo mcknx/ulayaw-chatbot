@@ -12,4 +12,5 @@ module.exports = {
     "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",
   jwtAccountActivation: "mckeenasma12345",
   emailFrom: "masma_180000002118@uic.edu.ph",
+  OPENAI_API_KEY: "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",
 };

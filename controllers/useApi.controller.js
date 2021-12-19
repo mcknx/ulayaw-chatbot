@@ -56,8 +56,17 @@ exports.understandUserInputController = async (req, res) => {
 
   // Load your key from an environment variable or secret management service
   // (do not include your key directly in your code)
-  // const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-  const OPENAI_API_KEY = "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";
+  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+  // const OPENAI_API_KEY =
+
+  // mckeenasmarvmz@gmail.com
+  // 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
+
+  // mckeenasma123@gmail.com and asmamckeen@gmail.com (disgrasya)
+  // "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";
+
+  // masma_180000002118@uic.edu.ph
+  // "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";
 
   const openai = new OpenAI(OPENAI_API_KEY);
   const emotionData = req.params.emotion;
@@ -72,6 +81,8 @@ exports.understandUserInputController = async (req, res) => {
   //   "nagsimula akong maging di mapakali ngayon lang dito sa bahay";
   // let inputData =
   //   "nagsimula akong hindi mapakali dahil sa capstone dahil kay maam";
+  // malungot ako dahil wala akong trabaho ngayon at naghihirap ang pamilya ko sa hirap ng buhay
+  // Malungkot ako dahil wala akong girlfriend at nag iisa lang sa buhay, para bang wala ng nag mamahal sa akin.
 
   console.log(inputData);
   console.log(emotionData);
@@ -156,7 +167,7 @@ exports.understandUserInputController = async (req, res) => {
               "If everyone thinks you're worthless, then maybe you need to find new people to hang out with.Seriously, the social context in which a person lives is a big influence in self-esteem.Otherwise, you can go round and round trying to understand why you're not worthless, then go back to the same crowd and be knocked down again.There are many inspirational messages you can find in social media.  Maybe read some of the ones which state that no person is worthless, and that everyone has a good purpose to their life.Also, since our culture is so saturated with the belief that if someone doesn't feel good about themselves that this is somehow terrible.Bad feelings are part of living.  They are the motivation to remove ourselves from situations and relationships which do us more harm than good.Bad feelings do feel terrible.   Your feeling of worthlessness may be good in the sense of motivating you to find out that you are much better than your feelings today.",
             ],
           ],
-          max_tokens: 60,
+          max_tokens: 20,
           stop: ["\n", "<|endoftext|>"],
         });
       };
