@@ -56,8 +56,9 @@ exports.understandUserInputController = async (req, res) => {
 
   // Load your key from an environment variable or secret management service
   // (do not include your key directly in your code)
-  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-  // const OPENAI_API_KEY =
+  const config = require("../config/keys");
+  // const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+  const OPENAI_API_KEY = config.OPENAI_API_KEY;
 
   // mckeenasmarvmz@gmail.com
   // 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
