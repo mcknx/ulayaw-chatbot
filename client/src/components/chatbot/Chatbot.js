@@ -3671,7 +3671,7 @@ function Chatbot(props) {
 
 function ModalTermsAndConditions({ showModal, setShowModal }) {
   return (
-    <div className="fixed top-0 w-full h-full bg-black bg-opacity-[0.75] ">
+    <div className="fixed top-0 w-full h-full bg-black bg-opacity-[0.75] z-50">
       <div className="h-full flex flex-col  justify-center align-center">
         {/* header */}
         <div className="w-full md:w-3/4 rounded-t-[10px] text-[20px] lg:text-[26px] p-[18px] lg:p-[28px]  text-white self-center bg-[#5DCFFF] font-semibold">

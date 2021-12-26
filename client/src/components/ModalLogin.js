@@ -379,7 +379,7 @@ export default function ModalLogin(props) {
   return (
     <>
       {isAuth() ? <Redirect to="/" /> : null}
-      <div className="left-0 fixed top-0 w-full h-full bg-black bg-opacity-[0.75] ">
+      <div className="left-0 fixed top-0 w-full h-full bg-black bg-opacity-[0.75] z-50">
         <ToastContainer />
         <div className="h-full flex flex-col  justify-center align-center">
           {/* header */}
