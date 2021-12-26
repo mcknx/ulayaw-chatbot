@@ -3410,7 +3410,8 @@ function Chatbot(props) {
             className={
               showThoughtDiaryTool
                 ? "flex flex-col  md:w-[500px] shadow-lg w-screen border-2    bg-white right-0 bottom-0 md:bottom-5 md:right-5  rounded-[20px] fixed  h-2/3 md:h-5/6 z-40"
-                : "flex flex-col  md:w-[500px] shadow-lg w-screen border-2    bg-white right-0 bottom-0 md:bottom-5 md:right-5  rounded-[20px] fixed  h-screen md:h-5/6 z-40"
+                : "flex flex-col  md:w-[500px] shadow-lg w-screen border-2    bg-white right-0 bottom-0 md:bottom-5 md:right-5  rounded-[20px] fixed h-[95%] md:h-5/6   z-40"
+              // h-screen md:h-5/6
             }
           >
             {/* nav */}
