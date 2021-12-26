@@ -90,6 +90,7 @@ export default function ModalLogin(props) {
         })
         .then((res) => {
           // toast.success(res.data.message);
+          console.log(res);
           props.setassessment_meron_companion(false);
           props.setassessment_meron_companion_done(false);
           props.setShowModal(false);
@@ -100,20 +101,34 @@ export default function ModalLogin(props) {
             true
           );
           props._handleTranslate(
-            `Nais kong panatilihing mo makiugnay kay ${formData.first_name}. Maaari mo siyang kausapin o bigyan ng indikasyon na-aayon sa iyong nararamdaman o naiisip.`,
+            `I want you to keep in touch with ${formData.first_name}. You can talk to him or give an indication according to how you feel or think.`,
             `Nais kong panatilihing mo makiugnay kay ${formData.first_name}. Maaari mo siyang kausapin o bigyan ng indikasyon na-aayon sa iyong nararamdaman o naiisip.`
           );
-          props._handleTranslate(
-            `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`,
-            `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`
-          );
+          if (res.data.user.result === "low") {
+            // Low
+            props._handleTranslate(
+              `Thank you ${props.userLoggedIn.first_name} for allowing me to be of help. Whatever you disclose in our conversation will remain between the two of us. Do not hesitate to reach out again whenever you need mental health assistance. Stay safe and healthy!`,
+              `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Makakaasa ka na mananatiling pribado at sa pagitan lamang nating dalawa ang mga napag-usapan natin ngayong araw na ito. Huwag ka sanang mahihiyang lumapit muli sa amin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat ${props.userLoggedIn.first_name}!`
+            );
+          }
+          if (res.data.user.result === "high") {
+            // High
+            props._handleTranslate(
+              `I am saddened to hear that you are going through such challenges ${props.userLoggedIn.first_name}. It must have been tough carrying all these and what a brave soul you are for recognizing your need for help. `,
+              `Salamat sa tiwala at sa pagbabahagi ng mga pinagdaraanan mo. Nakalulungkot marining na ikaw ay dumaranas ng ganitong mga pagsubok ${props.userLoggedIn.first_name}. Gayun pa man ay humahanga ako sa katatagan na pinapakita mo sa gitna ng mga problemang iyong kinakaharap.`
+            );
+            props._handleTranslate(
+              `Thank you ${props.userLoggedIn.first_name} for allowing me to be of help. Based on our conversation, it would be better to continuously address your concerns through a psychiatric consultation. Here at PMHA, we are willing to provide the initial consultation subject to the availability of the mental health professional. Should you be advised to have follow-up consultations, you may refer to your staff in charge to further discuss the process, options, and other concerns.`,
+              `Salamat ${props.userLoggedIn.first_name} sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Ang PMHA ay handang maglaan ng paunang konsultasyon upang lalo ka pa namin matugunan bukod sa pag uusap natin ngayong araw. Kung sakaling kailanganin pa ng follow up consultation ay mangyaring sumangguni sa aming staff-in-charge  upang mapag usapan ang proseso, options at iba pang concerns.`
+            );
+          }
 
           props._handleTranslate(
-            `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`,
+            `Do you want to continue our conversation? I would like to share a tool with you.`,
             `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`
           );
           props._handleTranslate(
-            `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`,
+            `I use it from time to time to be able to reduce the weight I feel. 🤗`,
             `Ito ay ginagamit ko paminsan minsan upang ma bawasan ang bigat na aking nararamdaman. 🤗`
           );
           // props.df_text_query(``, ``, `user`, ``, `diary`);
@@ -368,9 +383,9 @@ export default function ModalLogin(props) {
         <ToastContainer />
         <div className="h-full flex flex-col  justify-center align-center">
           {/* header */}
-          <div className="w-[600px] rounded-t-[10px] text-[25px] lg:text-[35px] p-[18px] lg:p-[28px]  text-white self-center bg-[#5DCFFF] font-semibold text-center relative">
+          <div className="w-full md:w-[600px] rounded-t-[10px] text-[25px] lg:text-[35px] p-[18px] lg:p-[28px]  text-white self-center bg-[#5DCFFF] font-semibold text-center relative">
             <button
-              className=" text-white px-[13px] py-[8px] absolute top-4  right-4 lg:w-[70px] w-[60px] rounded-[5px] bg-[#2E93BE] text-[14px]"
+              className=" text-white md:px-[13px] md:py-[8px] py-[4px] absolute top-4  md:right-4 right-2 md:w-[70px] w-[35px] rounded-[5px] bg-[#2E93BE] text-[10px] md:text-[14px]"
               onClick={() => {
                 props.setShowModal(!props.showModal);
 
@@ -416,7 +431,7 @@ export default function ModalLogin(props) {
           </div>
 
           {/* body */}
-          <div className="w-[600px] rounded-b-[10px] text-[12px] lg:text-[16px] p-[18px] px-[71px] py-[55px] self-center bg-white justify-center flex flex-col ">
+          <div className="w-full md:w-[600px] overflow-y-auto rounded-b-[10px] text-[12px] lg:text-[16px] p-[18px] md:px-[71px] md:py-[55px] self-center bg-white justify-center flex flex-col pt-[90px] md:pt-[10px]">
             {/* inputs */}
             <span>
               {showRegister || props.assessment_meron_companion ? (
@@ -608,7 +623,7 @@ export default function ModalLogin(props) {
               ""
             ) : ( */}
             <button
-              className="self-center rounded-[38px] bg-[#5DCFFF] space-x-[10px]  m-8 py-[20px] w-[405px] text-white text-[24px]"
+              className="self-center rounded-[38px] bg-[#5DCFFF] space-x-[10px]  m-8 py-[20px] w-[205px] md:w-[405px] text-white text-[12px] md:text-[24px]"
               onClick={(e) => {
                 // if (showRegister) {
                 handleSubmit(e);

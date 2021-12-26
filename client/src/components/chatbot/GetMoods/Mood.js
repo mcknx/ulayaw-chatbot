@@ -198,12 +198,12 @@ const Mood = (props) => {
     }
   }
   return (
-    <div className="py-5 p-2 select-none transform  scale-90">
+    <div className="md:py-5 p-2 select-none transform  scale-90">
       <label
         className={
           props.select
-            ? " bg-[#1D80AA] py-[65px]  flex justify-center flex-col cursor-pointer   text-white hover:bg-[#0C86BA] h-[120px] w-[120px] text-center   rounded-[35px] items-center"
-            : "py-[65px] flex justify-center flex-col cursor-pointer   hover:text-white hover:bg-[#0C86BA] h-[120px] w-[120px] text-center checked:bg-[#0C86BA] bg-[#5CCBF9] rounded-[35px] items-center "
+            ? " bg-[#1D80AA] py-[40px] md:py-[65px]  flex justify-center flex-col cursor-pointer   text-white hover:bg-[#0C86BA] h-[60px] md:h-[120px] w-[70px] md:w-[120px] text-center   rounded-[20px] md:rounded-[35px] items-center"
+            : "py-[40px] md:py-[65px] flex justify-center flex-col cursor-pointer   hover:text-white hover:bg-[#0C86BA] h-[60px] md:h-[120px] w-[70px] md:w-[120px] text-center checked:bg-[#0C86BA] bg-[#5CCBF9]  rounded-[20px] md:rounded-[35px] items-center "
         }
       >
         <input
@@ -343,12 +343,12 @@ const Mood = (props) => {
           checked={props.select}
         />
         <img
-          className="w-[80px] h-[80] cursor-pointer"
+          className="w-[40px] md:w-[80px] h-[80] cursor-pointer"
           src={_handleMoodImg(props.mood.mood_text)}
           // src={emotions[`low`]}
         />
 
-        <p className="font-bold cursor-pointer inline-block">
+        <p className="font-bold cursor-pointer inline-block md:text-base text-[10px]">
           {props.switchLanguage
             ? _handleMoodTagalog(props.mood.mood_text)
             : props.mood.mood_text}

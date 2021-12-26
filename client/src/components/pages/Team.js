@@ -16,7 +16,7 @@ const About = (props) => {
 
   return (
     <>
-      <div className="absolute text-center w-full h-[258px] bg-[#E1F6FF] top-[204px]">
+      <div className="absolute text-center w-full h-[258px] bg-[#E1F6FF] mt-[104px] lg:mt-[0px] lg:top-[204px]">
         <label className="text-center text-[#0C86BA] text-bold text-[48px]">
           The Team
         </label>
@@ -27,12 +27,12 @@ const About = (props) => {
             ? "hidden  "
             : showThoughtDiaryTool
             ? "hidden  "
-            : "container mx-auto my-auto md:pt-[100px] 2xl:pt-[200px] md:transform md:scale-[.79] 2xl:scale-[1] h-full "
+            : "container mx-auto my-auto md:pt-[100px] 2xl:pt-[200px] md:transform md:scale-[.79] 2xl:scale-[1] h-[1500px] xl:h-full "
         }
       >
-        <div className="grid  grid-cols-8  mt-[60px]">
+        <div className="relative justify-center grid  md:grid-cols-2 md:justify-evenly xl:grid-cols-8  mt-[260px] md:mt-[60px] gap-5">
           {/* center */}
-          <div className="col-span-2 flex flex-col justify-center items-center mr-[50px]">
+          <div className="xl:col-span-2 flex flex-col justify-center items-center md:mr-[50px] md:w-full w-[150px]">
             <label>
               <img
                 className="rounded-full border-[10px] border-[#48B9E9]"
@@ -51,7 +51,7 @@ const About = (props) => {
               </div>
             </div>
           </div>
-          <div className="col-span-2 flex flex-col justify-center items-center mr-[50px]">
+          <div className="xl:col-span-2 flex flex-col justify-center items-center md:mr-[50px] md:w-full w-[150px]">
             <label>
               <img
                 className="rounded-full border-[10px] border-[#48B9E9]"
@@ -70,7 +70,7 @@ const About = (props) => {
               </div>
             </div>
           </div>
-          <div className="col-span-2 flex flex-col justify-center items-center mr-[50px]">
+          <div className="xl:col-span-2 flex flex-col justify-center items-center md:mr-[50px] md:w-full w-[150px]">
             <label>
               <img
                 className="rounded-full border-[10px] border-[#48B9E9]"
@@ -89,7 +89,7 @@ const About = (props) => {
               </div>
             </div>
           </div>
-          <div className="col-span-2 flex flex-col justify-center items-center mr-[50px]">
+          <div className="xl:col-span-2 flex flex-col justify-center items-center md:mr-[50px] md:w-full w-[150px]">
             <label>
               <img
                 className="rounded-full border-[10px] border-[#48B9E9]"

@@ -432,7 +432,7 @@ function GetUserDetails(props) {
           {/* header */}
           <div className="w-full top-[60px] md:top-[70px] h-[129.5px] md:w-[600px] rounded-t-[10px] text-[25px] lg:text-[35px] p-[18px] lg:p-[28px]  text-white self-center bg-[#5DCFFF] font-semibold text-center relative">
             <button
-              className=" text-white px-[13px] py-[8px] absolute top-4  right-4 lg:w-[70px] w-[60px] rounded-[5px] bg-[#2E93BE] text-[14px]"
+              className=" text-white md:px-[13px] md:py-[8px] py-[4px] absolute top-4  md:right-4 right-2 md:w-[70px] w-[35px] rounded-[5px] bg-[#2E93BE] text-[10px] md:text-[14px]"
               onClick={() => {
                 props.setShowModal(!props.showModal);
               }}
@@ -450,7 +450,7 @@ function GetUserDetails(props) {
           </div>
 
           {/* body */}
-          <div className=" w-full h-full  2xl:h-[800px] md:w-[600px] rounded-b-[10px] text-[12px] lg:text-[16px] p-[18px] px-[71px] py-[55px] self-center bg-white justify-center flex flex-col ">
+          <div className=" w-full h-full  2xl:h-[800px] md:w-[600px] rounded-b-[10px] text-[12px] lg:text-[16px] p-[18px] md:px-[71px] py-[55px] self-center bg-white justify-center flex flex-col ">
             {/* inputs */}
             <span className="overflow-y-auto mt-[60px]">
               <>
@@ -631,7 +631,7 @@ function CreateCode(props) {
           {/* header */}
           <div className="w-full md:h-[129.5px] md:w-[600px] mx-auto rounded-t-[10px] text-[25px] lg:text-[35px] p-[18px] lg:p-[28px]  text-white self-center bg-[#5DCFFF] font-semibold text-center relative">
             <button
-              className=" text-white px-[13px] py-[8px] absolute top-4  right-4 lg:w-[70px] w-[60px] rounded-[5px] bg-[#2E93BE] text-[14px]"
+              className=" text-white md:px-[13px] md:py-[8px] py-[4px] absolute top-4  md:right-4 right-2 md:w-[70px] w-[35px] rounded-[5px] bg-[#2E93BE] text-[10px] md:text-[14px]"
               onClick={() => {
                 props.setShowModal(!props.showModal);
               }}
@@ -648,7 +648,7 @@ function CreateCode(props) {
           </div>
 
           {/* body */}
-          <div className="w-full h-full md:h-[362px] md:w-[600px] mx-auto rounded-b-[10px] text-[12px] lg:text-[16px] p-[18px] px-[71px] py-[55px] self-center bg-white justify-center flex flex-col ">
+          <div className="w-full h-full md:h-[362px] md:w-[600px] mx-auto rounded-b-[10px] text-[12px] lg:text-[16px] p-[18px] md:px-[71px] py-[55px] self-center bg-white justify-center flex flex-col ">
             {/* inputs */}
             <span>
               <>
@@ -753,14 +753,14 @@ function ThoughtDiary(props) {
   return (
     <div className="overflow-auto left-0 fixed top-0 w-full h-full bg-black bg-opacity-[0.75]">
       <div className="left-0 top-0  w-full h-full  bg-opacity-[0.60] z-20 mb-6">
-        <div className=" items-center flex justify-center flex-col  xl:w-[1350px] xl:pl-[24px] xl:pt-[26px] h-[1000px]  ">
+        <div className=" w-full items-start flex md:justify-center flex-col  xl:w-[1350px] xl:pl-[24px] pt-[26px] h-[3000px] md:h-[1000px]  transform scale-[0.95] md:scale-[1.0]  ">
           {/* header */}
           <div>
-            <div className="w-[655px] h-[54px] rounded-t-[15px] text-[20px] lg:text-[24px] p-[18px] lg:pt-[11px] px-[23px] text-white self-center bg-[#49c3f7] font-bold text-center">
+            <div className="w-full md:w-[655px] h-[54px] rounded-t-[15px] text-[20px] lg:text-[24px] p-[18px] lg:pt-[11px] px-[23px] text-white self-center bg-[#49c3f7] font-bold text-center">
               <p>Thought Diary</p>
             </div>
             <button
-              className=" text-white px-[13px] py-[8px] absolute top-4  right-4 lg:w-[70px] w-[60px] rounded-[5px] bg-[#2E93BE] text-[14px]"
+              className=" text-white md:px-[13px] md:py-[8px] py-[4px] absolute top-4  md:right-4 right-2 md:w-[70px] w-[35px] rounded-[5px] bg-[#2E93BE] text-[10px] md:text-[14px]"
               onClick={() => {
                 props.setShowModal(!props.showModal);
               }}
@@ -773,11 +773,11 @@ function ThoughtDiary(props) {
           {/* bg-black bg-opacity-[0.75] text-opacity-0  */}
           <div
             className={
-              "w-[655px] rounded-b-[15px]  self-center grid grid-cols-2  min-h-[750px] text-[#4CC2F4] text-[20px] font-semibold bg-white"
+              "w-full md:w-[655px] rounded-b-[15px] self-start  grid grid-cols-1 md:grid-cols-2  h-[1500px] md:min-h-[750px] text-[#4CC2F4] text-[20px] font-semibold bg-white"
             }
           >
             {/* A and C */}
-            <div className="w-[327.5px] border-l-4 border-b-4 border-t-4 border-[#86A1AC] rounded-b-[15px]  grid grid-rows-6 max-h-[750px]">
+            <div className="w-[327.5px] border-l-4 border-b-4 md:border-r-0 border-r-4 border-t-4 border-[#86A1AC] rounded-b-[15px]  grid grid-rows-6 max-h-[750px]">
               {/* section 1 */}
               <div
                 className={

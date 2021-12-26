@@ -469,11 +469,41 @@ exports.addCompanionController = async (req, res) => {
           });
         }
       });
-      return res.json({
-        success: true,
-        user: user,
-        message: `Successfully updated code '${user.code}' details. `,
-      });
+      const emailData = {
+        from: config.emailFrom,
+        to: assessmentTaker.admin_email,
+        subject: "SBQR Result from Ulayaw",
+        html: `
+        <p>User Email: ${assessmentTaker.user_email} </p>
+            <p>Result: ${assessmentTaker.result} </p>
+            
+    
+            <p>Thank you! visit us here on</p>
+            <p>${config.clientURL}</p>
+            <hr />
+            <p>This email may contain sensitive information</p>
+            <p>${config.clientURL}</p>
+        `,
+      };
+
+      sgMail
+        .send(emailData)
+        .then((sent) => {
+          return res.json({
+            success: true,
+            user: user,
+            message: `Successfully updated code '${user.code}' details. `,
+          });
+          // return res.json({
+          //   message: `Patient Details has been sent to ${formData.r_email}`,
+          // });
+        })
+        .catch((err) => {
+          return res.status(400).json({
+            success: false,
+            errors: err,
+          });
+        });
     }
   );
 };

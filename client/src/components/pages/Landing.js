@@ -15,33 +15,33 @@ const Landing = (props) => {
       // className={
       //   showThoughtDiaryTool
       //     ? "hidden "
-      //     : "container mx-auto my-auto md:pt-[100px] 2xl:pt-[200px] md:transform md:scale-[.79] 2xl:scale-[1]"
+      //     : "container mx-auto my-auto lg:pt-[100px] 2xl:pt-[200px] lg:transform lg:scale-[.79] 2xl:scale-[1]"
       // }
       className={
         showMoods
           ? "hidden  "
           : showThoughtDiaryTool
           ? "hidden  "
-          : "container mx-auto my-auto md:pt-[100px] 2xl:pt-[200px] md:transform md:scale-[.79] 2xl:scale-[1] h-full "
+          : "container lg:mx-auto my-12 lg:my-auto lg:pt-[100px] 2xl:pt-[200px] lg:transform lg:scale-[.79] 2xl:scale-[1] h-full "
       }
     >
-      <div className="md:grid md:grid-cols-12 gap-4 ">
+      <div className="lg:grid lg:grid-cols-12 gap-4 ">
         {/* left */}
         <div className="col-span-5 flex justify-center ">
           <label>
             <img
-              className="h-full md:h-[400px] md:w-[400px]"
+              className="h-[200px] w-[200px] lg:h-[400px] lg:w-[400px]"
               src={homeUlayaw}
             />
           </label>
         </div>
         {/* right */}
-        <div className="col-span-7 flex flex-col">
-          <label className="text-[48px] leading-tight text-[#28AFE8]">
+        <div className="col-span-7 flex flex-col md:px-[150px] lg:px-0 px-4">
+          <label className="text-[24px] lg:text-[48px] leading-tight text-[#28AFE8]">
             Kaibigan sa kalusugang pangkaisipan.
           </label>
-          <label className="text-[30px] text-[#5A676D] ">
-            Ipahayag ang iyong nararamdaman.
+          <label className="text-[15px] lg:text-[30px] text-[#5A676D] ">
+            Ipahayag ang iyong nararalgaman.
           </label>
 
           {/* buttons-upper */}
@@ -56,12 +56,12 @@ const Landing = (props) => {
             />
           </div> */}
 
-          <div className="text-center text-[#7a6d6d] w-[579px] mt-[23px] border-t-[1px] border-[#3E3E3E]">
+          <div className="text-center text-[#7a6d6d] w-full lg:w-[579px] mt-[23px] border-t-[1px] border-[#3E3E3E]">
             {/* or */}
           </div>
 
           {/* buttons-lower */}
-          <div className="text-[24px] font-medium flex flex-row space-x-[14px] w-[579px] text-[#1A4A61] text-justify">
+          <div className="text-[12px] lg:text-[24px] font-medium flex flex-row space-x-[14px] w-full lg:w-[579px] text-[#1A4A61] text-justify">
             <label>
               Pindutin ang emoji ni Ulayaw upang makapagsimula sa
               pakikipag-usap.

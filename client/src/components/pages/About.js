@@ -12,7 +12,7 @@ const About = (props) => {
 
   return (
     <>
-      <div className="absolute w-full h-[258px] bg-[#E1F6FF] top-[204px]"></div>
+      <div className="absolute w-full h-[258px] bg-[#E1F6FF] mt-[104px] lg:top-[204px]"></div>
       <div
         className={
           showMoods
@@ -22,17 +22,17 @@ const About = (props) => {
             : "container mx-auto my-auto md:pt-[100px] 2xl:pt-[200px] md:transform md:scale-[.79] 2xl:scale-[1] h-full "
         }
       >
-        <div className="md:grid md:grid-cols-12 gap-4 ">
+        <div className="relative md:grid md:grid-cols-12 gap-4 ">
           {/* left */}
-          <div className="col-span-5 flex justify-center ">
+          <div className="col-span-5 flex justify-center mt-[55px] lg:mt-[0px]">
             <label>
               <img className="-mt-8" src={welcome} />
             </label>
           </div>
           {/* right */}
-          <div className="col-span-7 flex flex-col">
+          <div className="col-span-7 flex flex-col md:px-0 px-4">
             {/* text */}
-            <div className="text-[24px] font-medium flex flex-row space-x-[14px] w-[579px] text-white text-justify bg-[#48B9E9] p-12 rounded-[20px]">
+            <div className="md:text-[24px] text-[12px]  font-medium flex flex-row space-x-[14px] w-full md:w-[500px] lg:w-[579px] text-white text-justify bg-[#48B9E9] p-12 rounded-[20px]">
               <label>
                 Ulayaw is proposed to be an assistive tool to the existing
                 intervention addressing its limitations and is in no way will

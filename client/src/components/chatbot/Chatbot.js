@@ -1105,7 +1105,7 @@ function Chatbot(props) {
         // setShowMoods(true);
 
         _handleTranslate(
-          `Hi ${userLoggedIn.first_name}, I'm glad you are here today. Maybe we could start by getting your moods. I want you to pick the most likely feelings you are experiencing right now first.`,
+          `Hi ${userLoggedIn.first_name}, I'm glad you are here today. Maybe we could start by getting your mood. First, I want you to pick the most likely feelings you are into right now.`,
           `Hi ${userLoggedIn.first_name}, natutuwa ako na narito ka ngayon. Siguro maaari nating simulan sa pagkuha ng iyong mood. Pumili ka ng isa dito sa ating 'emotion box'`
         );
 
@@ -1115,7 +1115,7 @@ function Chatbot(props) {
       case "abc_continue_step_1":
         console.log(assessmentUser);
         _handleTranslate(
-          `Hi ${userLoggedIn.first_name}, I'm glad you are here today. Maybe we could start by getting your moods. I want you to pick the most likely feelings you are experiencing right now first.`,
+          `Hi ${userLoggedIn.first_name}, I'm glad you are here today. Maybe we could start by getting your mood. First, I want you to pick the most likely feelings you are into right now.`,
           `Hi ${userLoggedIn.first_name}, natutuwa ako na narito ka ngayon. Siguro maaari nating simulan sa pagkuha ng iyong mood. Pumili ka ng isa dito sa ating 'emotion box'`
         );
         df_event_query("ABC_GETMOOD");
@@ -1591,6 +1591,7 @@ function Chatbot(props) {
       })
       .then((res) => {
         // toast.success(res.response.data);
+        console.log(res);
         df_event_query("ASSESSMENT_DONE");
         setShowChatBox(false);
         setassessment_meron_companion(false);
@@ -1601,10 +1602,25 @@ function Chatbot(props) {
           `Wala akong ka kasama`,
           true
         );
-        _handleTranslate(
-          `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin  ${userLoggedIn.first_name}. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`,
-          `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin ${userLoggedIn.first_name}. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Huwag ka sanang mahihiyang lumapit muli sa akin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat!`
-        );
+
+        if (res.data.user.result === "low") {
+          // Low
+          _handleTranslate(
+            `Thank you ${userLoggedIn.first_name} for allowing me to be of help. Whatever you disclose in our conversation will remain between the two of us. Do not hesitate to reach out again whenever you need mental health assistance. Stay safe and healthy!`,
+            `Salamat sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Makakaasa ka na mananatiling pribado at sa pagitan lamang nating dalawa ang mga napag-usapan natin ngayong araw na ito. Huwag ka sanang mahihiyang lumapit muli sa amin kapag kailangan mo ulit ng aming tulong. Palagi kang mag iingat ${userLoggedIn.first_name}!`
+          );
+        }
+        if (res.data.user.result === "high") {
+          // High
+          _handleTranslate(
+            `I am saddened to hear that you are going through such challenges ${userLoggedIn.first_name}. It must have been tough carrying all these and what a brave soul you are for recognizing your need for help. `,
+            `Salamat sa tiwala at sa pagbabahagi ng mga pinagdaraanan mo. Nakalulungkot marining na ikaw ay dumaranas ng ganitong mga pagsubok ${userLoggedIn.first_name}. Gayun pa man ay humahanga ako sa katatagan na pinapakita mo sa gitna ng mga problemang iyong kinakaharap.`
+          );
+          _handleTranslate(
+            `Thank you ${userLoggedIn.first_name} for allowing me to be of help. Based on our conversation, it would be better to continuously address your concerns through a psychiatric consultation. Here at PMHA, we are willing to provide the initial consultation subject to the availability of the mental health professional. Should you be advised to have follow-up consultations, you may refer to your staff in charge to further discuss the process, options, and other concerns.`,
+            `Salamat ${userLoggedIn.first_name} sa pagkakataong ibinigay mo upang mapag usapan ang iyong mga suliranin. Base sa ating mga napag usapan, mas makatutulong na ipagpatuloy ang pagproseso ng iyong concerns sa pamamagitan ng psychiatric consultation. Ang PMHA ay handang maglaan ng paunang konsultasyon upang lalo ka pa namin matugunan bukod sa pag uusap natin ngayong araw. Kung sakaling kailanganin pa ng follow up consultation ay mangyaring sumangguni sa aming staff-in-charge  upang mapag usapan ang proseso, options at iba pang concerns.`
+          );
+        }
 
         _handleTranslate(
           `Nais mo na bang ipagpatuloy ang pakikipag usap natin? May ibabahagi sana akong tool sa iyo.`,
@@ -1680,7 +1696,7 @@ function Chatbot(props) {
                     <label className="text-center ">{`${userLoggedIn.first_name},  these are the establishment and authorities near at your location. You can approach and contact as soon as you needed them. Don't hesitate to check and keep in touch. Thank you!`}</label>
                   )}
 
-                  <span className=" h-[350px] w-[350px] relative">
+                  <span className=" h-[350px] md:w-[350px] relative">
                     <MapContainer
                       lat={message.msg.map.latitude}
                       lng={message.msg.map.longitude}
@@ -1725,17 +1741,18 @@ function Chatbot(props) {
                 <div
                   // space-x-2 py-2
                   className={
-                    "rounded-[10px] self-center overflow-ellipsis  px-4    text-black font-medium text-left h-[300px] flex flex-col "
+                    "rounded-[10px] self-center overflow-ellipsis  md:px-4    text-black font-medium text-left h-[150px] md:h-[300px] flex flex-col justify-center w-full"
                   }
                 >
-                  <span className=" bg-[#F2EFEF] h-[150px] w-full relative right-0">
-                    <div className="z-40">
-                      <img
-                        // h-[150px] w-[150px]
-                        // className=" h-[150px] "
-                        src={ulayawTD}
-                      />
-                    </div>
+                  {/* h-[150px] */}
+                  <span className=" bg-[#F2EFEF]  w-full h-full self-center right-0 flex justify-center">
+                    {/* <div className="z-40"> */}
+                    <img
+                      // h-[150px] w-[150px]
+                      className=" md:h-[85%] "
+                      src={ulayawTD}
+                    />
+                    {/* </div> */}
                   </span>
                 </div>
               </div>
@@ -1763,17 +1780,18 @@ function Chatbot(props) {
                 <div
                   // space-x-2 py-2
                   className={
-                    "rounded-[10px] self-center overflow-ellipsis  px-4    text-black font-medium text-left h-[300px] flex flex-col "
+                    "rounded-[10px] self-center overflow-ellipsis  md:px-4    text-black font-medium text-left h-[150px] md:h-[300px] flex flex-col justify-center w-full"
                   }
                 >
-                  <span className=" bg-[#F2EFEF] h-[150px] w-full relative right-0">
-                    <div className="z-40">
-                      <img
-                        // h-[150px] w-[150px]
-                        // className=" h-[150px] "
-                        src={ulayawWelcome}
-                      />
-                    </div>
+                  {/* h-[150px] */}
+                  <span className=" bg-[#F2EFEF]  w-full h-full self-center right-0 flex justify-center">
+                    {/* <div className="z-40"> */}
+                    <img
+                      // h-[150px] w-[150px]
+                      className=" md:h-[85%] "
+                      src={ulayawWelcome}
+                    />
+                    {/* </div> */}
                   </span>
                 </div>
               </div>
@@ -1801,17 +1819,18 @@ function Chatbot(props) {
                 <div
                   // space-x-2 py-2
                   className={
-                    "rounded-[10px] self-center overflow-ellipsis  px-4    text-black font-medium text-left h-[300px] flex flex-col "
+                    "rounded-[10px] self-center overflow-ellipsis  md:px-4    text-black font-medium text-left h-[150px] md:h-[300px] flex flex-col justify-center w-full"
                   }
                 >
-                  <span className=" bg-[#F2EFEF] h-[150px] w-full relative right-0">
-                    <div className="z-40">
-                      <img
-                        // h-[150px] w-[150px]
-                        // className=" h-[150px] "
-                        src={ulayawExit}
-                      />
-                    </div>
+                  {/* h-[150px] */}
+                  <span className=" bg-[#F2EFEF]  w-full h-full self-center right-0 flex justify-center">
+                    {/* <div className="z-40"> */}
+                    <img
+                      // h-[150px] w-[150px]
+                      className=" md:h-[85%] "
+                      src={ulayawExit}
+                    />
+                    {/* </div> */}
                   </span>
                 </div>
               </div>
@@ -3387,7 +3406,13 @@ function Chatbot(props) {
       <div className="z-40">
         {/* md:w-96 xl bottom-[120px]  */}
         {showBot ? (
-          <div className="flex flex-col  md:w-[500px] shadow-lg w-full border-2    bg-white right-0 bottom-5 md:right-5  rounded-[20px] fixed  h-full md:h-5/6 ">
+          <div
+            className={
+              showThoughtDiaryTool
+                ? "flex flex-col  md:w-[500px] shadow-lg w-screen border-2    bg-white right-0 bottom-0 md:bottom-5 md:right-5  rounded-[20px] fixed  h-2/3 md:h-5/6 z-40"
+                : "flex flex-col  md:w-[500px] shadow-lg w-screen border-2    bg-white right-0 bottom-0 md:bottom-5 md:right-5  rounded-[20px] fixed  h-screen md:h-5/6 z-40"
+            }
+          >
             {/* nav */}
             <nav className="border-b-[3px] border-[#E4E4E4]">
               <div className="p-4 flex flex-row justify-between ">
@@ -3395,14 +3420,14 @@ function Chatbot(props) {
                   <span className="mr-2 self-center h-2 w-2 shadow-lg   rounded-full  bg-green-400 "></span>
                   <p>Ulayaw</p>
                 </div>
-                <ul className="right-0 cursor-pointer text-white font-semibold rounded-md bg-[#5DCFFF] h-[28px] w-[200px] flex justify-center transform hover:scale-[1.050] hover:opacity-80">
+                <ul className="right-0 cursor-pointer text-white font-semibold rounded-md bg-[#5DCFFF] h-[20px] md:h-[28px] w-[120px] md:w-[200px] flex justify-center transform hover:scale-[1.050] hover:opacity-80 self-center">
                   <li className=" ">
                     <p
                       // href="/"
                       // onClick={() => {
                       //   setShowBot(!showBot);
                       // }}
-                      className=" text-[17px] select-none"
+                      className="text-[12px] md:text-[17px] select-none"
                       onClick={() => {
                         setSwitchLanguage(!switchLanguage);
                         // handleExportWithComponent();
@@ -3533,7 +3558,7 @@ function Chatbot(props) {
         ) : (
           <button>
             <button
-              className=" h-[50px]  bottom-10  right-10  fixed  "
+              className=" h-[50px] transform scale-[0.70] md:scale-[1] bottom-10 right-2 md:right-10 z-40 fixed  "
               // style={{ height: 500 }}
             >
               <nav>
@@ -3597,6 +3622,7 @@ function Chatbot(props) {
             setQuickRepliesWelcome={setQuickRepliesWelcome}
             location={location.coordinates}
             setUserLoggedIn={setUserLoggedIn}
+            userLoggedIn={userLoggedIn}
             df_event_query={df_event_query}
             df_text_query={df_text_query}
             _handleTranslate={_handleTranslate}
@@ -3648,12 +3674,12 @@ function ModalTermsAndConditions({ showModal, setShowModal }) {
     <div className="fixed top-0 w-full h-full bg-black bg-opacity-[0.75] ">
       <div className="h-full flex flex-col  justify-center align-center">
         {/* header */}
-        <div className="w-3/4 rounded-t-[10px] text-[20px] lg:text-[26px] p-[18px] lg:p-[28px]  text-white self-center bg-[#5DCFFF] font-semibold">
+        <div className="w-full md:w-3/4 rounded-t-[10px] text-[20px] lg:text-[26px] p-[18px] lg:p-[28px]  text-white self-center bg-[#5DCFFF] font-semibold">
           <p>Terms and Condition</p>
         </div>
 
         {/* body */}
-        <div className="w-3/4 rounded-b-[10px] text-[12px] lg:text-[16px] p-[18px] px-[71px] py-[55px] self-center bg-white grid ">
+        <div className="w-full md:w-3/4 rounded-b-[10px] text-[12px] lg:text-[16px] p-[18px] md:px-[71px] py-[55px] self-center bg-white grid overflow-auto">
           <p className="text-justify">
             RA 10173 or the Data Privacy Act protects individuals from
             unauthorized processing of personal information. The researchers
@@ -3829,9 +3855,9 @@ function ThoughtDiary() {
   }
 
   return (
-    <div className="h-[1000px]">
-      <div className="left-0 top-0  w-full h-full  bg-opacity-[0.60] z-20 mb-6">
-        <div className="w-full items-start flex justify-center flex-col  xl:w-[1350px] xl:pl-[24px] xl:pt-[26px] h-[1000px]  ">
+    <div className="h-[3000px] md:h-[1000px]">
+      <div className="left-0 top-0  w-full h-full  bg-opacity-[0.60] z-20 md:z-0  mb-6">
+        <div className="w-full items-start flex md:justify-center flex-col  xl:w-[1350px] xl:pl-[24px] pt-[26px] h-[3000px] md:h-[1000px]  transform scale-[0.95] md:scale-[1.0]">
           {/* header */}
           <div className=" w-[215px] h-[54px] rounded-t-[15px] ml-2 text-[20px] lg:text-[24px] p-[18px] lg:pt-[11px] px-[23px] text-white self-start bg-[#49c3f7] font-bold">
             <p>Thought Diary</p>
@@ -3842,12 +3868,12 @@ function ThoughtDiary() {
           <div
             className={
               focusThoughtDiaryLetter != null
-                ? "bg-[#5DCFFF] w-[655px] rounded-b-[15px]  self-start  grid grid-cols-2  min-h-[750px]  text-white font-semibold  "
-                : "w-[655px] rounded-b-[15px] self-start  grid grid-cols-2  min-h-[750px] text-[#4CC2F4] text-[20px] font-semibold bg-white"
+                ? "bg-[#5DCFFF] w-full md:w-[655px] rounded-b-[15px]  self-start  grid grid-cols-1 md:grid-cols-2  h-[1500px] md:min-h-[750px]  text-white font-semibold  "
+                : "w-full md:w-[655px] rounded-b-[15px] self-start  grid grid-cols-1 md:grid-cols-2  h-[1500px] md:min-h-[750px] text-[#4CC2F4] text-[20px] font-semibold bg-white"
             }
           >
             {/* A and C */}
-            <div className="w-[327.5px] border-l-4 border-b-4 border-t-4 border-[#86A1AC] rounded-b-[15px]  grid grid-rows-6 max-h-[750px]">
+            <div className="w-[327.5px] border-l-4 border-b-4 md:border-r-0 border-r-4 border-t-4 border-[#86A1AC] rounded-b-[15px]  grid grid-rows-6 max-h-[750px]">
               {/* section 1 */}
               <div
                 className={
