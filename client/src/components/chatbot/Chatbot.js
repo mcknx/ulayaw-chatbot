@@ -524,6 +524,7 @@ function Chatbot(props) {
       } else if (getMoodStep1) {
         if (e.target.value !== "") {
           setShowChatBox(false);
+          toast.success("Please wait while the bot processes your message.");
 
           // user response
           let chat = e.target.value;
