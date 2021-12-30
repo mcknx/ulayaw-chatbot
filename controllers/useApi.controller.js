@@ -151,25 +151,38 @@ exports.understandUserInputController = async (req, res) => {
 
       const generate_essayRes = await generate_essay();
 
+      // const generate_answer = async () => {
+      //   return await openai.answers({
+      //     documents: [
+      //       "Have you used meditation or hypnosis? Relaxing the mind and connecting with your true self is a great way to calm your thoughts and get to peace and calm. Hypnosis and meditation have helped a lot of people with anxiety and depression. Google hypnotherapists near me or write for a while about what is going on.",
+      //       "Answers about our inner lives are most successfully reached from a sense of feeling grounded in oneself.First step is to accept your nervousness and restless sleep.  As often as possible, sleep during daytimes in order for your body to catch up on its need for rest.Accept too about feeling down.  It is normal to feel down once in a while.  From this place of self-acceptance, trust any answers which come up to your mind.  Often answers about complicated topics come in small pieces, not all at once as a whole unit.Also, your description about panic attacks is also completely normal.   They often arise unrelated to particular conditions at a given moment.  They are a healthy symptom your body is trying to expel bad feelings and does this by having the anxiety erupt at times.So, self-acceptance, tolerance of being on a process of clearing out worn out emotional clutter, and sleep at odd times if possible, are all ways to stabilize yourself, which will also feel calm and good!",
+      //     ],
+      //     question: res1.text,
+      //     search_model: "davinci",
+      //     model: "davinci",
+      //     examples_context:
+      //       "Answers about our inner lives are most successfully reached from a sense of feeling grounded in oneself.First step is to accept your nervousness and restless sleep.  As often as possible, sleep during daytimes in order for your body to catch up on its need for rest.Accept too about feeling down.  It is normal to feel down once in a while.  From this place of self-acceptance, trust any answers which come up to your mind.  Often answers about complicated topics come in small pieces, not all at once as a whole unit.Also, your description about panic attacks is also completely normal.   They often arise unrelated to particular conditions at a given moment.  They are a healthy symptom your body is trying to expel bad feelings and does this by having the anxiety erupt at times.So, self-acceptance, tolerance of being on a process of clearing out worn out emotional clutter, and sleep at odd times if possible, are all ways to stabilize yourself, which will also feel calm and good!",
+      //     examples: [
+      //       [
+      //         "I'm going through some things with my feelings and myself. I barely sleep and I do nothing but think about how I'm worthless and how I shouldn't be here. I've never tried or contemplated suicide. I've always wanted to fix my issues, but I never get around to it. How can I change my feeling of being worthless to everyone?",
+      //         "If everyone thinks you're worthless, then maybe you need to find new people to hang out with.Seriously, the social context in which a person lives is a big influence in self-esteem.Otherwise, you can go round and round trying to understand why you're not worthless, then go back to the same crowd and be knocked down again.There are many inspirational messages you can find in social media.  Maybe read some of the ones which state that no person is worthless, and that everyone has a good purpose to their life.Also, since our culture is so saturated with the belief that if someone doesn't feel good about themselves that this is somehow terrible.Bad feelings are part of living.  They are the motivation to remove ourselves from situations and relationships which do us more harm than good.Bad feelings do feel terrible.   Your feeling of worthlessness may be good in the sense of motivating you to find out that you are much better than your feelings today.",
+      //       ],
+      //     ],
+      //     max_tokens: 55,
+      //     stop: ["\n", "<|endoftext|>"],
+      //   });
+      // };
+
       const generate_answer = async () => {
-        return await openai.answers({
-          documents: [
-            "Have you used meditation or hypnosis? Relaxing the mind and connecting with your true self is a great way to calm your thoughts and get to peace and calm. Hypnosis and meditation have helped a lot of people with anxiety and depression. Google hypnotherapists near me or write for a while about what is going on.",
-            "Answers about our inner lives are most successfully reached from a sense of feeling grounded in oneself.First step is to accept your nervousness and restless sleep.  As often as possible, sleep during daytimes in order for your body to catch up on its need for rest.Accept too about feeling down.  It is normal to feel down once in a while.  From this place of self-acceptance, trust any answers which come up to your mind.  Often answers about complicated topics come in small pieces, not all at once as a whole unit.Also, your description about panic attacks is also completely normal.   They often arise unrelated to particular conditions at a given moment.  They are a healthy symptom your body is trying to expel bad feelings and does this by having the anxiety erupt at times.So, self-acceptance, tolerance of being on a process of clearing out worn out emotional clutter, and sleep at odd times if possible, are all ways to stabilize yourself, which will also feel calm and good!",
-          ],
-          question: res1.text,
-          search_model: "davinci",
-          model: "davinci",
-          examples_context:
-            "Answers about our inner lives are most successfully reached from a sense of feeling grounded in oneself.First step is to accept your nervousness and restless sleep.  As often as possible, sleep during daytimes in order for your body to catch up on its need for rest.Accept too about feeling down.  It is normal to feel down once in a while.  From this place of self-acceptance, trust any answers which come up to your mind.  Often answers about complicated topics come in small pieces, not all at once as a whole unit.Also, your description about panic attacks is also completely normal.   They often arise unrelated to particular conditions at a given moment.  They are a healthy symptom your body is trying to expel bad feelings and does this by having the anxiety erupt at times.So, self-acceptance, tolerance of being on a process of clearing out worn out emotional clutter, and sleep at odd times if possible, are all ways to stabilize yourself, which will also feel calm and good!",
-          examples: [
-            [
-              "I'm going through some things with my feelings and myself. I barely sleep and I do nothing but think about how I'm worthless and how I shouldn't be here. I've never tried or contemplated suicide. I've always wanted to fix my issues, but I never get around to it. How can I change my feeling of being worthless to everyone?",
-              "If everyone thinks you're worthless, then maybe you need to find new people to hang out with.Seriously, the social context in which a person lives is a big influence in self-esteem.Otherwise, you can go round and round trying to understand why you're not worthless, then go back to the same crowd and be knocked down again.There are many inspirational messages you can find in social media.  Maybe read some of the ones which state that no person is worthless, and that everyone has a good purpose to their life.Also, since our culture is so saturated with the belief that if someone doesn't feel good about themselves that this is somehow terrible.Bad feelings are part of living.  They are the motivation to remove ourselves from situations and relationships which do us more harm than good.Bad feelings do feel terrible.   Your feeling of worthlessness may be good in the sense of motivating you to find out that you are much better than your feelings today.",
-            ],
-          ],
-          max_tokens: 55,
-          stop: ["\n", "<|endoftext|>"],
+        return await openai.complete({
+          engine: "davinci",
+          prompt: `Create a therapist-like answer to the following:\nI'm going through some things with my feelings and myself. I barely sleep and I do nothing but think about how I'm worthless and how I shouldn't be here: If everyone thinks you're worthless, then maybe you need to find new people to hang out with. Seriously, the social context in which a person lives is a big influence in self-esteem. Otherwise, you can go round and round trying to understand why you're not worthless, then go back to the same crowd and be knocked down again.\n\nI have so many issues to address. I have a history of sexual abuse, I’m a breast cancer survivor and I am a lifetime insomniac. I have a long history of depression and I’m beginning to have anxiety. I have low self esteem but I’ve been happily married for almost 35 years: Let me start by saying there are never too many concerns that you can bring into counselling. In fact, most people who come to see me for counselling have more than one issue they would like to work on in psychotherapy and most times these are all interconnected. In counselling, we work together, collaboratively, to figure out which issues you would like to address first and then together we develop an individualized plan of care.\n\nI have been feeling more and more down for over a month. I have started having trouble sleeping due to panic attacks, but they are almost never triggered by something that I know of: First off, I would recommend seeing your doctor and getting a physical exam. If you have an underlying health problem, that needs to be addressed. If you don’t, I would recommend seeing a therapist and talking about your feelings.\n\nI’m facing severe depression and anxiety and I just feel like I’m going through a lot. This really distracts me and I cant get my mind off the things that are bothering me: If you are feeling this way, you may be at high risk for self-harm. I would recommend going to the nearest hospital and asking to see a doctor. They will be able to help you and direct you to the support you need.\n\nHow can I get to a place where I can be content from day to day?: This is a great question. First, you need to know that being content from day to day is a skill that can be learned. I would recommend seeing a therapist and developing this skill together.\n\n${res1.text}:`,
+          maxTokens: 100,
+          temperature: 0.7,
+          topP: 1,
+          presencePenalty: 0,
+          frequencyPenalty: 0,
+          stop: ["\n"],
         });
       };
 
@@ -246,7 +259,8 @@ exports.understandUserInputController = async (req, res) => {
 
       // Translate 4
       const filAnswers = async () => {
-        return await translate(generate_answerRes.data.answers, {
+        // generate_answerRes.data.answers
+        return await translate(generate_answerRes.data.choices[0].text, {
           from: "en",
           to: "tl",
         })
@@ -280,7 +294,8 @@ exports.understandUserInputController = async (req, res) => {
       // Essay about the topic
       console.log(generate_essayRes.data.choices[0].text);
       // Answer
-      console.log(generate_answerRes.data.answers);
+      // generate_answerRes.data.answers
+      console.log(generate_answerRes.data.choices[0].text);
       // Translate to tagalog
       console.log(awaitfilTopic);
       console.log(awaitfilSecondPerson);
@@ -295,7 +310,7 @@ exports.understandUserInputController = async (req, res) => {
         topic: topicRes.data.choices[0].text,
         second_person: second_personRes.data.choices[0].text,
         generate_essay: generate_essayRes.data.choices[0].text,
-        generate_answer: generate_answerRes.data.answers[0],
+        generate_answer: generate_answerRes.data.choices[0].text,
       });
     })
     .catch((err) => {
