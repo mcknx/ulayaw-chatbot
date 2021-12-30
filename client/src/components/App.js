@@ -22,6 +22,7 @@ import { GetForEvidenceDContext } from "../Context/GetForEvidenceDContext";
 import { GetAgainstEvidenceDContext } from "../Context/GetAgainstEvidenceDContext";
 import { GetLocationContext } from "../Context/GetLocationContext";
 import { ContinueThoughtDiaryContext } from "../Context/ContinueThoughtDiaryContext";
+import { GetInterpretationsContext } from "../Context/GetInterpretationsContext";
 import { ShowAdminRoute } from "../Context/ShowAdminRoute";
 import { ShowClientRoute } from "../Context/ShowClientRoute";
 import { PresentEmotion } from "../Context/PresentEmotion";
@@ -73,6 +74,7 @@ function App() {
   const [continueThoughtDiary, setContinueThoughtDiary] = useState(false);
   const [showAdminRoute, setShowAdminRoute] = useState(false);
   const [showClientRoute, setShowClientRoute] = useState(false);
+  const [getInterpretations, setGetInterpretations] = useState([]);
 
   const [showPresentEmotion, setShowPresentEmotion] = useState(false);
 
@@ -224,113 +226,129 @@ function App() {
                                                           setGetAgainstEvidenceD,
                                                         }}
                                                       >
-                                                        <GetLocationContext.Provider
+                                                        <GetInterpretationsContext.Provider
                                                           value={{
-                                                            getLocation,
-                                                            setGetLocation,
+                                                            getInterpretations,
+                                                            setGetInterpretations,
                                                           }}
                                                         >
-                                                          {/* contexts above */}
-                                                          {!showAdminRoute &&
-                                                          !cookies.get(
-                                                            "adminLogged"
-                                                          ) ? (
-                                                            <Route
-                                                              exact
-                                                              path="/"
-                                                              component={
-                                                                Landing
-                                                              }
-                                                            />
-                                                          ) : (
-                                                            ""
-                                                          )}
-                                                          {!showAdminRoute &&
-                                                          !cookies.get(
-                                                            "adminLogged"
-                                                          ) ? (
-                                                            <Route
-                                                              exact
-                                                              path="/manual"
-                                                              component={Manual}
-                                                            />
-                                                          ) : (
-                                                            ""
-                                                          )}
-                                                          {!showAdminRoute &&
-                                                          !cookies.get(
-                                                            "adminLogged"
-                                                          ) ? (
-                                                            <Route
-                                                              exact
-                                                              path="/team"
-                                                              component={Team}
-                                                            />
-                                                          ) : (
-                                                            ""
-                                                          )}
-                                                          {!showAdminRoute &&
-                                                          !cookies.get(
-                                                            "adminLogged"
-                                                          ) ? (
-                                                            <Route
-                                                              exact
-                                                              path="/about"
-                                                              component={About}
-                                                            />
-                                                          ) : (
-                                                            ""
-                                                          )}
-                                                          {!showAdminRoute &&
-                                                          !cookies.get(
-                                                            "adminLogged"
-                                                          ) ? (
-                                                            <Route
-                                                              exact
-                                                              path="/feedback"
-                                                              component={
-                                                                Feedback
-                                                              }
-                                                            />
-                                                          ) : (
-                                                            ""
-                                                          )}
-                                                          <Route
-                                                            path="/users/password/forget"
-                                                            exact
-                                                            render={(props) => (
-                                                              <ForgetPassword
-                                                                {...props}
+                                                          <GetLocationContext.Provider
+                                                            value={{
+                                                              getLocation,
+                                                              setGetLocation,
+                                                            }}
+                                                          >
+                                                            {/* contexts above */}
+                                                            {!showAdminRoute &&
+                                                            !cookies.get(
+                                                              "adminLogged"
+                                                            ) ? (
+                                                              <Route
+                                                                exact
+                                                                path="/"
+                                                                component={
+                                                                  Landing
+                                                                }
                                                               />
+                                                            ) : (
+                                                              ""
                                                             )}
-                                                          />
+                                                            {!showAdminRoute &&
+                                                            !cookies.get(
+                                                              "adminLogged"
+                                                            ) ? (
+                                                              <Route
+                                                                exact
+                                                                path="/manual"
+                                                                component={
+                                                                  Manual
+                                                                }
+                                                              />
+                                                            ) : (
+                                                              ""
+                                                            )}
+                                                            {!showAdminRoute &&
+                                                            !cookies.get(
+                                                              "adminLogged"
+                                                            ) ? (
+                                                              <Route
+                                                                exact
+                                                                path="/team"
+                                                                component={Team}
+                                                              />
+                                                            ) : (
+                                                              ""
+                                                            )}
+                                                            {!showAdminRoute &&
+                                                            !cookies.get(
+                                                              "adminLogged"
+                                                            ) ? (
+                                                              <Route
+                                                                exact
+                                                                path="/about"
+                                                                component={
+                                                                  About
+                                                                }
+                                                              />
+                                                            ) : (
+                                                              ""
+                                                            )}
+                                                            {!showAdminRoute &&
+                                                            !cookies.get(
+                                                              "adminLogged"
+                                                            ) ? (
+                                                              <Route
+                                                                exact
+                                                                path="/feedback"
+                                                                component={
+                                                                  Feedback
+                                                                }
+                                                              />
+                                                            ) : (
+                                                              ""
+                                                            )}
+                                                            <Route
+                                                              path="/users/password/forget"
+                                                              exact
+                                                              render={(
+                                                                props
+                                                              ) => (
+                                                                <ForgetPassword
+                                                                  {...props}
+                                                                />
+                                                              )}
+                                                            />
 
-                                                          <Route
-                                                            path="/users/activate/:token"
-                                                            exact
-                                                            render={(props) => (
-                                                              <Activate
-                                                                {...props}
-                                                              />
-                                                            )}
-                                                          />
-                                                          <Route
-                                                            path="/users/password/reset/:token"
-                                                            exact
-                                                            render={(props) => (
-                                                              <Reset
-                                                                {...props}
-                                                              />
-                                                            )}
-                                                          />
-                                                          {/* <Route
+                                                            <Route
+                                                              path="/users/activate/:token"
+                                                              exact
+                                                              render={(
+                                                                props
+                                                              ) => (
+                                                                <Activate
+                                                                  {...props}
+                                                                />
+                                                              )}
+                                                            />
+                                                            <Route
+                                                              path="/users/password/reset/:token"
+                                                              exact
+                                                              render={(
+                                                                props
+                                                              ) => (
+                                                                <Reset
+                                                                  {...props}
+                                                                />
+                                                              )}
+                                                            />
+                                                            {/* <Route
                                                         path="/admin"
                                                         exact
                                                         render={(props) => (
                                                           <Admin {...props} />
                                                         )}
                                                       /> */}
-                                                          {/* <Route
+                                                            {/* <Route
                                                         path="/login"
                                                         exact
                                                         render={(props) => (
@@ -339,24 +357,24 @@ function App() {
                                                           />
                                                         )}
                                                       /> */}
-                                                          {cookies.get(
-                                                            "adminLogged"
-                                                          ) ||
-                                                          showAdminRoute ? (
-                                                            <Admin />
-                                                          ) : (
-                                                            ""
-                                                          )}
-                                                          {!showAdminRoute &&
-                                                          !cookies.get(
-                                                            "adminLogged"
-                                                          ) ? (
-                                                            <Chatbot />
-                                                          ) : (
-                                                            ""
-                                                          )}
+                                                            {cookies.get(
+                                                              "adminLogged"
+                                                            ) ||
+                                                            showAdminRoute ? (
+                                                              <Admin />
+                                                            ) : (
+                                                              ""
+                                                            )}
+                                                            {!showAdminRoute &&
+                                                            !cookies.get(
+                                                              "adminLogged"
+                                                            ) ? (
+                                                              <Chatbot />
+                                                            ) : (
+                                                              ""
+                                                            )}
 
-                                                          {/* <PDFViewer>
+                                                            {/* <PDFViewer>
                                                     <Route
                                                       path="/showPDF"
                                                       exact
@@ -367,7 +385,8 @@ function App() {
                                                       )}
                                                     />
                                                   </PDFViewer> */}
-                                                        </GetLocationContext.Provider>
+                                                          </GetLocationContext.Provider>
+                                                        </GetInterpretationsContext.Provider>
                                                       </GetAgainstEvidenceDContext.Provider>
                                                     </GetForEvidenceDContext.Provider>
                                                   </HotThoughtRateContext.Provider>

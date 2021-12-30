@@ -45,6 +45,7 @@ exports.thoughtDiaryController = async (req, res) => {
   let step3Rate = formData[5].step3Rate;
   let step4Thoughts = formData[6].step4Thoughts;
   let step5AfterFeelings = formData[7].step5AfterFeelings;
+  console.log(formData);
 
   User.findOne(
     {

@@ -31,6 +31,7 @@ import { GetUTSContainerContext } from "../../Context/GetUTSContainerContext";
 import { HotThoughtRateContext } from "../../Context/HotThoughtRateContext";
 import { GetForEvidenceDContext } from "../../Context/GetForEvidenceDContext";
 import { GetAgainstEvidenceDContext } from "../../Context/GetAgainstEvidenceDContext";
+import { GetInterpretationsContext } from "../../Context/GetInterpretationsContext";
 import useGeoLocation from "../../hooks/useGeolocation";
 import { GetLocationContext } from "../../Context/GetLocationContext";
 import { ContinueThoughtDiaryContext } from "../../Context/ContinueThoughtDiaryContext";
@@ -121,6 +122,9 @@ function Chatbot(props) {
   const [getMoodHot, setGetMoodHot] = useState(false);
   const [getAfterFeelings, setGetAfterFeelings] = useState(false);
   const [getAfterFeelingsChat, setGetAfterFeelingsChat] = useState([]);
+  const { getInterpretations, setGetInterpretations } = useContext(
+    GetInterpretationsContext
+  );
 
   const { getHotEmotionCAnswer, setGetHotEmotionCAnswer } = useContext(
     GetHotEmotionCAnswerContext
@@ -689,6 +693,7 @@ function Chatbot(props) {
               `Have you been struck by the relationship of your negative thoughts?`,
               `Napansin mo ba ang ugnayan ng iyong negatibong pagiisip?`
             );
+            setFocusThoughtDiaryLetter("b_uts");
             // _handleTranslate(
             //   `Have you been struck by the relationship of your negative thoughts?`,
             //   `Kanina kinuha ko yung present mood (${showPresentEmotion[0].mood_text}) mo pagkatapos`
@@ -773,11 +778,15 @@ function Chatbot(props) {
           );
         }
       } else if (getAfterFeelings) {
+        let chat = e.target.value;
         if (e.target.value !== "") {
           // user response
           _handleTranslate(e.target.value, e.target.value, true);
           setGetAfterFeelingsChat((prevAft) => {
-            return [...prevAft, e.target.value];
+            return [...prevAft, chat];
+          });
+          setGetInterpretations((prevAft) => {
+            return [...prevAft, chat];
           });
 
           // bot reponse
@@ -3786,6 +3795,9 @@ function ThoughtDiary() {
   const { getAgainstEvidenceD, setGetAgainstEvidenceD } = useContext(
     GetAgainstEvidenceDContext
   );
+  const { getInterpretations, setGetInterpretations } = useContext(
+    GetInterpretationsContext
+  );
   const { getLocation, setGetLocation } = useContext(GetLocationContext);
   const { showPresentEmotion, setShowPresentEmotion } =
     useContext(PresentEmotion);
@@ -4114,6 +4126,11 @@ function ThoughtDiary() {
                   {/* {continueThoughtDiary ? ( */}
                   <label className="flex flex-col leading-none">
                     <label>
+                      <label className="text-[14px] text-blue-900  font-bold">
+                        thoughts of the event
+                      </label>
+                    </label>
+                    <label>
                       {focusThoughtDiaryLetter === "b_1" ? (
                         <>
                           <ol className="text-[14px] text-justify text-blue-900 font-normal py-2 px-2 space-y-2">
@@ -4210,6 +4227,38 @@ function ThoughtDiary() {
                     : " text-center break-words max-w-[330px]  pt-2 pb-4 px-4 row-span-2"
                 }
               >
+                <label className="flex flex-col leading-none">
+                  <label>
+                    <label className="text-[14px] text-blue-900  font-bold">
+                      interpretation(s)
+                    </label>
+                  </label>
+                </label>
+                <label className="">
+                  {/* {_handleShowList(getOtherThoughtB)} */}
+                  {getInterpretations != null || getInterpretations != undefined
+                    ? getInterpretations.map((item, i) => {
+                        // console.log(firstHit === -1, firstHit);
+                        // if (item.select && firstHitOther === -1) {
+                        //   firstHitOther = i;
+                        // }
+                        return (
+                          <>
+                            {/* .select && i != firstHitOther */}
+                            {i != 0 ? (
+                              <span className="text-[50px] leading-[0px]">
+                                ,
+                              </span>
+                            ) : (
+                              ""
+                            )}
+                            {item}
+                          </>
+                        );
+                      })
+                    : ""}
+                  <span className="text-[50px] leading-[0px]">.</span>
+                </label>
                 {/* The hot thought Unhelpful Thinking Styles */}
                 {continueThoughtDiary ? (
                   <label className="flex flex-col leading-none">

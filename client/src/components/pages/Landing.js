@@ -41,7 +41,7 @@ const Landing = (props) => {
             Kaibigan sa kalusugang pangkaisipan.
           </label>
           <label className="text-[15px] lg:text-[30px] text-[#5A676D] ">
-            Ipahayag ang iyong nararalgaman.
+            Ipahayag ang iyong nararamdaman.
           </label>
 
           {/* buttons-upper */}

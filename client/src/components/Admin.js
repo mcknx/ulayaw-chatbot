@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ShowAdminRoute } from "../Context/ShowAdminRoute";
+import { GetInterpretationsContext } from "../Context/GetInterpretationsContext";
 import authSvg from "../assets/forget.svg";
 import ulayaw from "../assets/ulayaw.png";
 import { ToastContainer, toast } from "react-toastify";
@@ -714,6 +715,9 @@ function CreateCode(props) {
 }
 
 function ThoughtDiary(props) {
+  const { getInterpretations, setGetInterpretations } = useContext(
+    GetInterpretationsContext
+  );
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedUser, setSelectedUser] = useState();
   let presentEmotion;
@@ -912,7 +916,7 @@ function ThoughtDiary(props) {
                   {/* other thoughts */}
                   <label className="flex flex-col leading-none pt-10">
                     <label className="text-[14px] text-blue-900  font-bold">
-                      your thoughts
+                      thoughts of the event
                     </label>
 
                     {/* other thoughts instances */}
@@ -949,6 +953,38 @@ function ThoughtDiary(props) {
                   " text-center break-words max-w-[330px]  pt-2 pb-4 px-4 row-span-2"
                 }
               >
+                <label className="flex flex-col leading-none">
+                  <label>
+                    <label className="text-[14px] text-blue-900  font-bold">
+                      interpretation(s)
+                    </label>
+                  </label>
+                </label>
+                <label className="">
+                  {/* {_handleShowList(getOtherThoughtB)} */}
+                  {isLoaded
+                    ? selectedUser.step5AfterFeelings.map((item, i) => {
+                        // console.log(firstHit === -1, firstHit);
+                        // if (item.select && firstHitOther === -1) {
+                        //   firstHitOther = i;
+                        // }
+                        return (
+                          <>
+                            {/* .select && i != firstHitOther */}
+                            {i != 0 ? (
+                              <span className="text-[50px] leading-[0px]">
+                                ,
+                              </span>
+                            ) : (
+                              ""
+                            )}
+                            {item}
+                          </>
+                        );
+                      })
+                    : ""}
+                  <span className="text-[50px] leading-[0px]">.</span>
+                </label>
                 {/* The hot thought Unhelpful Thinking Styles */}
 
                 {/* Other Unhelpful Thinking Styles  */}
