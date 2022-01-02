@@ -16,7 +16,7 @@ const Header = () => {
         <span className=" rounded-full self-center mr-[8%] bg-white cursor-pointer inline-block">
           <img className=" lg:w-20 " src={ulayawFace} />
         </span>
-        <span className="text-white self-center text-xl lg:text-[39px] 2xl:text-[50px] w-40 cursor-pointer">
+        <span className="text-white self-center text-xl lg:text-[39px]  w-40 cursor-pointer">
           <Link to={"/"}>Ulayaw</Link>
         </span>
       </span>

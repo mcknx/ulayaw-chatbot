@@ -610,7 +610,16 @@ export default function ModalLogin(props) {
               ""
             ) : (
               <Link
-                onClick={() => props.setShowModal(false)}
+                onClick={() => {
+                  props.setShowModal(!props.showModal);
+
+                  if (props.setQuickRepliesWelcome) {
+                    props.setQuickRepliesWelcome(true);
+                  }
+                  if (props.assessment_meron_companion_done) {
+                    props.setassessment_meron_companion_done(true);
+                  }
+                }}
                 to={"/users/password/forget"}
                 className="pt-4 text-[14px]  cursor-pointer  hover:text-black  text-gray-500"
               >
