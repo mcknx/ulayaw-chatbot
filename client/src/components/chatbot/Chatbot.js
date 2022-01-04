@@ -138,6 +138,7 @@ function Chatbot(props) {
     GetOtherEmotionAllContext
   );
   const [getRateEmotion, setGetRateEmotion] = useState(false);
+  const [getRateEmotionExplain, setGetRateEmotionExplain] = useState(false);
   const { getHotEmotionRate, setGetHotEmotionRate } = useContext(
     HotEmotionRateContext
   );
@@ -619,45 +620,108 @@ function Chatbot(props) {
                 `Mangyaring maglagay ng numero sa pagitan ng (1-100)`
               );
             } else {
-              if (chat > 0 && chat < 51) {
-                // df_text_query(chat, false);
-                _handleTranslate(`${chat}`, `${chat}`, true);
-                _handleTranslate(
-                  `Okay, that wasn't so strong. However, you mentioned experiencing these things that affected you. '${_handleMoods(
-                    getHotEmotionCAnswer
-                  )}' and '${_handleShowList(getOtherEmotionAll)}'`,
-                  `Okay, hindi siya ganoon tindi. Gayunpaman, binanggit mo ang karanasan sa mga bagay na ito na nakaapekto sa iyo. '${_handleMoods(
-                    getHotEmotionCAnswer
-                  )}' and '${_handleShowList(getOtherEmotionAll)}'`
-                );
-              }
-              if (chat > 50 && chat <= 100) {
-                _handleTranslate(`${chat}`, `${chat}`, true);
-                _handleTranslate(
-                  `Okay, that's pretty strong. It's not surprising that you've noticed that these things affected you.`,
-                  `Okay, medyo matindi nga iyon. Hindi nakakagulat na napansin mo ang mga bagay na ito ay nakaapekto sa iyo.`
-                );
-              }
-
-              setShowChatBox(false);
-              setFocusThoughtDiaryLetter("b");
-              // df_event_query("ABC_THOUGHT_DIARY_B");
-              setGetRateEmotion(false);
               setGetHotEmotionRate(chat);
+              setGetRateEmotion(false);
+              setGetRateEmotionExplain(true);
+              _handleTranslate(`${chat}`, `${chat}`, true);
+              _handleTranslate(
+                `Can you explain why this is your rate?`,
+                `Maaari mo bang maipaliwanag kung bakit ito ang iyong rate?`
+              );
+
+              // if (chat > 0 && chat < 51) {
+              //   // df_text_query(chat, false);
+              //   _handleTranslate(`${chat}`, `${chat}`, true);
+              //   _handleTranslate(
+              //     `Okay, that wasn't so strong. However, you mentioned experiencing these things that affected you. '${_handleMoods(
+              //       getHotEmotionCAnswer
+              //     )}' and '${_handleShowList(getOtherEmotionAll)}'`,
+              //     `Okay, hindi siya ganoon tindi. Gayunpaman, binanggit mo ang karanasan sa mga bagay na ito na nakaapekto sa iyo. '${_handleMoods(
+              //       getHotEmotionCAnswer
+              //     )}' and '${_handleShowList(getOtherEmotionAll)}'`
+              //   );
+              // }
+              // if (chat > 50 && chat <= 100) {
+              //   _handleTranslate(`${chat}`, `${chat}`, true);
+              //   _handleTranslate(
+              //     `Okay, that's pretty strong. It's not surprising that you've noticed that these things affected you.`,
+              //     `Okay, medyo matindi nga iyon. Hindi nakakagulat na napansin mo ang mga bagay na ito ay nakaapekto sa iyo.`
+              //   );
+              // }
+            }
+            console.log(chat);
+          }
+        } else {
+          df_text_query("Please put anything in the chatbox", false, "bot");
+        }
+      } else if (getRateEmotionExplain) {
+        let chat = e.target.value;
+
+        if (e.target.value !== "") {
+          _handleTranslate(e.target.value, e.target.value, true);
+          setShowChatBox(false);
+          setFocusThoughtDiaryLetter("b");
+          // _handleTranslate(
+          //   `Okay lets go human na boi, human ug alas 4 gagi hahahaha`,
+          //   `Okay lets go human na boi, human ug alas 4 gagi hahahaha`
+          // );
+          setShowChatBox(false);
+          toast.success("Please wait while the bot processes your message.");
+          let emotion;
+          showPresentEmotion.map((item, i) => {
+            if (item.select) {
+              emotion = item.mood_text;
+            }
+          });
+          await axios
+            .get(`/api/useApi/understand/${e.target.value}/${emotion}`)
+            .then((res) => {
+              console.log(res);
+              // setShowChatBox(false);
+              // return res.data.data;
+              // return res;
+              // _handleTranslate(
+              //   `Topic: ${res.data.topic}`,
+              //   `Topic: ${res.data.filTopic}`
+              // );
+              _handleTranslate(
+                `${res.data.second_person}`,
+                `${res.data.filSecondPerson}`
+              );
+              // _handleTranslate(
+              //   `${res.data.generate_essay}`,
+              //   `${res.data.filEssay}`
+              // );
+              _handleTranslate(
+                `${res.data.generate_answer}`,
+                `${res.data.filAnswers}`
+              );
+              _handleTranslate(
+                `However, you mentioned experience with these things that affect you.`,
+                `Gayunpaman, binanggit mo ang karanasan sa mga bagay na ito na nakakaapekto sa iyo.`
+              );
+              // df_event_query("ABC_THOUGHT_DIARY_B");
+              // setGetRateEmotion(false);
+
               _handleTranslate(
                 `Ask yourself. List all statements linking A (event) and C. (consequence). Share in detail what you want to say.`,
                 `Tanungin ang iyong sarili. Ilista ang lahat ng pahayag na nag-uugnay sa A (kaganapan) at C. (kahihinatnan). Ibahagi ng detalyado ang nais mong sabihin. `
               );
               _handleTranslate(
-                `First, What were you thinking of that event?`,
-                `Una, Ano bang iniisip mo sa kaganapan na iyon? `
+                `What was your first thought or feeling at the event at that time?`,
+                `Ano ba ang una mong naisip o na feel sa pangyayari noong panahong na iyon? `
               );
+              setGetRateEmotionExplain(false);
               setFocusThoughtDiaryLetter("b_1");
               setGetOtherThoughtBool(true);
               setShowChatBox(true);
-            }
-            console.log(chat);
-          }
+            })
+            .catch((err) => {
+              // console.log(err.response);
+              // setShowChatBox(false);
+              // toast.error("Sorry there was an error");
+              _handleTranslate(`Okay`, `Okay`);
+            });
         } else {
           df_text_query("Please put anything in the chatbox", false, "bot");
         }
@@ -668,8 +732,8 @@ function Chatbot(props) {
             setShowChatBox(true);
             _handleTranslate(`${chat}`, `${chat}`, true);
             _handleTranslate(
-              `What came to your mind at that time? As you feel troubled by the emotions you feel`,
-              `Ano ang pumasok sa isip mo noong panahon na iyon? Habang nababagabag ka sa mga emotion na iyong nararamdaman`
+              `What first came to your mind at that time as you were feeling emotions based on your experience.`,
+              `Ano ang unang pumasok sa isip mo nung panahon na iyon habang nakakaramdam ka ng mga emosyon base sa iyong experience.`
             );
             setFocusThoughtDiaryLetter("b_c");
 
@@ -680,8 +744,8 @@ function Chatbot(props) {
             setShowChatBox(true);
             _handleTranslate(`${chat}`, `${chat}`, true);
             _handleTranslate(
-              `Finally, "What am I saying to myself?"`,
-              `Panghuli, "Ano ba ang sinasabi ko sa sarili ko?"`
+              `What did you say to yourself during those times?`,
+              `Ano ang sinabi mo sa sarili mo noong mga panahon na iyon?`
             );
             setFocusThoughtDiaryLetter("b");
 
@@ -795,13 +859,57 @@ function Chatbot(props) {
           // let filMsgUnderstood = await msgUnderstood.data.fil;
 
           // _handleTranslate(`${engMsgUnderstood}`, `${filMsgUnderstood}`);
-          _handleTranslate(`Okay`, `Okay`);
-
-          // bot response
-          let assessStep1 = `Mayroon ka pa bang gusto sabihin? `;
-          _handleTranslate(`Do you have anything else to say? `, assessStep1);
-          df_event_query("ABC_THOUGHT_DIARY_B_AFTER");
+          // _handleTranslate(`Okay`, `Okay`);
           setShowChatBox(false);
+          toast.success("Please wait while the bot processes your message.");
+          let emotion;
+          showPresentEmotion.map((item, i) => {
+            if (item.select) {
+              emotion = item.mood_text;
+            }
+          });
+          await axios
+            .get(`/api/useApi/understand/${e.target.value}/${emotion}`)
+            .then((res) => {
+              console.log(res);
+              // setShowChatBox(false);
+              // return res.data.data;
+              // return res;
+              // _handleTranslate(
+              //   `Topic: ${res.data.topic}`,
+              //   `Topic: ${res.data.filTopic}`
+              // );
+              _handleTranslate(
+                `${res.data.second_person}`,
+                `${res.data.filSecondPerson}`
+              );
+              // _handleTranslate(
+              //   `${res.data.generate_essay}`,
+              //   `${res.data.filEssay}`
+              // );
+              _handleTranslate(
+                `${res.data.generate_answer}`,
+                `${res.data.filAnswers}`
+              );
+              // _handleTranslate(
+              //   `However, you mentioned experience with these things that affect you.`,
+              //   `Gayunpaman, binanggit mo ang karanasan sa mga bagay na ito na nakakaapekto sa iyo.`
+              // );
+              // bot response
+              let assessStep1 = `Mayroon ka pa bang gusto sabihin? `;
+              _handleTranslate(
+                `Do you have anything else to say? `,
+                assessStep1
+              );
+              df_event_query("ABC_THOUGHT_DIARY_B_AFTER");
+              setShowChatBox(false);
+            })
+            .catch((err) => {
+              // console.log(err.response);
+              // setShowChatBox(false);
+              // toast.error("Sorry there was an error");
+              _handleTranslate(`Okay`, `Okay`);
+            });
         }
       } else if (getExplainDBool) {
         let chat = e.target.value;
@@ -1116,7 +1224,7 @@ function Chatbot(props) {
 
         _handleTranslate(
           `Hi ${userLoggedIn.first_name}, I'm glad you are here today. Maybe we could start by getting your mood. First, I want you to pick the most likely feelings you are into right now.`,
-          `Hi ${userLoggedIn.first_name}, natutuwa ako na narito ka ngayon. Siguro maaari nating simulan sa pagkuha ng iyong mood. Pumili ka ng isa dito sa ating 'emotion box'`
+          `Hi ${userLoggedIn.first_name}, natutuwa ako na narito ka ngayon. Siguro maaari nating simulan sa pagkuha ng iyong nararamdaman. Pumili ka ng isa dito sa ating 'emotion box'`
         );
 
         df_event_query("ABC_GETMOOD");
@@ -1126,7 +1234,7 @@ function Chatbot(props) {
         console.log(assessmentUser);
         _handleTranslate(
           `Hi ${userLoggedIn.first_name}, I'm glad you are here today. Maybe we could start by getting your mood. First, I want you to pick the most likely feelings you are into right now.`,
-          `Hi ${userLoggedIn.first_name}, natutuwa ako na narito ka ngayon. Siguro maaari nating simulan sa pagkuha ng iyong mood. Pumili ka ng isa dito sa ating 'emotion box'`
+          `Hi ${userLoggedIn.first_name}, natutuwa ako na narito ka ngayon. Siguro maaari nating simulan sa pagkuha ng iyong nararamdaman. Pumili ka ng isa dito sa ating 'emotion box'`
         );
         df_event_query("ABC_GETMOOD");
         break;
@@ -1211,16 +1319,16 @@ function Chatbot(props) {
 
       case "abc_hindi_b":
         _handleTranslate(
-          `Negative feelings or consequences are caused by events or activating events.`,
-          `Ang mga negatibong nararamdaman o kinahihinatnan ay sanhi ng kaganapan o activating events.`
+          `When a person experiences a negative feeling caused by an event or activating life events, it is usually followed by negative self-beliefs.`,
+          `Kapag ang isang tao ay nakakaranas ng isang negatibong nararamdaman sanhi ng kaganapan o activating events sa buhay, ito ay karaniwang nasusundan ng mga negatibong paniniwala sa sarili.`
         );
         _handleTranslate(
-          `Because of that, can you imagine what negative beliefs you hold on to?`,
-          `Dahil dyan, maari mo bang isipin kung anong negatibong paniniwala ang kinakapitan mo?`
+          `Because of that, can you imagine what negative beliefs you hold?`,
+          `Dahil diyan, maaari mo bang isipin kung anong negatibong paniniwala ang pinanghahawakan mo?`
         );
         _handleTranslate(
-          `So what unreasonable style of thinking have you gone through that you want to change?`,
-          `Kung gayon, anong hindi makatwirang istilo ng pag-iisip napagdaanan mo na nais mong baguhin?`
+          `Unhelpful thinking styles are unhelpful statements and self-thinking, it may well be in one of the ones you mentioned earlier in the Beliefs section. If so, what irrational style of thinking have you gone through that you want to change?`,
+          `Ang hindi makatwirang istilo ng pag-iisip ay ang mga hindi nakakatulong na mga pahayag at pag-iisip sa sarili, maaaring nasa isa na rin ito sa mga binanggit mo kanina sa Beliefs seksyon. Kung gayon, anong hindi makatwirang istilo ng pag-iisip napagdaanan mo na nais mong baguhin?`
         );
         _handleTranslate(
           `What are they? Can you share interpretations or thoughts you have right now?`,
@@ -1468,7 +1576,7 @@ function Chatbot(props) {
     //   ),
     //   `base sa iyong napiling mood. Mayroon ka bang ideya kung kailan, saan at paano ito nagsimula?`
     // );
-    let inputData = `Base sa iyong napiling mood. Mayroon ka bang ideya kung kailan, saan at paano ito nagsimula?`;
+    let inputData = `Base sa iyong napiling mood. Mayroon ka bang ideya kung kailan, saan at paano ito nagsimula? at gaano mo na katagal itong nararamdaman?`;
 
     _handleTranslate(
       _handleMoods(selectedMoods),
@@ -1478,7 +1586,7 @@ function Chatbot(props) {
 
     // let ms = await _handleTranslateEng(inputData, false);
     _handleTranslate(
-      `Based on your chosen mood. Do you have any idea when, where and how it started?`,
+      `Based on your chosen mood. Do you have any idea when, where and how it started? and how long have you been feeling it?`,
       inputData
     );
 

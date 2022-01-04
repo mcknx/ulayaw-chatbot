@@ -136,20 +136,20 @@ exports.understandUserInputController = async (req, res) => {
 
       const second_personRes = await second_person();
 
-      const generate_essay = async () => {
-        return await openai.complete({
-          engine: "davinci",
-          prompt: `Create an essay about loss of friends, losing a friend/s, friend problem and suggest a solution: Losing a friend is one of the most painful experiences in life, and it can be even more difficult to deal with when you have lost a friend to death. When you lose someone close to you, it can leave a hole in your heart that will never heal.\n\nCreate an essay about sleep problems, sleep issues and suggest a solution: Sleep problems are one of the most common problems faced by people today. Sleep disorders can be caused by a number of factors, including stress, anxiety, depression and other physical or psychological factors.\n\nCreate an essay about self-esteem, self-confidence, self-image and suggest a solution: Self-esteem is the value that a person places on himself. It is important to have good self-esteem, because it helps you to feel good about yourself and boosts your confidence.\n\nCreate an essay about death of a loved one, death of a family member and suggest a solution: Death is one of the most painful experiences that anyone can go through. When you lose a loved one, it can leave you feeling empty and alone.\n\nCreate an essay about stress, anxiety and suggest a solution: Stress is one of the most common problems faced by people today. Stress can be caused by a number of factors, including work, school, family and other physical or psychological factors.\n\nCreate an essay about ${emotionData}, ${topicRes.data.choices[0].text} and suggest a solution:`,
-          maxTokens: 60,
-          temperature: 0.5,
-          topP: 1,
-          presencePenalty: 0,
-          frequencyPenalty: 0.81,
-          stop: ["\n"],
-        });
-      };
+      // const generate_essay = async () => {
+      //   return await openai.complete({
+      //     engine: "davinci",
+      //     prompt: `Create an essay about loss of friends, losing a friend/s, friend problem and suggest a solution: Losing a friend is one of the most painful experiences in life, and it can be even more difficult to deal with when you have lost a friend to death. When you lose someone close to you, it can leave a hole in your heart that will never heal.\n\nCreate an essay about sleep problems, sleep issues and suggest a solution: Sleep problems are one of the most common problems faced by people today. Sleep disorders can be caused by a number of factors, including stress, anxiety, depression and other physical or psychological factors.\n\nCreate an essay about self-esteem, self-confidence, self-image and suggest a solution: Self-esteem is the value that a person places on himself. It is important to have good self-esteem, because it helps you to feel good about yourself and boosts your confidence.\n\nCreate an essay about death of a loved one, death of a family member and suggest a solution: Death is one of the most painful experiences that anyone can go through. When you lose a loved one, it can leave you feeling empty and alone.\n\nCreate an essay about stress, anxiety and suggest a solution: Stress is one of the most common problems faced by people today. Stress can be caused by a number of factors, including work, school, family and other physical or psychological factors.\n\nCreate an essay about ${emotionData}, ${topicRes.data.choices[0].text} and suggest a solution:`,
+      //     maxTokens: 60,
+      //     temperature: 0.5,
+      //     topP: 1,
+      //     presencePenalty: 0,
+      //     frequencyPenalty: 0.81,
+      //     stop: ["\n"],
+      //   });
+      // };
 
-      const generate_essayRes = await generate_essay();
+      // const generate_essayRes = await generate_essay();
 
       // const generate_answer = async () => {
       //   return await openai.answers({
@@ -235,27 +235,27 @@ exports.understandUserInputController = async (req, res) => {
       };
 
       // Translate 3
-      const filEssay = async () => {
-        return await translate(generate_essayRes.data.choices[0].text, {
-          from: "en",
-          to: "tl",
-        })
-          .then((r) => {
-            // console.log("@paiva/translation-google");
-            // console.log(r.text, "res.text");
-            // return res.json({
-            //   success: true,
-            //   data: r.text,
-            // });
-            return r.text;
-          })
-          .catch((err) => {
-            console.error(err);
-            // return res.json({
-            //   errors: errorHandler(err),
-            // });
-          });
-      };
+      // const filEssay = async () => {
+      //   return await translate(generate_essayRes.data.choices[0].text, {
+      //     from: "en",
+      //     to: "tl",
+      //   })
+      //     .then((r) => {
+      //       // console.log("@paiva/translation-google");
+      //       // console.log(r.text, "res.text");
+      //       // return res.json({
+      //       //   success: true,
+      //       //   data: r.text,
+      //       // });
+      //       return r.text;
+      //     })
+      //     .catch((err) => {
+      //       console.error(err);
+      //       // return res.json({
+      //       //   errors: errorHandler(err),
+      //       // });
+      //     });
+      // };
 
       // Translate 4
       const filAnswers = async () => {
@@ -283,7 +283,7 @@ exports.understandUserInputController = async (req, res) => {
 
       const awaitfilTopic = await filTopic();
       const awaitfilSecondPerson = await filSecondPerson();
-      const awaitfilEssay = await filEssay();
+      // const awaitfilEssay = await filEssay();
       const awaitfilAnswers = await filAnswers();
       // Orig Query English Converted
       console.log(res1.text);
@@ -292,24 +292,24 @@ exports.understandUserInputController = async (req, res) => {
       // Secondary Person Explanation
       console.log(second_personRes.data.choices[0].text);
       // Essay about the topic
-      console.log(generate_essayRes.data.choices[0].text);
+      // console.log(generate_essayRes.data.choices[0].text);
       // Answer
       // generate_answerRes.data.answers
       console.log(generate_answerRes.data.choices[0].text);
       // Translate to tagalog
       console.log(awaitfilTopic);
       console.log(awaitfilSecondPerson);
-      console.log(awaitfilEssay);
+      // console.log(awaitfilEssay);
       console.log(awaitfilAnswers);
       return res.json({
         success: true,
         filTopic: awaitfilTopic,
         filSecondPerson: awaitfilSecondPerson,
-        filEssay: awaitfilEssay,
+        // filEssay: awaitfilEssay,
         filAnswers: awaitfilAnswers,
         topic: topicRes.data.choices[0].text,
         second_person: second_personRes.data.choices[0].text,
-        generate_essay: generate_essayRes.data.choices[0].text,
+        // generate_essay: generate_essayRes.data.choices[0].text,
         generate_answer: generate_answerRes.data.choices[0].text,
       });
     })
