@@ -560,10 +560,10 @@ function Chatbot(props) {
                 `${res.data.second_person}`,
                 `${res.data.filSecondPerson}`
               );
-              _handleTranslate(
-                `${res.data.generate_essay}`,
-                `${res.data.filEssay}`
-              );
+              // _handleTranslate(
+              //   `${res.data.generate_essay}`,
+              //   `${res.data.filEssay}`
+              // );
               _handleTranslate(
                 `${res.data.generate_answer}`,
                 `${res.data.filAnswers}`
