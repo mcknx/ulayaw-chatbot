@@ -68,6 +68,7 @@
     "opencage-api-client": "^1.0.0",
     "react-facebook-login": "^4.1.1",
     "react-hot-toast": "^2.1.1",
+    "react-modal-image": "^2.5.0",
     "react-textfit": "^1.1.1",
     "react-to-pdf": "^0.0.14",
     "sentiment": "^5.0.2",

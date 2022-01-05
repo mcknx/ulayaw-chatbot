@@ -19,7 +19,7 @@ const About = (props) => {
             ? "hidden  "
             : showThoughtDiaryTool
             ? "hidden  "
-            : "container mx-auto my-auto md:pt-[100px] 2xl:pt-[200px] md:transform md:scale-[.79] 2xl:scale-[1] h-[1000px] md:h-full "
+            : "container mx-auto my-auto md:pt-[100px] 2xl:pt-[200px] md:transform md:scale-[.79] 2xl:scale-[1] h-[1000px] "
         }
       >
         <div className="relative md:grid md:grid-cols-12 gap-4 ">
