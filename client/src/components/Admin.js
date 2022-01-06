@@ -97,7 +97,7 @@ const Admin = ({ match }) => {
       <div className="max-w-screen-xl m-0 sm:m-20 bg-white shadow sm:rounded-lg flex justify-center flex-1 w-full">
         <div className="flex flex-col justify-center w-full h-full m-0 ">
           {/* table */}
-          <div className="w-full h-full my-auto max-w-[1400px] max-h-[1000px] mx-auto bg-white shadow-lg rounded-sm border border-gray-200">
+          <div className="w-full h-full my-auto max-w-[1400px] mx-auto bg-white shadow-lg rounded-sm border border-gray-200">
             <header className="px-5  border-b border-gray-100 flex justify-between">
               <h2 className="py-4 font-semibold text-gray-800">Users</h2>
 
