@@ -191,7 +191,7 @@ exports.handOverController = async (req, res) => {
   //   });
 
   const emailData = {
-    from: formData.admin_email,
+    from: config.emailFrom,
     to: formData.r_email,
     subject: "HandOver Patient from Ulayaw",
     html: `
