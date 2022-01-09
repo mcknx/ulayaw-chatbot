@@ -280,7 +280,13 @@ export default function ModalLogin(props) {
                     props._handleTranslate(`Login`, `Login`, true);
                     props._handleTranslate(
                       `We appreciate your signing in, ${res.data.user.first_name}. We've verified that you're ${res.data.user.age} years old and that you're a ${res.data.user.gender}.`,
-                      `Hello ${res.data.user.first_name}, nagpapasalamat kami sa iyong pag sign in. Napag alaman namin na ikaw ay ${res.data.user.age} taong gulang at isang ${res.data.user.gender}.`
+                      `Hello ${
+                        res.data.user.first_name
+                      }, nagpapasalamat kami sa iyong pag sign in. Napag alaman namin na ikaw ay ${
+                        res.data.user.age
+                      } taong gulang at isang ${
+                        res.data.user.gender === "male" ? "lalaki" : "babae"
+                      }.`
                     );
                     props._handleTranslate(
                       `The information will be included in your profile's documentation. You can be assured that your data will be kept confidential and secure while in our care.`,

@@ -416,7 +416,9 @@ function Chatbot(props) {
                 isAuth().first_name
               }, nagpapasalamat kami sa iyong pag sign in. Napag alaman namin na ikaw ay ${
                 isAuth().age
-              } taong gulang at isang ${isAuth().gender}.`
+              } taong gulang at isang ${
+                isAuth().gender === "male" ? "lalaki" : "babae"
+              }.`
             );
             _handleTranslate(
               `The information will be included in your profile's documentation. You can be assured that your data will be kept confidential and secure while in our care.`,
@@ -597,7 +599,7 @@ function Chatbot(props) {
           setGetOtherEmotionAll(chat.split(/[,]+/));
           _handleTranslate(
             `Choose one of those citations that is more relevant to "activating events" or events.`,
-            `Pumili ng isang sa mga na banggit na mas nauugnay sa "activating events" o kaganapan. `
+            `Pumili ng isa sa mga nabanggit na mas nauugnay sa "activating events" o kaganapan. `
           );
           // console.log(getOtherEmotionAll);
           df_event_query("ABC_THOUGHT_DIARY_EXPLAINING_C");
@@ -733,7 +735,7 @@ function Chatbot(props) {
             _handleTranslate(`${chat}`, `${chat}`, true);
             _handleTranslate(
               `What first came to your mind at that time as you were feeling emotions based on your experience.`,
-              `Ano ang unang pumasok sa isip mo nung panahon na iyon habang nakakaramdam ka ng mga emosyon base sa iyong experience.`
+              `Ano ang unang pumasok sa isip mo noong panahon na iyon habang nakakaramdam ka ng emosyon base sa iyong experience?`
             );
             setFocusThoughtDiaryLetter("b_c");
 
@@ -1224,7 +1226,7 @@ function Chatbot(props) {
 
         _handleTranslate(
           `Hi ${userLoggedIn.first_name}, I'm glad you are here today. Maybe we could start by getting your mood. First, I want you to pick the most likely feelings you are into right now.`,
-          `Hi ${userLoggedIn.first_name}, natutuwa ako na narito ka ngayon. Siguro maaari nating simulan sa pagkuha ng iyong nararamdaman. Pumili ka ng isa dito sa ating 'emotion box'`
+          `Hi ${userLoggedIn.first_name}, natutuwa ako na narito ka ngayon. Siguro maaari nating simulan sa pagkuha ng iyong nararamdaman. Pumili ka ng isa dito sa ating 'emotion box' na pinakanararamdaman mo ngayon.`
         );
 
         df_event_query("ABC_GETMOOD");
@@ -1234,7 +1236,7 @@ function Chatbot(props) {
         console.log(assessmentUser);
         _handleTranslate(
           `Hi ${userLoggedIn.first_name}, I'm glad you are here today. Maybe we could start by getting your mood. First, I want you to pick the most likely feelings you are into right now.`,
-          `Hi ${userLoggedIn.first_name}, natutuwa ako na narito ka ngayon. Siguro maaari nating simulan sa pagkuha ng iyong nararamdaman. Pumili ka ng isa dito sa ating 'emotion box'`
+          `Hi ${userLoggedIn.first_name}, natutuwa ako na narito ka ngayon. Siguro maaari nating simulan sa pagkuha ng iyong nararamdaman. Pumili ka ng isa dito sa ating 'emotion box' na pinakanararamdaman mo ngayon.`
         );
         df_event_query("ABC_GETMOOD");
         break;
@@ -1580,7 +1582,7 @@ function Chatbot(props) {
 
     _handleTranslate(
       _handleMoods(selectedMoods),
-      _handleMoods(selectedMoods),
+      _handleMoodsTag(selectedMoods),
       true
     );
 
@@ -2348,7 +2350,7 @@ function Chatbot(props) {
                         setGetAdverseStep3(item);
                         _handleTranslate(
                           `Assume yourself in events. What words describe how you feel or what they are?`,
-                          `Ipagpalagay mo ang iyong sarili sa mga kaganapan. Anong mga salita ang naglalarawan sa iyong nararamdaman o kinahihinatnan nito?`
+                          `Ipagpalagay mo ang iyong sarili sa mga kaganapan. Paano mo mailalarawan ang iyong nararamdaman o kinahihinatnan nito?`
                         );
                         _handleTranslate(
                           `Please put a comma in each description.`,
@@ -2609,7 +2611,11 @@ function Chatbot(props) {
                       `Just come back when you have a problem. If you have comments and feedback to our chatbot. Please don't hesitate to write it at our feedback page. Thank you again.`,
                       `Mag balik ka lang pag may problema ka. Kung mayroon kang mga puna at feedback sa aming chatbot. Huwag sana kayong mag-atubili na isulat ito sa aming feedback page. Salamat muli.`
                     );
-
+                    _handleTranslate(
+                      `Do you want to continue chatting with Ulayaw? 😳 or you have an Assessment Code from the PMHA?`,
+                      `Gusto mo bang mag patuloy sa pakikipag usap kay Ulayaw? 😳 o mayroon kang Assessment Code mula sa PMHA?.`
+                    );
+                    df_event_query("LOGIN_CONTINUE");
                     let email = isAuth().email;
                     let formData = [];
                     formData.push({
@@ -2669,6 +2675,11 @@ function Chatbot(props) {
                       `Just come back when you have a problem. If you have comments and feedback to our chatbot. Please don't hesitate to write it at our feedback page. Thank you again.`,
                       `Mag balik ka lang pag may problema ka. Kung mayroon kang mga puna at feedback sa aming chatbot. Huwag sana kayong mag-atubili na isulat ito sa aming feedback page. Salamat muli.`
                     );
+                    _handleTranslate(
+                      `Do you want to continue chatting with Ulayaw? 😳 or you have an Assessment Code from the PMHA?`,
+                      `Gusto mo bang mag patuloy sa pakikipag usap kay Ulayaw? 😳 o mayroon kang Assessment Code mula sa PMHA?.`
+                    );
+                    df_event_query("LOGIN_CONTINUE");
                     let email = isAuth().email;
                     let formData = [];
                     formData.push({
@@ -2991,6 +3002,51 @@ function Chatbot(props) {
       }
       if (moodContainer[i].select) {
         res += moodContainer[i].mood_text;
+      }
+    }
+    res += ".";
+    return res;
+  }
+  function _handleMoodsTag(moodContainer) {
+    let res = "";
+    let firstHit = -1;
+    for (let i = 0; i < moodContainer.length; i++) {
+      if (moodContainer[i].select && firstHit === -1) {
+        firstHit = i;
+      }
+      if (moodContainer[i].select && i != firstHit) {
+        res += ",";
+      }
+      if (moodContainer[i].select) {
+        // res += moodContainer[i].mood_text;
+
+        if (moodContainer[i].mood_text === "sad") {
+          res += "malungkot";
+        }
+
+        if (moodContainer[i].mood_text === "worried") {
+          res += "nag-aalala";
+        }
+        if (moodContainer[i].mood_text === "frustrated") {
+          res += "bigo";
+        }
+        if (moodContainer[i].mood_text === "guilty") {
+          res += "nagkasala";
+        }
+
+        if (moodContainer[i].mood_text === "nervous") {
+          res += "kinakabahan";
+        }
+
+        if (moodContainer[i].mood_text === "embarrased") {
+          res += "nahihiya";
+        }
+        if (moodContainer[i].mood_text === "angry") {
+          res += "galit";
+        }
+        if (moodContainer[i].mood_text === "anxious") {
+          res += "balisa";
+        }
       }
     }
     res += ".";
