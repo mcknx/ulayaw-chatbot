@@ -61,6 +61,7 @@ function Chatbot(props) {
   const handleExportWithComponent = (event) => {
     pdfExportComponent.current.save();
   };
+  const [restart, setRestart] = useState(false);
   const [messages, setMessages] = useState([]);
   const [messagesFilipino, setMessagesFilipino] = useState([]);
   const [showBot, setShowBot] = useState(true);
@@ -1234,6 +1235,9 @@ function Chatbot(props) {
 
       case "abc_continue_step_1":
         console.log(assessmentUser);
+        if (restart) {
+          window.location.reload();
+        }
         _handleTranslate(
           `Hi ${userLoggedIn.first_name}, I'm glad you are here today. Maybe we could start by getting your mood. First, I want you to pick the most likely feelings you are into right now.`,
           `Hi ${userLoggedIn.first_name}, natutuwa ako na narito ka ngayon. Siguro maaari nating simulan sa pagkuha ng iyong nararamdaman. Pumili ka ng isa dito sa ating 'emotion box' na pinakanararamdaman mo ngayon.`
@@ -2612,10 +2616,12 @@ function Chatbot(props) {
                       `Mag balik ka lang pag may problema ka. Kung mayroon kang mga puna at feedback sa aming chatbot. Huwag sana kayong mag-atubili na isulat ito sa aming feedback page. Salamat muli.`
                     );
                     _handleTranslate(
-                      `Do you want to continue chatting with Ulayaw? 😳 or you have an Assessment Code from the PMHA?`,
-                      `Gusto mo bang mag patuloy sa pakikipag usap kay Ulayaw? 😳 o mayroon kang Assessment Code mula sa PMHA?.`
+                      `Do you want to continue chatting with Ulayaw?`,
+                      `Gusto mo bang mag patuloy sa pakikipag usap kay Ulayaw?`
                     );
-                    df_event_query("LOGIN_CONTINUE");
+                    setRestart(true);
+                    // window.location.reload();
+                    df_event_query("ASSESSMENT_DONE");
                     let email = isAuth().email;
                     let formData = [];
                     formData.push({
@@ -2676,10 +2682,12 @@ function Chatbot(props) {
                       `Mag balik ka lang pag may problema ka. Kung mayroon kang mga puna at feedback sa aming chatbot. Huwag sana kayong mag-atubili na isulat ito sa aming feedback page. Salamat muli.`
                     );
                     _handleTranslate(
-                      `Do you want to continue chatting with Ulayaw? 😳 or you have an Assessment Code from the PMHA?`,
-                      `Gusto mo bang mag patuloy sa pakikipag usap kay Ulayaw? 😳 o mayroon kang Assessment Code mula sa PMHA?.`
+                      `Do you want to continue chatting with Ulayaw?`,
+                      `Gusto mo bang mag patuloy sa pakikipag usap kay Ulayaw?`
                     );
-                    df_event_query("LOGIN_CONTINUE");
+                    setRestart(true);
+                    // window.location.reload();
+                    df_event_query("ASSESSMENT_DONE");
                     let email = isAuth().email;
                     let formData = [];
                     formData.push({
