@@ -232,16 +232,10 @@ function Chatbot(props) {
             text: queryText,
             latitude: location.coordinates.lat,
             longitude: location.coordinates.lng,
-            key: "AIzaSyAzfKhs0GtFbKBjEfn61zNJN2NsaFk5fKs",
+            key: process.env.GOOGLEMAPAPI,
           },
         },
       };
-
-      // My Key
-      // AIzaSyA6hz3_zGUdW-B6RrjX1zi2nKVfM9sRyjg
-
-      // Free Key
-      // AIzaSyAyesbQMyKVVbBgKVi2g6VX7mop2z96jBo
     } else if (extra === "welcome") {
       says = {
         // speaks: "user",

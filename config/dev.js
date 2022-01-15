@@ -9,8 +9,9 @@ module.exports = {
     "mongodb+srv://mckeenasma:mckeenasma@cluster0.uijoy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
   clientURL: "http://localhost:3000",
   mailKey:
-    "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",
+    "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",
   jwtAccountActivation: "mckeenasma12345",
   emailFrom: "masma_180000002118@uic.edu.ph",
-  OPENAI_API_KEY: "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",
+  OPENAI_API_KEY: "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",
+  GOOGLEMAPAPI: "AIzaSyDFuqTorLbA7qMOuO77yEIaokWMfZtjXcE",
 };

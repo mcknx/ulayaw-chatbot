@@ -60,15 +60,6 @@ exports.understandUserInputController = async (req, res) => {
   // const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
   const OPENAI_API_KEY = config.OPENAI_API_KEY;
 
-  // mckeenasmarvmz@gmail.com
-  // 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
-
-  // mckeenasma123@gmail.com and asmamckeen@gmail.com (disgrasya)
-  // "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";
-
-  // masma_180000002118@uic.edu.ph
-  // "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";
-
   const openai = new OpenAI(OPENAI_API_KEY);
   const emotionData = req.params.emotion;
   const inputData = req.params.words;
