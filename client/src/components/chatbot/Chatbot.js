@@ -232,7 +232,7 @@ function Chatbot(props) {
             text: queryText,
             latitude: location.coordinates.lat,
             longitude: location.coordinates.lng,
-            key: process.env.GOOGLEMAPAPI,
+            key: "AIzaSyDFuqTorLbA7qMOuO77yEIaokWMfZtjXcE",
           },
         },
       };
