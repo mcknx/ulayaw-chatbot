@@ -1658,6 +1658,20 @@ function Chatbot(props) {
     //   ),
     //   `base sa iyong napiling mood. Mayroon ka bang ideya kung kailan, saan at paano ito nagsimula?`
     // );
+    let email = isAuth().email;
+
+    axios
+      .post(`/api/admin/addChat`, {
+        email,
+        messages,
+      })
+      .then((res) => {
+        // toast.success(res.response.data);
+        console.log(res);
+      })
+      .catch((err) => {
+        toast.error(err.response.data.errors);
+      });
     let inputData = `Base sa iyong napiling mood. Mayroon ka bang ideya kung kailan, saan at paano ito nagsimula? at gaano mo na katagal itong nararamdaman?`;
 
     _handleTranslate(
