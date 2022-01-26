@@ -297,6 +297,7 @@ export default function ModalLogin(props) {
                       `Do you want to start our conversation? 😳 or you have an Assessment Code from the PMHA?`,
                       `Gusto mo na bang mag simula? 😳 o mayroon kang Assessment Code mula sa PMHA?.`
                     );
+                    props.setListen(true);
 
                     props.df_event_query("LOGIN_CONTINUE");
                     props.setShowModal(false);

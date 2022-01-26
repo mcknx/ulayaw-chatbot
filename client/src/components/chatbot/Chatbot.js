@@ -62,6 +62,7 @@ function Chatbot(props) {
     pdfExportComponent.current.save();
   };
   const [restart, setRestart] = useState(false);
+  const [listen, setListen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [messagesFilipino, setMessagesFilipino] = useState([]);
   const [showBot, setShowBot] = useState(true);
@@ -425,6 +426,7 @@ function Chatbot(props) {
               `Do you want to start our conversation? 😳 or you have an Assessment Code from the PMHA?`,
               `Gusto mo na bang mag simula? 😳 o mayroon kang Assessment Code mula sa PMHA?.`
             );
+            setListen(true);
 
             df_event_query("LOGIN_CONTINUE");
           } else {
@@ -3688,10 +3690,24 @@ function Chatbot(props) {
   });
   // }, [getLocation, cookies.get("termsAndConditions")]);
 
-  // useEffect(() => {
-  //   const timer = setTimeout(() => console.log("Initial timeout!"), 1000);
-  //   return () => clearTimeout(timer);
-  // }, [messages]);
+  useEffect(async () => {
+    if (listen) {
+      let email = isAuth().email;
+
+      await axios
+        .post(`/api/admin/addChat`, {
+          email,
+          messages,
+        })
+        .then((res) => {
+          // toast.success(res.response.data);
+          console.log(res);
+        })
+        .catch((err) => {
+          toast.error(err.response.data.errors);
+        });
+    }
+  }, [messages, listen]);
 
   function resolveAfterXSeconds(x) {
     return new Promise((resolve) => {
@@ -3920,6 +3936,7 @@ function Chatbot(props) {
         )}
         {showModalLogin ? (
           <ModalLogin
+            setListen={setListen}
             showModal={showModalLogin}
             setShowModal={setShowModalLogin}
             setQuickRepliesWelcome={setQuickRepliesWelcome}
