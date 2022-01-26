@@ -3,6 +3,7 @@ import { ShowAdminRoute } from "../Context/ShowAdminRoute";
 import { GetInterpretationsContext } from "../Context/GetInterpretationsContext";
 import authSvg from "../assets/forget.svg";
 import ulayaw from "../assets/ulayaw.png";
+import ulayawFace from "../assets/ulayaw.png";
 import { ToastContainer, toast } from "react-toastify";
 import { authenticate, isAuth } from "../helpers/auth";
 import axios from "axios";
@@ -10,6 +11,7 @@ import jwt from "jsonwebtoken";
 import Select from "react-select";
 import { Link } from "react-router-dom";
 import Cookies from "universal-cookie";
+import Message from "./chatbot/Message";
 const cookies = new Cookies();
 
 const Admin = ({ match }) => {
@@ -30,6 +32,7 @@ const Admin = ({ match }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isUserLoaded, setIsUserLoaded] = useState(false);
   const [showUser, setShowUser] = useState(false);
+  const [showUserChat, setShowUserChat] = useState(false);
   const [showTD, setShowTD] = useState(false);
   const [showCreateCode, setShowCreateCode] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState();
@@ -160,6 +163,9 @@ const Admin = ({ match }) => {
                       <th className="p-2 whitespace-nowrap">
                         <div className="font-semibold text-center">Details</div>
                       </th>
+                      <th className="p-2 whitespace-nowrap">
+                        <div className="font-semibold text-center">Chat</div>
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="text-sm divide-y divide-gray-100">
@@ -280,6 +286,17 @@ const Admin = ({ match }) => {
                                 show
                               </div>
                             </td>
+                            <td className="p-2 whitespace-nowrap">
+                              <div
+                                className="mx-auto text-center hover:opacity-80 bg-[#5dcfff] cursor-pointer w-[50px] rounded-lg p-1 text-white hover:shadow-lg"
+                                onClick={() => {
+                                  setShowUserChat(true);
+                                  setSelectedUser(user);
+                                }}
+                              >
+                                show
+                              </div>
+                            </td>
                           </tr>
                         );
                       })
@@ -307,6 +324,15 @@ const Admin = ({ match }) => {
           user={selectedUser}
           setShowModal={setShowUser}
           showModal={showUser}
+        />
+      ) : (
+        ""
+      )}
+      {showUserChat ? (
+        <ShowUserChatDetails
+          user={selectedUser}
+          setShowModal={setShowUserChat}
+          showModal={showUserChat}
         />
       ) : (
         ""
@@ -559,6 +585,210 @@ function GetUserDetails(props) {
   );
 }
 
+function ShowUserChatDetails(props) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [selectedUser, setSelectedUser] = useState();
+  const [switchLanguage, setSwitchLanguage] = useState(true);
+  useEffect(async () => {
+    await axios
+      .get(`/api/admin/chat/${props.user.email}`)
+      .then((res) => {
+        console.log(res);
+
+        setSelectedUser(res.data[0]);
+        if (res.data[0].chat === "no_chat") {
+          setIsLoaded(false);
+        } else {
+          setIsLoaded(true);
+        }
+      })
+      .catch((err) => {});
+  }, [isLoaded]);
+  function renderMessages(returnedMessages) {
+    // if (cookies.get("termsAndConditions")) {
+    if (returnedMessages) {
+      // console.log(returnedMessages);
+
+      return returnedMessages.map((message, i) => {
+        // console.log(i);
+        return renderOneMessage(message, i);
+      });
+    } else {
+      return null;
+    }
+    // }
+  }
+  function renderOneMessage(message, i) {
+    if (message.msg && message.msg.text && message.msg.text.text) {
+      if (switchLanguage) {
+        return (
+          <Message
+            key={i}
+            speaks={message.speaks}
+            text={message.msg.text.textFil}
+          />
+        );
+      } else {
+        return (
+          <Message
+            key={i}
+            speaks={message.speaks}
+            text={message.msg.text.text}
+          />
+        );
+      }
+    }
+  }
+  return (
+    <>
+      <div className="left-0 fixed top-0 w-full h-full bg-black bg-opacity-[0.75] ">
+        <ToastContainer />
+        <div className="h-full flex flex-col  justify-center align-center ">
+          {/* header */}
+          <div className="w-full top-[60px] md:top-[70px] h-[200.5px] md:w-[600px] rounded-t-[10px] text-[25px] lg:text-[35px] p-[18px] lg:p-[28px]  text-white self-center bg-[#5DCFFF] font-semibold text-center relative">
+            <button
+              className=" text-white md:px-[13px] md:py-[8px] py-[4px] absolute top-4  md:right-4 right-2 md:w-[70px] w-[35px] rounded-[5px] bg-[#2E93BE] text-[10px] md:text-[14px]"
+              onClick={() => {
+                props.setShowModal(!props.showModal);
+              }}
+            >
+              Close
+            </button>
+
+            <>
+              <p>User Chat History</p>
+              <p className="text-[14px] text-gray-100">
+                This form allows admins to view a user's chat history. The
+                history is not always updated because it was implemented after
+                the user registered, which is why some users do not have a chat
+                history and must chat with the chatbot to get one.
+              </p>
+            </>
+          </div>
+
+          {/* body */}
+          <div className=" w-full h-full  2xl:h-[800px] md:w-[600px] rounded-b-[10px] text-[12px] lg:text-[16px]  md:px-[71px] py-[55px] self-center bg-white justify-center flex flex-col ">
+            <div className="z-40">
+              <div
+                className={
+                  "flex flex-col  md:w-[500px] shadow-lg w-screen border-2    bg-white   rounded-[20px]   h-full "
+                }
+              >
+                {/* nav */}
+                <nav className="border-b-[3px] border-[#E4E4E4]">
+                  <div className="p-4 flex flex-row justify-between ">
+                    <div className="flex  text-[#5DCFFF] text-[20px]  font-normal">
+                      <span className="mr-2 self-center h-2 w-2 shadow-lg   rounded-full  bg-green-400 "></span>
+                      <p>Ulayaw</p>
+                    </div>
+                    <ul className="right-0 cursor-pointer text-white font-semibold rounded-md bg-[#5DCFFF] h-[20px] md:h-[28px] w-[120px] md:w-[200px] flex justify-center transform hover:scale-[1.050] hover:opacity-80 self-center">
+                      <li className=" ">
+                        <p
+                          // href="/"
+                          // onClick={() => {
+                          //   setShowBot(!showBot);
+                          // }}
+                          className="text-[12px] md:text-[17px] select-none"
+                          onClick={() => {
+                            setSwitchLanguage(!switchLanguage);
+                            // handleExportWithComponent();
+                          }}
+                        >
+                          {switchLanguage
+                            ? "Translate to English"
+                            : "Translate to Filipino"}
+                        </p>
+                      </li>
+                    </ul>
+                    {/* <ul className="right-0 cursor-pointer text-white font-semibold rounded-full bg-[#5DCFFF] h-[28px] w-[28px] flex justify-center transform hover:scale-[1.050]">
+                      <li className=" ">
+                        <a
+                          href="/"
+                          // onClick={() => {
+                          //   setShowBot(!showBot);
+                          // }}
+                          className=" text-[19px] "
+                          // onClick={hide}
+                        >
+                          ✖
+                        </a>
+                      </li>
+                    </ul> */}
+                  </div>
+                </nav>
+                {/* body */}
+                <div
+                  className="h-[400px] md:h-[500px]  overflow-auto space-y-2 "
+                  //
+                >
+                  <div className=" p-2 ">
+                    {isLoaded && (
+                      <div className=" rounded-lg  mb-2 text-sm ">
+                        <div>
+                          <div
+                            className={
+                              "flex justify-start space-x-2  p-2 rounded-lg bottom-0 "
+                            }
+                          >
+                            <div className={"flex justify-end flex-col"}>
+                              <div className=" rounded-full flex justify-center  text-white h-10 w-10  ">
+                                <img src={ulayawFace} />
+                                {/* <a href="/">{speaks}</a> */}
+                              </div>
+                            </div>
+
+                            <div
+                              className={
+                                "rounded-[10px] self-center overflow-ellipsis  px-4 py-2 bg-[#F2EFEF] text-black font-medium text-left"
+                              }
+                            >
+                              <label>
+                                {switchLanguage
+                                  ? `Kaibigan, ang pakikipag-usap na ito ay pribado. Ang
+                          iyong pagkakakilanlan ay protektado at may siguridad
+                          ang bawat impormasyon mababanggit. Maaaring basahin
+                          muna ang`
+                                  : `Friend, this conversation is private. Your identity is protected and you have to make sure every information is mentioned. The`}
+                                <button
+                                  className="pl-1 underline font-bold text-[#5DCFFF] cursor-pointer transform hover:scale-105"
+                                  // onClick={() => {
+                                  //   setShowModal(true);
+                                  // }}
+                                >
+                                  {switchLanguage ? `kondisyon` : `condition`}
+                                  {/* kondisyon */}
+                                </button>{" "}
+                                {switchLanguage
+                                  ? `upang makapag patuloy.`
+                                  : `can be read first to proceed.`}
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {isLoaded
+                      ? renderMessages(selectedUser.chat)
+                      : "The user does not have chat history, please tell her/him to chat to the chatbot in order to get updated"}
+                  </div>
+                  {/* <div
+                    ref={(el) => {
+                      messagesEnd = el;
+                    }}
+                    className="clear-both"
+                    // style={{ float: "left", clear: "both" }}
+                  ></div> */}
+                </div>
+                {/* input */}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
 function CreateCode(props) {
   const [isClicked, setIsClicked] = useState(false);
   const [formData, setFormData] = useState({

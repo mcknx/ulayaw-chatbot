@@ -90,20 +90,14 @@ exports.understandUserInputController = async (req, res) => {
       const topic = async () => {
         return await openai.complete({
           engine: "davinci",
-          // prompt:
-          //   "The following is a list user inputs and the categories they fall into\n\nAt school, it feels like I've lost all my friends: loss of friends, losing a friend/s, friend problem\nI've been really weird with my sleeping patterns: sleep problems, sleep issues\nI'm going through some things with my feelings and myself: self-esteem, self-confidence, self-image\nAt cemetery, I visited my dad who lost his life: death of a loved one, death of a family member\nI feel like I am not at a good state of mind: mental health, mental illness\nI'm very unsettled in my soul. I'm not happy with myself or the decisions I make, which makes me not happy with anyone else: self-esteem, self-confidence, self-image\nI feel like a failure most of my days. I don't feel like I'm good at anything anymore. I feel like less of a person: self-esteem, self-confidence, self-image\n",
           prompt: `The following is a list of user inputs and the emotional categories to which they belong\n\nAt school, it feels like I've lost all my friends: loss of friends, losing a friend/s, friend problem\nI've been really weird with my sleeping patterns: sleep problems, sleep issues\nI'm going through some things with my feelings and myself: self-esteem, self-confidence, self-image\nAt cemetery, I visited my dad who lost his life: death of a loved one, death of a family member\nI feel like I am not at a good state of mind: mental health, mental illness\nI'm very unsettled in my soul. I'm not happy with myself or the decisions I make, which makes me not happy with anyone else: self-esteem, self-confidence, self-image\nI feel like a failure most of my days. I don't feel like I'm good at anything anymore. I feel like less of a person: self-esteem, self-confidence, self-image\nI started to get restless because of the capstone because of maam: restless about capstone, capstone class\nI started to get restless because of our project: restless about project, project class\n${emotionData}, ${res1.text}:`,
-
           maxTokens: 60,
           temperature: 0,
           topP: 1,
           presencePenalty: 0,
           frequencyPenalty: 0.89,
-
           stop: ["\n"],
         });
-
-        // console.log(generate_essay.data);
       };
 
       const topicRes = await topic();

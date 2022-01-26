@@ -154,6 +154,16 @@ exports.fetchUserCodeController = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+exports.fetchUserChatController = async (req, res) => {
+  const email = req.params.email;
+  try {
+    let data = await User.find({ email: email });
+    res.json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server error");
+  }
+};
 
 exports.handOverController = async (req, res) => {
   const {
@@ -505,6 +515,55 @@ exports.addCompanionController = async (req, res) => {
             errors: err,
           });
         });
+    }
+  );
+};
+exports.addChatController = async (req, res) => {
+  const { messages, email, pdf } = req.body;
+  console.log(email, "email");
+  console.log(messages, "messages");
+  if (pdf === true) {
+    messages.push({
+      speaks: "user",
+      msg: {
+        text: { text: "Oo, Save as PDF", textFil: "Oo, Save as PDF" },
+      },
+    });
+  }
+  if (pdf === false) {
+    messages.push({
+      speaks: "user",
+      msg: {
+        text: { text: "No", textFil: "Hindi" },
+      },
+    });
+  }
+
+  User.findOne(
+    {
+      email: email,
+    },
+    (err, user) => {
+      if (err || !user) {
+        return res.status(400).json({
+          errors: `Chat not saved`,
+        });
+      }
+      const updatedFields = {
+        chat: messages,
+      };
+      user = _.extend(user, updatedFields);
+      user.save((err, result) => {
+        if (err) {
+          return res.status(400).json({
+            error: `Chat not saved.`,
+          });
+        }
+        return res.json({
+          success: true,
+          message: messages,
+        });
+      });
     }
   );
 };

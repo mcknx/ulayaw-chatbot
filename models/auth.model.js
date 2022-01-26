@@ -46,6 +46,7 @@ const userSchema = new mongoose.Schema(
       data: String,
       default: "",
     },
+    chat: { type: Object, trim: true, default: "no_chat" },
   },
   {
     timestamps: true,

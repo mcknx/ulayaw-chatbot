@@ -350,6 +350,7 @@ function Chatbot(props) {
       // setMessages(...messages, says);
     }
   }
+
   useEffect(async () => {
     console.log(location);
 
@@ -535,6 +536,20 @@ function Chatbot(props) {
             return [...prevAct, chat];
           });
 
+          let email = isAuth().email;
+          await axios
+            .post(`/api/admin/addChat`, {
+              email,
+              messages,
+            })
+            .then((res) => {
+              // toast.success(res.response.data);
+              console.log(res);
+            })
+            .catch((err) => {
+              toast.error(err.response.data.errors);
+            });
+
           // bot reponse
 
           let emotion;
@@ -589,6 +604,21 @@ function Chatbot(props) {
         if (e.target.value !== "") {
           // user response
           _handleTranslate(e.target.value, e.target.value, true);
+
+          let email = isAuth().email;
+          await axios
+            .post(`/api/admin/addChat`, {
+              email,
+              messages,
+            })
+            .then((res) => {
+              // toast.success(res.response.data);
+              console.log(res);
+            })
+            .catch((err) => {
+              toast.error(err.response.data.errors);
+            });
+
           let chat = e.target.value;
           // console.log(chat.split(/[ ,]+/));
           setGetOtherEmotionAll(chat.split(/[,]+/));
@@ -621,6 +651,19 @@ function Chatbot(props) {
               setGetRateEmotion(false);
               setGetRateEmotionExplain(true);
               _handleTranslate(`${chat}`, `${chat}`, true);
+              let email = isAuth().email;
+              await axios
+                .post(`/api/admin/addChat`, {
+                  email,
+                  messages,
+                })
+                .then((res) => {
+                  // toast.success(res.response.data);
+                  console.log(res);
+                })
+                .catch((err) => {
+                  toast.error(err.response.data.errors);
+                });
               _handleTranslate(
                 `Can you explain why this is your rate?`,
                 `Maaari mo bang maipaliwanag kung bakit ito ang iyong rate?`
@@ -656,6 +699,19 @@ function Chatbot(props) {
 
         if (e.target.value !== "") {
           _handleTranslate(e.target.value, e.target.value, true);
+          let email = isAuth().email;
+          await axios
+            .post(`/api/admin/addChat`, {
+              email,
+              messages,
+            })
+            .then((res) => {
+              // toast.success(res.response.data);
+              console.log(res);
+            })
+            .catch((err) => {
+              toast.error(err.response.data.errors);
+            });
           setShowChatBox(false);
           setFocusThoughtDiaryLetter("b");
           // _handleTranslate(
@@ -728,6 +784,19 @@ function Chatbot(props) {
           if (maxInput === 0) {
             setShowChatBox(true);
             _handleTranslate(`${chat}`, `${chat}`, true);
+            let email = isAuth().email;
+            await axios
+              .post(`/api/admin/addChat`, {
+                email,
+                messages,
+              })
+              .then((res) => {
+                // toast.success(res.response.data);
+                console.log(res);
+              })
+              .catch((err) => {
+                toast.error(err.response.data.errors);
+              });
             _handleTranslate(
               `What first came to your mind at that time as you were feeling emotions based on your experience.`,
               `Ano ang unang pumasok sa isip mo noong panahon na iyon habang nakakaramdam ka ng emosyon base sa iyong experience?`
@@ -843,6 +912,19 @@ function Chatbot(props) {
         if (e.target.value !== "") {
           // user response
           _handleTranslate(e.target.value, e.target.value, true);
+          let email = isAuth().email;
+          await axios
+            .post(`/api/admin/addChat`, {
+              email,
+              messages,
+            })
+            .then((res) => {
+              // toast.success(res.response.data);
+              console.log(res);
+            })
+            .catch((err) => {
+              toast.error(err.response.data.errors);
+            });
           setGetAfterFeelingsChat((prevAft) => {
             return [...prevAft, chat];
           });
@@ -2603,6 +2685,21 @@ function Chatbot(props) {
                       `Oo, Save as PDF`,
                       true
                     );
+                    let email = isAuth().email;
+                    let pdf = true;
+                    axios
+                      .post(`/api/admin/addChat`, {
+                        email,
+                        messages,
+                        pdf,
+                      })
+                      .then((res) => {
+                        // toast.success(res.response.data);
+                        console.log(res);
+                      })
+                      .catch((err) => {
+                        toast.error(err.response.data.errors);
+                      });
                     _handleTranslate(`Okay, Saving...`, `Okay, Saving...`);
                     df_text_query(``, ``, `user`, ``, `exit`);
                     _handleTranslate(
@@ -2616,7 +2713,7 @@ function Chatbot(props) {
                     setRestart(true);
                     // window.location.reload();
                     df_event_query("ASSESSMENT_DONE");
-                    let email = isAuth().email;
+                    // let email = isAuth().email;
                     let formData = [];
                     formData.push({
                       presentEmotion: showPresentEmotion.map((item, i) => {
@@ -2669,6 +2766,21 @@ function Chatbot(props) {
                   onClick={() => {
                     setShowThoughtDiaryTool(false);
                     _handleTranslate(`No`, `Hindi,`, true);
+                    let email = isAuth().email;
+                    let pdf = false;
+                    axios
+                      .post(`/api/admin/addChat`, {
+                        email,
+                        messages,
+                        pdf,
+                      })
+                      .then((res) => {
+                        // toast.success(res.response.data);
+                        console.log(res);
+                      })
+                      .catch((err) => {
+                        toast.error(err.response.data.errors);
+                      });
                     _handleTranslate(`Okay, Thank you!`, `Okay, Thank you!`);
                     df_text_query(``, ``, `user`, ``, `exit`);
                     _handleTranslate(
@@ -2682,7 +2794,7 @@ function Chatbot(props) {
                     setRestart(true);
                     // window.location.reload();
                     df_event_query("ASSESSMENT_DONE");
-                    let email = isAuth().email;
+                    // let email = isAuth().email;
                     let formData = [];
                     formData.push({
                       presentEmotion: showPresentEmotion.map((item, i) => {

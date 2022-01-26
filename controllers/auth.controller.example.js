@@ -102,7 +102,7 @@ exports.activationController = (req, res) => {
             return res.json({
               success: true,
               message: user,
-              message: "Signup success",
+              message: "Your account has been activated, you may now login",
             });
           }
         });
