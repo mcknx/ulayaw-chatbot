@@ -72,12 +72,14 @@ const Landing = (props) => {
           </div>
         </div>
       </div>
-      <video
-        src="https://www.youtube.com/watch?v=W1xYfL0D760"
-        className="h-[800px] mt-[100px]"
-        controls="controls"
-        autoplay="true"
-      />
+      <iframe
+        className="h-[800px] w-full mt-[100px]"
+        src="https://www.youtube.com/embed/W1xYfL0D760"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
     </div>
   );
 };
