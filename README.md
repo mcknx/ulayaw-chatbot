@@ -1,4 +1,5 @@
 # ulayaw-chatbot
+### visit and try the amazing chatbot at ulayaw.herokuapp.com
 ## Client Side
 Note: When activating an account, the link received to your email may not work; to resolve this, open the link sent to your email in a Private Browser/Private Window, where you can activate the account; after activating the account, just quit the Private Browser/Private Window.
 ```
