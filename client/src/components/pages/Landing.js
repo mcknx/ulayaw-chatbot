@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { ThoughtDiaryContext } from "../../Context/ThoughtDiaryContext";
 import { ShowMoodsContext } from "../../Context/ShowMoodsContext";
 import homeUlayaw from "../../assets/home_ulayaw.png";
+import demovideo from "../../assets/demo.mp4";
 
 const Landing = (props) => {
   const { showThoughtDiaryTool, setShowThoughtDiaryTool } =
@@ -22,7 +23,7 @@ const Landing = (props) => {
           ? "hidden  "
           : showThoughtDiaryTool
           ? "hidden  "
-          : "container lg:mx-auto my-12 lg:my-auto lg:pt-[100px] 2xl:pt-[200px] lg:transform lg:scale-[.79] 2xl:scale-[1] h-full "
+          : "container lg:mx-auto my-12 lg:my-auto lg:pt-[100px] 2xl:pt-[200px] lg:transform lg:scale-[.79] 2xl:scale-[1] h-[2000px] grow w-full"
       }
     >
       <div className="lg:grid lg:grid-cols-12 gap-4 ">
@@ -72,6 +73,12 @@ const Landing = (props) => {
           </div>
         </div>
       </div>
+      <video
+        src={demovideo}
+        className="h-[800px]"
+        controls="controls"
+        autoplay="true"
+      />
     </div>
   );
 };
