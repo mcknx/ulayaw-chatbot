@@ -58,7 +58,7 @@ exports.understandUserInputController = async (req, res) => {
   // (do not include your key directly in your code)
   const config = require("../config/keys");
   // const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-  const OPENAI_API_KEY = config.OPENAI_API_KEY;
+  const OPENAI_API_KEY = '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';
 
   const openai = new OpenAI(OPENAI_API_KEY);
   const emotionData = req.params.emotion;
